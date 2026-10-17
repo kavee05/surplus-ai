@@ -56,8 +56,8 @@ async function analyseLive(image: string, mimeType: string): Promise<PhotoAnalys
     signal: AbortSignal.timeout(25_000),
   });
   if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    throw new Error(`Model ${model} request failed (${res.status}): ${detail.slice(0, 200)}`);
+    const detail = await res.json().catch(() => null);
+    throw new Error(`Model ${model} request failed (${res.status}): ${String(detail?.error?.message ?? "no detail").slice(0, 200)}`);
   }
   const json = await res.json();
   // Thinking models can return several parts; the JSON answer is the last text part.
@@ -108,6 +108,8 @@ export async function POST(req: Request) {
   } catch (e) {
     // Logged server-side only (visible in Vercel logs); the key is never included.
     console.error("[analyze-photo] live analysis failed:", e instanceof Error ? e.message : e);
-    return NextResponse.json({ mode: "demo", result: { ...uploadFallback, notes: "The AI service did not return a usable answer. Fill in the details yourself." } } satisfies AnalyzeResponse);
+    // A short reason helps diagnose setup problems. It holds the HTTP status and Google's message, never the key.
+    const reason = (e instanceof Error ? e.message : "Unknown error").replace(/AIza[0-9A-Za-z_-]+/g, "[key]").slice(0, 240);
+    return NextResponse.json({ mode: "demo", reason, result: { ...uploadFallback, notes: "The AI service did not return a usable answer. Fill in the details yourself." } });
   }
 }
