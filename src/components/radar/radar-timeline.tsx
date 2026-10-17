@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { fmtDate, fmtNum } from "@/lib/format";
 import type { Forecast } from "@/lib/types";
@@ -14,6 +14,19 @@ export type { TimelineNeed } from "./timeline-core";
 export function RadarTimeline({ className, onSelect, ...props }: TimelineProps & { className?: string; onSelect?: (f: Forecast) => void }) {
   const scroller = useRef<HTMLDivElement>(null);
   const todayPos = todayPosition(props.data.today, props.from, props.to);
+  // The phase bars draw in once per browser session, then stay still.
+  const [draw] = useState(() => {
+    try {
+      return !sessionStorage.getItem("surplus-ai:timeline-drawn");
+    } catch {
+      return false;
+    }
+  });
+  useEffect(() => {
+    try {
+      sessionStorage.setItem("surplus-ai:timeline-drawn", "1");
+    } catch {}
+  }, []);
   useEffect(() => {
     const el = scroller.current;
     if (!el || el.scrollWidth <= el.clientWidth) return;
@@ -22,7 +35,7 @@ export function RadarTimeline({ className, onSelect, ...props }: TimelineProps &
   }, [todayPos]);
 
   return (
-    <div ref={scroller} className={cn("blueprint relative overflow-x-auto rounded-xl border", className)}>
+    <div ref={scroller} className={cn("blueprint relative overflow-x-auto rounded-xl border", draw && "tl-draw", className)}>
       <TimelineCore
         {...props}
         renderNeed={(n) => (

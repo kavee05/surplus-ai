@@ -8,6 +8,7 @@ import { StatusBadge } from "@/components/app/status-badge";
 import { CertaintyBadge } from "@/components/explain/certainty";
 import { DecisionDialog, type DecisionMode } from "@/components/explain/decision-dialog";
 import { ExplanationPanel } from "@/components/explain/explanation-panel";
+import { Flash } from "@/components/app/flash";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -207,7 +208,9 @@ export function PreOrderPanel({
           <Figure label="Order now" value={fmtNum(result.orderNow)} unit={mat.unit} icon={ShoppingCart} tone="neutral" big />
           <div className={cn("col-span-2 flex flex-col bg-card px-4 py-3 sm:col-span-1 sm:px-5", result.listingQty > 0 && "sm:col-span-3")}>
             <span className="text-xs text-muted-foreground">Decision date</span>
-            <span className="tabular mt-1 text-xl font-semibold tracking-tight">{fmtDate(result.decisionDate)}</span>
+            <span className="tabular mt-1 text-xl font-semibold tracking-tight">
+              <Flash value={fmtDate(result.decisionDate)} />
+            </span>
             <span className="text-xs text-muted-foreground">Confirm the forecast or top up</span>
           </div>
         </div>
@@ -337,7 +340,9 @@ function Figure({
       )}
     >
       <span className={cn("text-xs", tone === "forecast" ? "text-forecast-ink" : "text-muted-foreground")}>{label}</span>
-      <span className={cn("tabular mt-1 font-semibold tracking-tight", big ? "text-3xl" : "text-xl")}>{value}</span>
+      <span className={cn("tabular mt-1 font-semibold tracking-tight", big ? "text-3xl" : "text-xl")}>
+        <Flash value={value} />
+      </span>
       <span className="text-xs text-muted-foreground">{unit}</span>
     </div>
   );
@@ -347,7 +352,9 @@ function Saving({ label, value, note }: { icon?: React.ComponentType<{ className
   return (
     <div className="flex min-w-0 flex-col">
       <span className="text-xs text-muted-foreground">{label}</span>
-      <span className="tabular mt-1 text-base font-semibold sm:text-lg">{value}</span>
+      <span className="tabular mt-1 text-base font-semibold sm:text-lg">
+        <Flash value={value} />
+      </span>
       <span className="hidden text-[11px] text-muted-foreground sm:block">{note}</span>
     </div>
   );

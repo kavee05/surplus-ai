@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Flash } from "./flash";
 import { Sparkline } from "./sparkline";
 
 /**
@@ -47,7 +48,7 @@ export function KpiCard({
         {Icon && <Icon className="size-4 shrink-0 text-muted-foreground/60" aria-hidden />}
       </div>
       <div className="mt-3 flex items-end justify-between gap-2">
-        <div className="tabular text-[1.375rem] leading-none font-semibold tracking-[-0.025em] whitespace-nowrap sm:text-[1.75rem]">{value}</div>
+        <div className="tabular text-[1.375rem] leading-none font-semibold tracking-[-0.025em] whitespace-nowrap sm:text-[1.75rem]">{typeof value === "string" || typeof value === "number" ? <Flash value={value} /> : value}</div>
         {trend && <Sparkline values={trend} tone={tone === "success" ? "success" : tone === "forecast" ? "forecast" : "brand"} className="hidden w-14 shrink-0 xl:block" />}
       </div>
       {(hint || action) && (

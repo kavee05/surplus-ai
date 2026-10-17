@@ -38,4 +38,13 @@ Filled in during the motion pass (step D5).
 
 | Element | Before | After | Why |
 | --- | --- | --- | --- |
-| _pending_ | | | |
+| Buttons | Colour change only | Scale to 0.97 on press, 150 ms, strong ease-out | Immediate physical feedback that the press registered |
+| Forecast ring on the Surplus Network | Did not exist | Green ring fades and scales in from 0.95 when a forecast is confirmed, 220 ms | Marks the one state change the product exists for: forecast becoming real |
+| Changed numbers (KPIs, Pre-Order figures) | Swapped silently | Brief amber highlight that fades over 600 ms, only when the value changes, never on first render | After an assumption or input edit the eye finds what moved. Longer than 300 ms on purpose: it is a fade-out after an instant change, not a transition the user waits on |
+| Radar timeline bars | Static | Draw in from the left once per browser session, 280 ms, transform only | Shows time running left to right; once only, so repeat visits are calm |
+| Menus, selects, popovers | Default fade and zoom | Kept, growing from the trigger (Radix transform origin), 100 ms | Already matched the rule; origin ties the layer to its trigger |
+| Command palette | Did not exist | No animation | Opened many times a session; animation would only slow it |
+| Charts | Bars grew on every mount | No mount animation | Decorative, delayed reading, and repeated on every visit |
+| Mobile camera button | Did not exist | Scale to 0.97 on press | Same press feedback as other buttons |
+| Accordion and "items for other roles" chevron | Default | Rotation only, 150 ms | Small, frequent, so short |
+| Everything | Partly covered | `prefers-reduced-motion` sets all animation and transition durations to near zero | Accessibility first (precedence rank 2) |

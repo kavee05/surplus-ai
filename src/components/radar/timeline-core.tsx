@@ -128,7 +128,7 @@ export function TimelineCore({
                   ))}
                   <div
                     className={cn(
-                      "absolute top-1/2 h-3 -translate-y-1/2 rounded-full",
+                      "tl-bar absolute top-1/2 h-3 -translate-y-1/2 rounded-full",
                       p.status === "planned" && "border border-dashed border-brand/50 bg-brand-soft",
                       p.status === "active" && "bg-brand/80",
                       p.status === "completed" && "bg-[var(--stone-300)]",

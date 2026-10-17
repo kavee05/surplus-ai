@@ -234,3 +234,15 @@ body:has([aria-label="Guided demo"]) #main {
   .net-svg text { font-size: 19px; }
   .net-svg text.net-small { font-size: 16px; }
 }
+
+/* Radar timeline: phase bars draw in from the left once per session (transform only) */
+.tl-draw .tl-bar { transform-origin: left center; animation: tl-draw 280ms var(--ease-out) both; }
+@keyframes tl-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* A number that just changed (for example after an assumption edit) gets a brief highlight that fades */
+.num-flash { position: relative; }
+.num-flash::after {
+  content: ""; position: absolute; inset: -2px -4px; border-radius: 4px; pointer-events: none;
+  background: var(--forecast); opacity: 0; animation: num-flash 600ms var(--ease-out);
+}
+@keyframes num-flash { from { opacity: 0.28; } to { opacity: 0; } }
