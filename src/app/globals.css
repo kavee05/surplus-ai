@@ -7,9 +7,10 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
-  --font-heading: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-heading: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-instrument-serif), ui-serif, Georgia, serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -59,8 +60,8 @@
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-xl: 10px;
+  --radius-2xl: 14px;
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
@@ -70,30 +71,30 @@
 }
 
 :root {
-  /* Neutral scale: cool stone */
-  --stone-0: #ffffff;
-  --stone-50: #f4f6f5;
-  --stone-100: #eef1ef;
-  --stone-200: #dfe5e3;
-  --stone-300: #c3ccca;
-  --stone-500: #5a6a70;
-  --stone-700: #2e3d43;
-  --stone-900: #142126;
+  /* Neutral scale: warm paper (one tinted grey family) */
+  --stone-0: #fcfbf8;
+  --stone-50: #f4f3ef;
+  --stone-100: #eceae4;
+  --stone-200: #dedad2;
+  --stone-300: #c9c4b9;
+  --stone-500: #59625f;
+  --stone-700: #2f3936;
+  --stone-900: #14201f;
 
   /* Brand: teal ink. Accent: hi-vis amber, reserved for forecasts */
   --brand: #0f4c5c;
   --brand-strong: #0a3741;
   --brand-soft: #e3eef0;
-  --forecast: #f2a541;
-  --forecast-ink: #8a5300;
-  --forecast-soft: #fdf1de;
+  --forecast: #e9a23b;
+  --forecast-ink: #7c4b08;
+  --forecast-soft: #fbefdc;
 
-  --success: #1d7a4c;
-  --success-soft: #e2f3ea;
+  --success: #1e7a4c;
+  --success-soft: #e3f1e8;
   --warning: #9a5b00;
   --warning-soft: #fcf0d9;
-  --danger: #b8322a;
-  --danger-soft: #fbe6e4;
+  --danger: #b3382c;
+  --danger-soft: #f8e5e2;
   --info: #2a62a3;
   --info-soft: #e5eef8;
 
@@ -120,8 +121,8 @@
   --chart-3: #5f8fa3;
   --chart-4: #a8552a;
   --chart-5: #9aa8ae;
-  --radius: 0.5rem;
-  --ink: #0b2a31;
+  --radius: 0.375rem;
+  --ink: #0e2a30;
   --sidebar: var(--ink);
   --sidebar-foreground: #b9cacd;
   --sidebar-primary: var(--forecast);
@@ -131,9 +132,14 @@
   --sidebar-border: rgb(255 255 255 / 0.09);
   --sidebar-ring: var(--forecast);
 
-  --shadow-1: 0 1px 0 rgb(20 33 38 / 0.03);
-  --shadow-2: 0 1px 2px rgb(20 33 38 / 0.04), 0 12px 32px -12px rgb(20 33 38 / 0.14);
-  --shadow-3: 0 12px 40px rgb(20 33 38 / 0.18);
+  --shadow-1: none;
+  --shadow-2: 0 1px 2px rgb(14 42 48 / 0.06), 0 16px 36px -14px rgb(14 42 48 / 0.22);
+  --shadow-3: 0 18px 48px -12px rgb(14 42 48 / 0.28);
+
+  /* Motion (Emil): strong ease-out, short */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --dur-fast: 150ms;
+  --dur-base: 220ms;
 }
 
 @layer base {
@@ -154,7 +160,14 @@
     outline-offset: 2px;
   }
   .tabular {
+    font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+  .font-display {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.01em;
   }
   h1,
   h2,
@@ -197,4 +210,23 @@ body:has([aria-label="Guided demo"]) #main {
     linear-gradient(to right, rgb(15 76 92 / 0.035) 1px, transparent 1px),
     linear-gradient(to bottom, rgb(15 76 92 / 0.035) 1px, transparent 1px);
   background-size: 96px 96px, 96px 96px, 24px 24px, 24px 24px;
+}
+
+/* Surplus Network: forecast ring solidifies to green when confirmed (transform and opacity only) */
+.net-confirmed {
+  opacity: 0;
+  transform: scale(0.95);
+  transition:
+    opacity var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-out);
+}
+.net-ring[data-confirmed] .net-confirmed {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Keep network labels legible when the SVG is scaled down on phones */
+@media (max-width: 640px) {
+  .net-svg text { font-size: 19px; }
+  .net-svg text.net-small { font-size: 16px; }
 }

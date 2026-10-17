@@ -1,10 +1,8 @@
-import { Camera, Check, ClipboardCheck, HardHat, LineChart, Radar, Repeat, ShoppingCart } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SimulatedBadge } from "@/components/app/simulated-badge";
 import { HeroVisual } from "@/components/landing/hero-visual";
 import { DISCLAIMER, SiteFooter, SiteHeader } from "@/components/landing/site-chrome";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { HERO_INPUT, seedState } from "@/data/initial";
 import { evidence } from "@/data/evidence";
@@ -31,16 +29,46 @@ const rc = preOrderCheck(state, { ...HERO_INPUT, conservative: true });
 const impact = impactSummary(state);
 
 const steps = [
-  { icon: Radar, title: "Forecast surplus from purchase plans", body: "For every phase, compare what was ordered with what the bill of quantities needs plus a wastage allowance. The difference is likely surplus, with an evidence level that rises as the phase progresses." },
-  { icon: ShoppingCart, title: "Check before you buy", body: "A buyer enters an item, quantity and date. Logged surplus is used first, then forecast surplus from nearby sites. The answer: reserve this much, order the rest now, and confirm by a set date." },
-  { icon: Camera, title: "Log the real surplus by photo", body: "When the phase ends, the site engineer photographs what is left. The AI suggests the item and an estimated quantity; the engineer confirms. The forecast is marked Confirmed or Revised." },
-  { icon: Repeat, title: "Transfer and measure", body: "The transfer moves from Matched to Completed, with engineer approval for structural items. Management sees money saved, tonnes diverted and forecast accuracy." },
+  { verb: "Forecast", title: "Forecast surplus from purchase plans", body: "For every phase, compare what was ordered with what the bill of quantities needs plus a wastage allowance. The difference is likely surplus, with an evidence level that rises as the phase progresses." },
+  { verb: "Check", title: "Check before you buy", body: "A buyer enters an item, quantity and date. Logged surplus is used first, then forecast surplus from nearby sites. The answer: reserve this much, order the rest now, and confirm by a set date." },
+  { verb: "Confirm", title: "Log the real surplus by photo", body: "When the phase ends, the site engineer photographs what is left. The AI suggests the item and an estimated quantity; the engineer confirms. The forecast is marked Confirmed or Revised." },
+  { verb: "Measure", title: "Transfer and measure", body: "The transfer moves from Matched to Completed, with engineer approval for structural items. Management sees money saved, tonnes diverted and forecast accuracy." },
 ];
 
 const roles = [
-  { icon: HardHat, title: "Site engineer or storekeeper", device: "Mostly on a phone", body: "Logs leftover material from a photo in under a minute, approves structural transfers, and sees who is waiting for the surplus." },
-  { icon: ClipboardCheck, title: "Procurement officer or QS", device: "Mostly on a desktop", body: "Runs a Pre-Order Check before every order, reserves forecast surplus, and orders only the shortfall." },
-  { icon: LineChart, title: "Sustainability and management", device: "Weekly dashboard", body: "Tracks savings, tonnes diverted, forecast accuracy and surplus left unclaimed for too long." },
+  { title: "Site engineer or storekeeper", device: "Mostly on a phone", body: "Logs leftover material from a photo in under a minute, approves structural transfers, and sees who is waiting for the surplus." },
+  { title: "Procurement officer or QS", device: "Mostly on a desktop", body: "Runs a Pre-Order Check before every order, reserves forecast surplus, and orders only the shortfall." },
+  { title: "Sustainability and management", device: "Weekly dashboard", body: "Tracks savings, tonnes diverted, forecast accuracy and surplus left unclaimed for too long." },
+];
+
+const aiSplit = [
+  {
+    who: "AI model",
+    tone: "bg-info",
+    items: [
+      ["Reading photos", "Suggests the item, condition and an estimated quantity. The engineer checks and confirms before saving."],
+      ["Understanding requests", "Turns a sentence like “1,000 floor tiles at Bandar Bukit Raja by 7 December” into fields, checked against the real catalogue."],
+      ["Writing the summary", "A short briefing, shown only if every number and date in it matches the engine. Otherwise a template is shown."],
+    ],
+  },
+  {
+    who: "Deterministic code",
+    tone: "bg-brand",
+    items: [
+      ["Forecasting surplus", "Ordered minus planned quantity with wastage, from purchase plans."],
+      ["Matching and ranking", "Hard filters, then a weighted score you can inspect."],
+      ["Savings and carbon", "Quantity times assumed factors, with every formula shown."],
+    ],
+  },
+  {
+    who: "People",
+    tone: "bg-forecast",
+    items: [
+      ["Approving and reserving", "Holds, matches and transfers need a person to confirm. Rejections need a reason."],
+      ["Structural sign-off", "Steel and precast items need a site engineer's approval."],
+      ["Ordering", "Surplus AI never places a supplier order or books a truck."],
+    ],
+  },
 ];
 
 const faqs = [
@@ -53,6 +81,9 @@ const faqs = [
   { q: "What about steel and other structural items?", a: "They can be listed, but a transfer cannot be reserved until a site engineer approves it." },
 ];
 
+const SECTION = "mx-auto max-w-6xl scroll-mt-20 px-4 py-14 sm:px-6 lg:py-20";
+const H2 = "font-display text-[2.25rem] leading-[1.05] text-balance sm:text-[2.75rem]";
+
 export default function Landing() {
   return (
     <>
@@ -62,9 +93,9 @@ export default function Landing() {
       <SiteHeader />
       <main id="main">
         {/* Hero */}
-        <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 pt-10 pb-14 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12 lg:pt-16 lg:pb-16">
+        <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 pt-10 pb-14 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14 lg:pt-16 lg:pb-20">
           <div className="flex flex-col gap-6">
-            <h1 className="text-5xl leading-[1.02] font-semibold tracking-[-0.035em] text-balance sm:text-6xl">Check before you buy.</h1>
+            <h1 className="font-display text-[3.25rem] leading-[0.98] text-balance sm:text-7xl">Check before you buy.</h1>
             <p className="max-w-xl text-lg text-muted-foreground text-pretty">
               Surplus AI forecasts the material each township phase will have left over, from what was ordered against what the plans need. Buyers on other sites see it weeks early and order less.
             </p>
@@ -83,246 +114,225 @@ export default function Landing() {
 
         {/* Problem */}
         <section aria-labelledby="problem-h" className="border-y bg-card">
-          <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:py-16">
-            <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
-              <div className="lg:sticky lg:top-24 lg:self-start">
-                <h2 id="problem-h" className="text-3xl font-semibold tracking-tight text-balance">Buffers become waste because nobody sees across sites.</h2>
-                <p className="mt-4 text-muted-foreground text-pretty">
-                  Teams order a little extra to stay safe. At the end of each phase, usable tiles, timber, paving, steel offcuts and safety items are left over. Another phase a few kilometres away buys the same things new.
-                </p>
-                <Link href="/app/evidence" className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand underline-offset-4 hover:underline">
-                  Sources and their limits
-                </Link>
-              </div>
-              <ul className="grid gap-px overflow-hidden rounded-xl border bg-border sm:grid-cols-2">
-                {evidence.filter((e) => e.id !== "haehre").map((e) => (
-                  <li key={e.id} className="flex flex-col gap-2 bg-card p-5">
-                    <span className="tabular text-3xl font-semibold tracking-tight">{e.figure}</span>
-                    <span className="text-sm">{e.figureLabel}</span>
-                    <span className="mt-auto pt-2 text-xs text-muted-foreground">
-                      {e.who}. {e.source.split(" (")[0]}.
-                      <span className="mt-1 block">Limit: {e.limits}</span>
-                    </span>
+          <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:py-20">
+            <div className="lg:sticky lg:top-24 lg:self-start">
+              <h2 id="problem-h" className={H2}>
+                Buffers become waste because nobody sees across sites.
+              </h2>
+              <p className="mt-4 text-muted-foreground text-pretty">
+                Teams order a little extra to stay safe. At the end of each phase, usable tiles, timber, paving, steel offcuts and safety items are left over. Another phase a few kilometres away buys the same things new.
+              </p>
+              <Link href="/app/evidence" className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand underline underline-offset-4 hover:no-underline">
+                Sources and their limits
+              </Link>
+            </div>
+            <ul className="flex flex-col divide-y border-y">
+              {evidence
+                .filter((e) => e.id !== "haehre")
+                .map((e) => (
+                  <li key={e.id} className="grid gap-x-6 gap-y-1 py-5 sm:grid-cols-[11.5rem_1fr]">
+                    <span className="tabular text-[1.75rem] leading-tight font-semibold tracking-tight">{e.figure}</span>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[0.9375rem]">{e.figureLabel}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {e.who}. {e.source.split(" (")[0]}. <span className="text-foreground/80">Limit:</span> {e.limits}
+                      </span>
+                    </div>
                   </li>
                 ))}
-              </ul>
-            </div>
+            </ul>
           </div>
         </section>
 
-        {/* How it works */}
-        <section id="how" aria-labelledby="how-h" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-14 sm:px-6 lg:py-16">
-          <h2 id="how-h" className="max-w-2xl text-3xl font-semibold tracking-tight text-balance">
+        {/* How it works: a process line, not icon cards */}
+        <section id="how" aria-labelledby="how-h" className={SECTION}>
+          <h2 id="how-h" className={`max-w-2xl ${H2}`}>
             How it works
           </h2>
-          <ol className="mt-8 grid gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-4">
-            {steps.map((s, i) => (
-              <li key={s.title} className="relative flex flex-col gap-3">
-                <span className="flex items-center gap-3">
-                  <span className="grid size-10 place-items-center rounded-xl bg-brand text-primary-foreground">
-                    <s.icon className="size-5" aria-hidden />
-                  </span>
-                  <span className="tabular text-sm font-medium text-muted-foreground">Step {i + 1}</span>
-                  {i < steps.length - 1 && <span className="ml-1 hidden h-px flex-1 bg-border lg:block" aria-hidden />}
-                </span>
+          <p className="mt-3 max-w-2xl text-muted-foreground">One loop across every township: forecast, check, confirm, measure.</p>
+          <ol className="mt-10 grid gap-y-8 md:grid-cols-2 md:gap-x-10 lg:grid-cols-4 lg:gap-x-0">
+            {steps.map((s) => (
+              <li key={s.title} className="relative flex flex-col gap-2 border-l-2 border-brand/25 pl-5 lg:border-t-2 lg:border-l-0 lg:pt-5 lg:pr-8 lg:pl-0">
+                <span className="absolute top-0 -left-[5px] size-2 rounded-[2px] bg-brand lg:-top-[5px] lg:left-0" aria-hidden />
+                <span className="text-xs font-semibold tracking-wide text-brand uppercase">{s.verb}</span>
                 <h3 className="font-semibold">{s.title}</h3>
-                <p className="text-sm text-muted-foreground">{s.body}</p>
+                <p className="text-sm text-muted-foreground text-pretty">{s.body}</p>
               </li>
             ))}
           </ol>
         </section>
 
-        {/* Radar deep-dive */}
-        <section id="radar" aria-labelledby="radar-h" className="scroll-mt-16 bg-brand-strong text-white">
-          <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 lg:grid-cols-2 lg:py-16">
+        {/* Radar: a light, sunken worked example (no dark band) */}
+        <section id="radar" aria-labelledby="radar-h" className="scroll-mt-16 border-y bg-muted/60">
+          <div className="mx-auto grid max-w-6xl items-start gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:py-20">
             <div>
-              <h2 id="radar-h" className="text-3xl font-semibold tracking-tight text-balance">
+              <h2 id="radar-h" className={H2}>
                 Surplus Radar works before the surplus exists.
               </h2>
-              <p className="mt-4 text-white/80 text-pretty">
+              <p className="mt-4 text-muted-foreground text-pretty">
                 A normal exchange can only help once leftovers are logged, which is usually after the next site has already ordered. Radar reads the purchase plans instead, so the buyer can order less in the first place.
               </p>
-              <ul className="mt-6 flex flex-col gap-2.5 text-sm text-white/85">
+              <ul className="mt-6 flex flex-col divide-y border-y text-sm">
                 {[
                   "Every number has a “how this was calculated” drawer. No black box.",
                   "Every recommendation shows its evidence, its arithmetic and what is still unknown.",
                   "A decision date says when to confirm the forecast or top up the order.",
                   "Change an assumption on the Settings page and every result updates.",
                 ].map((t) => (
-                  <li key={t} className="flex gap-2.5">
-                    <Check className="mt-0.5 size-4 shrink-0 text-forecast" aria-hidden />
-                    <span>{t}</span>
+                  <li key={t} className="py-2.5">
+                    {t}
                   </li>
                 ))}
               </ul>
-              <Button asChild size="lg" variant="secondary" className="mt-7 h-11 px-5 text-base">
+              <Button asChild size="lg" className="mt-7 h-11 px-5 text-base">
                 <Link href="/app/radar">Open Surplus Radar</Link>
               </Button>
             </div>
-            <div className="rounded-2xl bg-white/[0.06] p-5 ring-1 ring-white/15 sm:p-6">
-              <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="rounded-xl border bg-card">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b px-5 py-3">
                 <h3 className="font-semibold">The worked example</h3>
                 <SimulatedBadge />
               </div>
-              <dl className="mt-5 flex flex-col divide-y divide-white/15 text-sm">
+              <dl className="flex flex-col divide-y px-5 text-sm">
                 {[
                   ["City of Elmina Phase 3 ordered", `${fmtNum(plan.orderedQty)} tiles`],
                   ["The plans need, with 5% wastage", `${fmtNum(plan.plannedQty)} × ${(1 + tile.wastageAllowance).toFixed(2)} = ${fmtNum(plan.plannedQty * (1 + tile.wastageAllowance))}`],
                   ["Expected surplus", `${fmtNum(hero.qty)} tiles from ${fmtDate(hero.availableFrom)}`],
-                  [`Evidence at ${state.phases.find((p) => p.id === hero.phaseId)!.progressPct}% progress`, `Moderate (score ${hero.confidence.toFixed(2)}, not calibrated)`],
+                  [`Evidence at ${state.phases.find((p) => p.id === hero.phaseId)!.progressPct}% progress`, "Evidence: moderate"],
                   ["Bandar Bukit Raja needs", `${fmtNum(HERO_INPUT.qty)} tiles by ${fmtDate(HERO_INPUT.neededBy)}`],
                   ["Recommendation", `Reserve ${fmtNum(r.reservedForecast)}, order ${fmtNum(r.orderNow)} now`],
                   ["Conservative mode", `Reserve ${fmtNum(rc.reservedForecast)}, order ${fmtNum(rc.orderNow)} now`],
                   ["Decision date", `${fmtDate(r.decisionDate)} (need date minus ${tile.leadTimeDays + g.handlingBufferDays} days)`],
                   ["Estimated saving", `${fmtRm(r.expected.savedRm)}, ${fmtNum(r.expected.tonnes, 1)} t diverted`],
-                ].map(([k, v]) => (
-                  <div key={k} className="flex flex-col gap-0.5 py-2.5 sm:flex-row sm:justify-between sm:gap-6">
-                    <dt className="shrink-0 text-white/70">{k}</dt>
+                ].map(([k, v], i) => (
+                  <div key={k} className={`flex flex-col gap-0.5 py-2.5 sm:flex-row sm:justify-between sm:gap-6 ${i === 5 ? "-mx-5 bg-forecast-soft/60 px-5" : ""}`}>
+                    <dt className="shrink-0 text-muted-foreground">{k}</dt>
                     <dd className="tabular font-medium sm:text-right">{v}</dd>
                   </div>
                 ))}
               </dl>
+              <p className="border-t px-5 py-3 text-xs text-muted-foreground">
+                Evidence levels come from phase progress using a rule of thumb. They are not a measured probability.
+              </p>
             </div>
           </div>
         </section>
 
         {/* Where AI is used */}
-        <section id="ai" aria-labelledby="ai-h" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-14 sm:px-6 lg:py-16">
-          <h2 id="ai-h" className="max-w-2xl text-3xl font-semibold tracking-tight text-balance">
+        <section id="ai" aria-labelledby="ai-h" className={SECTION}>
+          <h2 id="ai-h" className={`max-w-2xl ${H2}`}>
             Where AI is used, and where it is not
           </h2>
           <p className="mt-3 max-w-2xl text-muted-foreground">AI reads messy input and writes plain-language summaries. Deterministic code does every calculation. People approve every action.</p>
-          <div className="mt-8 grid gap-px overflow-hidden rounded-xl border bg-border md:grid-cols-3">
-            {[
-              {
-                who: "AI model",
-                tone: "bg-info",
-                items: [
-                  ["Reading photos", "Suggests the item, condition and an estimated quantity. The engineer checks and confirms before saving."],
-                  ["Understanding requests", "Turns a sentence like “1,000 floor tiles at Bandar Bukit Raja by 7 December” into fields, checked against the real catalogue."],
-                  ["Writing the summary", "A short briefing, shown only if every number and date in it matches the engine. Otherwise a template is shown."],
-                ],
-              },
-              {
-                who: "Deterministic code",
-                tone: "bg-brand",
-                items: [
-                  ["Forecasting surplus", "Ordered minus planned quantity with wastage, from purchase plans."],
-                  ["Matching and ranking", "Hard filters, then a weighted score you can inspect."],
-                  ["Savings and carbon", "Quantity times assumed factors, with every formula shown."],
-                ],
-              },
-              {
-                who: "People",
-                tone: "bg-forecast",
-                items: [
-                  ["Approving and reserving", "Holds, matches and transfers need a person to confirm. Rejections need a reason."],
-                  ["Structural sign-off", "Steel and precast items need a site engineer's approval."],
-                  ["Ordering", "Surplus AI never places a supplier order or books a truck."],
-                ],
-              },
-            ].map((col) => (
-              <div key={col.who} className="bg-card p-6">
+          <div className="mt-10 grid gap-y-8 md:grid-cols-3 md:gap-x-10">
+            {aiSplit.map((col) => (
+              <div key={col.who} className="border-t-2 border-foreground/80 pt-4">
                 <p className="flex items-center gap-2 text-sm font-semibold">
-                  <span className={`size-2 rounded-full ${col.tone}`} aria-hidden />
+                  <span className={`size-2 rounded-[2px] ${col.tone}`} aria-hidden />
                   {col.who}
                 </p>
-                <dl className="mt-4 flex flex-col gap-4">
+                <dl className="mt-4 flex flex-col divide-y">
                   {col.items.map(([t, d]) => (
-                    <div key={t}>
+                    <div key={t} className="py-3 first:pt-0">
                       <dt className="font-medium">{t}</dt>
-                      <dd className="mt-0.5 text-sm text-muted-foreground">{d}</dd>
+                      <dd className="mt-0.5 text-sm text-muted-foreground text-pretty">{d}</dd>
                     </div>
                   ))}
                 </dl>
               </div>
             ))}
           </div>
-          <p className="mt-4 text-xs text-muted-foreground">The app shows a Live AI or Demo mode badge wherever AI is used. In demo mode no model runs: sample photos and a rule-based reader stand in, and the summary is the template.</p>
+          <p className="mt-6 text-xs text-muted-foreground">The app shows a Live AI or Demo mode badge wherever AI is used. In demo mode no model runs: sample photos and a rule-based reader stand in, and the summary is the template.</p>
         </section>
 
-        {/* Roles */}
-        <section id="roles" aria-labelledby="roles-h" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-14 sm:px-6 lg:py-16">
-          <h2 id="roles-h" className="text-3xl font-semibold tracking-tight">
-            One habit, three roles
-          </h2>
-          <p className="mt-3 max-w-2xl text-muted-foreground">These users are our assumption. We have not interviewed SDP staff yet.</p>
-          <div className="mt-8 grid gap-px overflow-hidden rounded-xl border bg-border md:grid-cols-3">
-            {roles.map((x) => (
-              <div key={x.title} className="flex flex-col gap-3 bg-card p-6">
-                <x.icon className="size-6 text-brand" aria-hidden />
-                <h3 className="font-semibold">{x.title}</h3>
-                <p className="text-xs text-muted-foreground">{x.device}</p>
-                <p className="text-sm text-muted-foreground text-pretty">{x.body}</p>
+        {/* Roles: ruled rows */}
+        <section id="roles" aria-labelledby="roles-h" className="border-t">
+          <div className={SECTION}>
+            <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+              <div>
+                <h2 id="roles-h" className={H2}>
+                  One habit, three roles
+                </h2>
+                <p className="mt-3 max-w-md text-muted-foreground">These users are our assumption. We have not interviewed SDP staff yet.</p>
               </div>
-            ))}
+              <ul className="flex flex-col divide-y border-y">
+                {roles.map((x) => (
+                  <li key={x.title} className="grid gap-x-6 gap-y-1 py-5 sm:grid-cols-[13rem_1fr]">
+                    <div>
+                      <h3 className="font-semibold">{x.title}</h3>
+                      <p className="text-xs text-muted-foreground">{x.device}</p>
+                    </div>
+                    <p className="text-sm text-muted-foreground text-pretty">{x.body}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </section>
 
         {/* Impact + model */}
         <section aria-labelledby="impact-h" className="border-y bg-card">
-          <div className="mx-auto grid max-w-6xl gap-12 px-4 py-14 sm:px-6 lg:grid-cols-2 lg:py-16">
+          <div className="mx-auto grid max-w-6xl gap-12 px-4 py-14 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:py-20">
             <div>
               <div className="flex flex-wrap items-center gap-3">
-                <h2 id="impact-h" className="text-3xl font-semibold tracking-tight">
+                <h2 id="impact-h" className={H2}>
                   Impact in the demo
                 </h2>
                 <SimulatedBadge />
               </div>
-              <p className="mt-3 text-muted-foreground">Simulated transfers between eight townships over seven months. These are not results; they show what the dashboard would measure.</p>
-              <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-xl border bg-border">
+              <p className="mt-3 max-w-xl text-muted-foreground">Simulated transfers between eight townships over seven months. These are not results; they show what the dashboard would measure.</p>
+              <dl className="mt-8 grid grid-cols-2 border-t sm:grid-cols-4">
                 {[
                   [fmtRm(impact.savedRm), "saved on completed transfers"],
                   [`${fmtNum(impact.tonnes, 1)} t`, "kept out of disposal"],
                   [`${fmtNum(impact.co2eKg / 1000, 1)} t`, "CO2e avoided, illustrative"],
                   [`${Math.round((impact.accuracy ?? 0) * 100)}%`, "forecast accuracy, simulated history"],
                 ].map(([v, k]) => (
-                  <div key={k} className="bg-card p-5">
-                    <dt className="sr-only">{k}</dt>
-                    <dd className="tabular text-3xl font-semibold tracking-tight">{v}</dd>
-                    <dd className="mt-1 text-sm text-muted-foreground">{k}</dd>
+                  <div key={k} className="flex flex-col-reverse gap-1 border-b py-4 pr-4 sm:border-b-0">
+                    <dt className="text-xs text-muted-foreground">{k}</dt>
+                    <dd className="tabular text-2xl font-semibold tracking-tight">{v}</dd>
                   </div>
                 ))}
               </dl>
             </div>
             <div>
-              <h2 className="text-3xl font-semibold tracking-tight">How it could pay for itself</h2>
+              <h2 className="font-display text-[1.875rem] leading-[1.1]">How it could pay for itself</h2>
               <p className="mt-3 text-muted-foreground">Two business models we would test. Both are assumptions; we have not set prices.</p>
-              <div className="mt-8 flex flex-col gap-4">
-                <div className="rounded-xl border p-5">
-                  <h3 className="font-semibold">Per-township subscription</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">A flat fee for each township connected. Simple to budget, but value depends on how many sites join.</p>
+              <dl className="mt-6 flex flex-col divide-y border-y">
+                <div className="py-4">
+                  <dt className="font-semibold">Per-township subscription</dt>
+                  <dd className="mt-1 text-sm text-muted-foreground">A flat fee for each township connected. Simple to budget, but value depends on how many sites join.</dd>
                 </div>
-                <div className="rounded-xl border p-5">
-                  <h3 className="font-semibold">Share of verified savings</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">A percentage of the RM saved on completed transfers. Aligns cost with results, but needs savings both sides trust.</p>
+                <div className="py-4">
+                  <dt className="font-semibold">Share of verified savings</dt>
+                  <dd className="mt-1 text-sm text-muted-foreground">A percentage of the RM saved on completed transfers. Aligns cost with results, but needs savings both sides trust.</dd>
                 </div>
-                <p className="text-xs text-muted-foreground">Hypotheses to test in a pilot. No pricing has been discussed with anyone.</p>
-              </div>
+              </dl>
+              <p className="mt-3 text-xs text-muted-foreground">Hypotheses to test in a pilot. No pricing has been discussed with anyone.</p>
             </div>
           </div>
         </section>
 
-        {/* FAQ */}
-        <section id="faq" aria-labelledby="faq-h" className="mx-auto max-w-3xl scroll-mt-20 px-4 py-14 sm:px-6 lg:py-16">
-          <h2 id="faq-h" className="text-3xl font-semibold tracking-tight">
+        {/* FAQ: an open two-column list */}
+        <section id="faq" aria-labelledby="faq-h" className={SECTION}>
+          <h2 id="faq-h" className={H2}>
             Honest answers
           </h2>
-          <Accordion type="single" collapsible className="mt-6">
+          <dl className="mt-10 grid gap-x-12 md:grid-cols-2">
             {faqs.map((f) => (
-              <AccordionItem key={f.q} value={f.q}>
-                <AccordionTrigger className="text-base">{f.q}</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">{f.a}</AccordionContent>
-              </AccordionItem>
+              <div key={f.q} className="border-t py-5">
+                <dt className="font-semibold">{f.q}</dt>
+                <dd className="mt-1.5 text-sm text-muted-foreground text-pretty">{f.a}</dd>
+              </div>
             ))}
-          </Accordion>
+          </dl>
         </section>
 
         {/* CTA */}
         <section aria-labelledby="cta-h" className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
-          <div className="flex flex-col items-start gap-6 rounded-2xl border bg-card p-8 shadow-card sm:p-10 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col items-start gap-6 border-t-2 border-foreground/80 pt-8 md:flex-row md:items-end md:justify-between">
             <div>
-              <h2 id="cta-h" className="text-2xl font-semibold tracking-tight">
+              <h2 id="cta-h" className="font-display text-[2.25rem] leading-[1.05]">
                 See it in two minutes.
               </h2>
               <p className="mt-2 max-w-xl text-muted-foreground">Follow 1,000 tiles from a buyer&rsquo;s first check to a completed transfer. No sign-in needed.</p>
@@ -332,13 +342,11 @@ export default function Landing() {
                 <Link href="/app?demo=start">Try the guided demo</Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="h-11 px-5 text-base">
-                <Link href="/app/evidence">
-                  See the evidence
-                </Link>
+                <Link href="/app/evidence">See the evidence</Link>
               </Button>
             </div>
           </div>
-          <p className="mt-6 text-xs text-muted-foreground">{DISCLAIMER}</p>
+          <p className="mt-8 text-xs text-muted-foreground">{DISCLAIMER}</p>
         </section>
       </main>
       <SiteFooter />

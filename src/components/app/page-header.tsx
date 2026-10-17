@@ -16,7 +16,7 @@ export function PageHeader({
     <div className={cn("mb-6 flex flex-col gap-4 border-b pb-5 md:flex-row md:items-end md:justify-between", className)}>
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-[1.625rem] leading-tight font-semibold tracking-[-0.02em] text-balance">{title}</h1>
+          <h1 className="font-display text-[2.125rem] leading-[1.05] text-balance">{title}</h1>
           <SimulatedBadge />
         </div>
         {description && <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">{description}</p>}
