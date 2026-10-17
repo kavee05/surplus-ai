@@ -37,7 +37,7 @@ const STEPS: Step[] = [
   },
   {
     title: "Radar sees surplus before it exists",
-    body: "City of Elmina Phase 3 ordered 5,000 tiles against 4,200 needed, and it finishes on 23 Nov. That is about 800 spare tiles. At 62% progress the evidence is moderate (progress-based score 0.70, not a calibrated probability). Nobody has logged them yet.",
+    body: "City of Elmina Phase 3 ordered 5,000 tiles against 4,200 needed, and it finishes on 23 Nov. That is about 800 spare tiles. At 62% progress the evidence is moderate: a rule of thumb from phase progress, not a calibrated probability. Nobody has logged them yet.",
     route: "/app/radar",
     role: "procurement",
     target: "radar-timeline",

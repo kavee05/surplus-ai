@@ -188,23 +188,6 @@ export function TimelineCore({
   );
 }
 
-/** Non-interactive timeline for server rendering (landing page). */
-export function RadarTimelineStatic({ className, ...props }: TimelineProps & { className?: string }) {
-  return (
-    <div className={cn("blueprint relative overflow-x-auto rounded-xl border", className)}>
-      <TimelineCore
-        {...props}
-        renderMarker={(m) => (
-          <span role="img" aria-label={m.label} title={m.label} className={m.className} style={m.style}>
-            {m.children}
-          </span>
-        )}
-        renderNeed={(n) => <span role="img" aria-label={n.label} title={n.label} className={n.className} style={n.style} />}
-      />
-    </div>
-  );
-}
-
 export function RadarLegend({ today, className }: { today: string; className?: string }) {
   return (
     <div className={cn("flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground", className)}>

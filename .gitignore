@@ -51,3 +51,7 @@ DEMO_SCRIPT.md
 SUBMISSION_NOTES.md
 PROGRESS.md
 scripts/.*.mjs
+
+# Playwright
+/test-results/
+/playwright-report/
