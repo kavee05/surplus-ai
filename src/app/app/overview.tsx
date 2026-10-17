@@ -3,6 +3,7 @@
 import { ArrowUpRight, Camera, CircleCheck, Clock, HandHeart, Radar, ShieldAlert, Shuffle, Truck } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
+import { AskBar } from "@/components/ai/ask-bar";
 import { EmptyState } from "@/components/app/empty-state";
 import { KpiCard } from "@/components/app/kpi-card";
 import { PageHeader } from "@/components/app/page-header";
@@ -67,6 +68,8 @@ export function Overview() {
         <KpiCard label="Reusable surplus now" value={fmtRm(stages.available)} hint="Logged and unclaimed, at new price" />
         <KpiCard label="Saving achieved" value={fmtRm(stages.achieved.savedRm)} hint={`${stages.achieved.count} completed transfers, estimated`} tone="success" />
       </div>
+
+      <AskBar variant="overview" className="mt-6" />
 
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-5">
         <section aria-labelledby="queue-h" className="rounded-xl border bg-card lg:col-span-3">

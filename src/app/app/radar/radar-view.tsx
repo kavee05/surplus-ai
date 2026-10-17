@@ -7,11 +7,24 @@ import { PageHeader } from "@/components/app/page-header";
 import { PageSkeleton } from "@/components/app/page-skeleton";
 import { StatusBadge } from "@/components/app/status-badge";
 import { ExplanationPanel } from "@/components/explain/explanation-panel";
+import { AskBar } from "@/components/ai/ask-bar";
 import { PreOrderPanel } from "@/components/radar/preorder-panel";
 import { RadarLegend, RadarTimeline } from "@/components/radar/radar-timeline";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { HERO_INPUT } from "@/data/initial";
 import { materialById, siteName } from "@/lib/engine/context";
 import { preOrderCheck, type PreOrderInput } from "@/lib/engine/preorder";
@@ -20,14 +33,48 @@ import { fmtDate, fmtNum, fmtRm } from "@/lib/format";
 import { useForecasts, useStore } from "@/lib/store";
 import type { Forecast } from "@/lib/types";
 
+/** Pre-fill the check from an Ask Surplus AI link, if every field is valid. */
+function inputFromParams(
+  params: URLSearchParams,
+  state: {
+    materials: { id: string }[];
+    sites: { id: string }[];
+    phases: { id: string; siteId: string }[];
+  },
+): PreOrderInput | null {
+  const m = params.get("material"),
+    si = params.get("site"),
+    ph = params.get("phase"),
+    q = Number(params.get("qty")),
+    by = params.get("by");
+  if (!m || !si || !ph || !by || !(q > 0) || !/^\d{4}-\d{2}-\d{2}$/.test(by))
+    return null;
+  if (
+    !state.materials.some((x) => x.id === m) ||
+    !state.phases.some((x) => x.id === ph && x.siteId === si)
+  )
+    return null;
+  return {
+    materialId: m,
+    siteId: si,
+    phaseId: ph,
+    qty: Math.round(q),
+    neededBy: by,
+    conservative: false,
+  };
+}
+
 export function RadarView() {
   const { state, ready } = useStore();
   const forecasts = useForecasts();
-  const [input, setInput] = useState<PreOrderInput>({ ...HERO_INPUT, conservative: false });
+  const params = useSearchParams();
+  const [input, setInput] = useState<PreOrderInput>(
+    () =>
+      inputFromParams(params, state) ?? { ...HERO_INPUT, conservative: false },
+  );
   const [materialFilter, setMaterialFilter] = useState<string>("follow");
   const [siteFilter, setSiteFilter] = useState<string>("all");
   const [selected, setSelected] = useState<Forecast | null>(null);
-  const params = useSearchParams();
   const linked = params.get("forecast");
   useEffect(() => {
     if (!linked || !ready) return;
@@ -36,7 +83,8 @@ export function RadarView() {
   }, [linked, ready, forecasts]);
 
   const result = useMemo(() => preOrderCheck(state, input), [state, input]);
-  const material = materialFilter === "follow" ? input.materialId : materialFilter;
+  const material =
+    materialFilter === "follow" ? input.materialId : materialFilter;
   const topForecast = result.forecasts.find((c) => c.reservedQty > 0)?.forecast;
 
   if (!ready) return <PageSkeleton cards={0} />;
@@ -48,18 +96,31 @@ export function RadarView() {
         description="Surplus forecast from ordered versus planned quantities on every phase. Check here before you buy, and reserve what is coming."
       />
 
-      <section aria-labelledby="timeline-heading" className="flex flex-col gap-3">
+      <AskBar onApply={setInput} className="mb-8" />
+
+      <section
+        aria-labelledby="timeline-heading"
+        className="flex flex-col gap-3"
+      >
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <h2 id="timeline-heading" className="font-semibold">
               Phases and forecast surplus
             </h2>
-            <p className="text-sm text-muted-foreground">Select a marker to see how the forecast was calculated.</p>
+            <p className="text-sm text-muted-foreground">
+              Select a marker to see how the forecast was calculated.
+            </p>
           </div>
           <div className="flex flex-wrap items-end gap-3">
-            <Filter className="mb-2 hidden size-4 text-muted-foreground sm:block" aria-hidden />
+            <Filter
+              className="mb-2 hidden size-4 text-muted-foreground sm:block"
+              aria-hidden
+            />
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="f-material" className="text-xs text-muted-foreground">
+              <Label
+                htmlFor="f-material"
+                className="text-xs text-muted-foreground"
+              >
                 Material
               </Label>
               <Select value={materialFilter} onValueChange={setMaterialFilter}>
@@ -67,7 +128,9 @@ export function RadarView() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="follow">Same as Pre-Order Check</SelectItem>
+                  <SelectItem value="follow">
+                    Same as Pre-Order Check
+                  </SelectItem>
                   <SelectItem value="all">All materials</SelectItem>
                   {state.materials.map((m) => (
                     <SelectItem key={m.id} value={m.id}>
@@ -115,7 +178,10 @@ export function RadarView() {
         <h2 id="preorder-heading" className="font-semibold">
           Pre-Order Check
         </h2>
-        <p className="mb-4 text-sm text-muted-foreground">Enter what you are about to buy. Logged surplus is used first, then forecast surplus from other sites.</p>
+        <p className="mb-4 text-sm text-muted-foreground">
+          Enter what you are about to buy. Logged surplus is used first, then
+          forecast surplus from other sites.
+        </p>
         <PreOrderPanel input={input} setInput={setInput} result={result} />
       </section>
 
