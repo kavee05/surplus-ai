@@ -16,7 +16,7 @@
 | Ink muted | `--muted-foreground` | `#59625F` | Secondary text (AA on paper and surface) |
 | Brand teal | `--brand` | `#0F4C5C` | Primary actions, network, charts series 1 |
 | Forecast amber | `--forecast` / `--forecast-ink` | `#E9A23B` / `#83500B` | Forecasts only (fills / text) |
-| Confirmed green | `--success` | `#1E7A4C` | Confirmed, completed, achieved |
+| Confirmed green | `--success` | `#1A7046` | Confirmed, completed, achieved |
 | Risk red | `--danger` | `#B3382C` | Risk, rejection, blockers |
 | Control ink | `--ink` | `#0E2A30` | Sidebar and the network canvas frame |
 

@@ -37,7 +37,7 @@ export function AppSidebar() {
       <SidebarContent>
         {navGroups.map((group) => (
           <SidebarGroup key={group.label}>
-            <SidebarGroupLabel className="text-[11px] font-medium text-sidebar-foreground/60">{group.label}</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-[11px] font-medium text-sidebar-foreground/80">{group.label}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map((item) => (

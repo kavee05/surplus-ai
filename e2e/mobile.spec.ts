@@ -22,10 +22,12 @@ test("command palette opens with the keyboard and navigates", async ({ page, isM
   test.skip(isMobile, "Keyboard shortcut is a desktop feature");
   await page.goto("/app");
   await expect(page.locator("h1")).toBeVisible();
+  await page.waitForLoadState("networkidle");
   await page.keyboard.press("Control+k");
   const input = page.getByPlaceholder("Go to a page or run an action");
   await expect(input).toBeVisible();
   await input.fill("Impact");
+  await expect(page.getByRole("option", { name: "Impact" })).toBeVisible();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/app\/impact/);
 });
