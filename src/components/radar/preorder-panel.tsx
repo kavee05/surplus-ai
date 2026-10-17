@@ -33,11 +33,10 @@ export function PreOrderPanel({
   const mat = materialById(state, input.materialId);
   const sitePhases = state.phases.filter((p) => p.siteId === input.siteId && p.status !== "completed");
   const reserving = result.forecasts.filter((c) => c.reservedQty > 0);
-  const already = state.transfers.filter((t) => t.toSiteId === input.siteId && t.forecastId && reserving.some((c) => c.forecast.id === t.forecastId));
   const isHero = input.siteId === "bbr" && input.materialId === "tile-porcelain";
 
   const reserve = () => {
-    for (const c of reserving) {
+    for (const c of reserving.filter((x) => x.alreadyReserved === 0)) {
       const heroCase = isHero && c.forecast.id === HERO_FORECAST_ID;
       dispatch({
         type: "createTransfer",
@@ -49,6 +48,7 @@ export function PreOrderPanel({
           materialId: input.materialId,
           qty: c.reservedQty,
           needId: heroCase ? HERO_NEED_ID : undefined,
+          toPhaseId: input.phaseId,
           by: person.name,
           today: state.today,
           structural: mat.structural,
@@ -163,7 +163,7 @@ export function PreOrderPanel({
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {result.listingQty > 0 && (
-            <Figure label="From logged surplus" value={`${fmtNum(result.listingQty)}`} unit={mat.unit} icon={PackageCheck} tone="brand" />
+            <Figure label={result.fromListings.some((a) => a.secured) ? "Reserved, logged surplus" : "From logged surplus"} value={`${fmtNum(result.listingQty)}`} unit={mat.unit} icon={PackageCheck} tone="brand" />
           )}
           <Figure label="Reserve from forecast" value={fmtNum(result.reservedForecast)} unit={mat.unit} icon={Scale} tone="forecast" big />
           <Figure label="Order now" value={fmtNum(result.orderNow)} unit={mat.unit} icon={ShoppingCart} tone="neutral" big />
@@ -264,11 +264,11 @@ export function PreOrderPanel({
 
         <div className="flex flex-col gap-2 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-muted-foreground">Estimates from simulated data. Forecasts are not guaranteed.</p>
-          {reserving.length > 0 &&
-            (already.length > 0 ? (
+          {(reserving.length > 0 || result.securedQty > 0) &&
+            (result.securedQty > 0 ? (
               <Button variant="secondary" asChild data-demo="reserve-button">
                 <Link href="/app/transfers">
-                  <Check aria-hidden /> Reserved. View transfer
+                  <Check aria-hidden /> {fmtNum(result.securedQty)} reserved. View transfer
                 </Link>
               </Button>
             ) : (

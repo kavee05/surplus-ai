@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { HERO_INPUT, seedState } from "@/data/initial";
 import { HERO_FORECAST_ID } from "@/data/seed";
+import { heroListing, heroReservation } from "@/lib/actions";
 import { computeForecasts, confidenceFor, expectedSurplusQty, forecastAccuracy, recordActual, riskLabel } from "./forecast";
 import { haversineKm, siteDistanceKm } from "./geo";
 import { matchNeed } from "./matching";
@@ -135,6 +136,28 @@ describe("pre-order check: hero scenario", () => {
     const r = preOrderCheck(s, { ...HERO_INPUT });
     expect(r.reservedForecast).toBe(500);
     expect(r.orderNow).toBe(500);
+  });
+
+  it("keeps showing 800 / 200 after the buyer reserves, and after the forecast is confirmed", () => {
+    const s = seedState();
+    s.transfers.push(heroReservation(s.today));
+    let r = preOrderCheck(s, { ...HERO_INPUT });
+    expect(r.reservedForecast).toBe(800);
+    expect(r.orderNow).toBe(200);
+    expect(r.securedQty).toBe(800);
+    r = preOrderCheck(s, { ...HERO_INPUT, conservative: true });
+    expect(r.reservedForecast).toBe(800);
+
+    // Actual surplus logged: the hold now points at a real listing.
+    const t = s.transfers.find((x) => x.id === "T-HERO")!;
+    s.listings.push({ ...heroListing("2026-11-23", 820), status: "reserved" });
+    t.listingId = "L-HERO";
+    t.status = "Reserved";
+    s.outcomes.push({ forecastId: HERO_FORECAST_ID, status: "Confirmed", forecastQty: 800, actualQty: 820, loggedAt: "2026-11-23" });
+    r = preOrderCheck(s, { ...HERO_INPUT });
+    expect(r.listingQty).toBe(800);
+    expect(r.reservedForecast).toBe(0);
+    expect(r.orderNow).toBe(200);
   });
 
   it("changes when an assumption changes", () => {

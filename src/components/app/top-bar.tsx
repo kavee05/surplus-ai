@@ -53,14 +53,14 @@ function Crumbs() {
   });
   return (
     <Breadcrumb className="min-w-0">
-      <BreadcrumbList className="flex-nowrap">
+      <BreadcrumbList className="flex-nowrap whitespace-nowrap">
         <BreadcrumbItem className="hidden sm:inline-flex">
           {trail.length ? <BreadcrumbLink asChild><Link href="/app">Overview</Link></BreadcrumbLink> : <BreadcrumbPage>Overview</BreadcrumbPage>}
         </BreadcrumbItem>
         {trail.map((c, i) => (
           <Fragment key={c.href}>
-            <BreadcrumbSeparator className="hidden sm:inline-flex" />
-            <BreadcrumbItem className="min-w-0">
+            <BreadcrumbSeparator className={i === trail.length - 1 ? "hidden sm:inline-flex" : "hidden xl:inline-flex"} />
+            <BreadcrumbItem className={i === trail.length - 1 ? "min-w-0" : "hidden xl:inline-flex"}>
               {i === trail.length - 1 ? (
                 <BreadcrumbPage className="truncate">{c.label}</BreadcrumbPage>
               ) : (
@@ -94,7 +94,7 @@ export function TopBar() {
       <div className="ml-auto flex items-center gap-2">
         <form
           role="search"
-          className="relative hidden md:block"
+          className="relative hidden lg:block"
           onSubmit={(e) => {
             e.preventDefault();
             router.push(`/app/surplus?q=${encodeURIComponent(q)}`);
@@ -106,10 +106,10 @@ export function TopBar() {
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search surplus"
             aria-label="Search surplus inventory"
-            className="h-8 w-44 pl-8 lg:w-60"
+            className="h-8 w-40 pl-8 xl:w-56"
           />
         </form>
-        <span className="hidden text-xs text-muted-foreground lg:inline">Demo date {fmtDate(state.today)}</span>
+        <span className="hidden text-xs whitespace-nowrap text-muted-foreground xl:inline">Demo date {fmtDate(state.today)}</span>
         <SimulatedBadge className="hidden sm:inline-flex" />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

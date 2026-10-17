@@ -9,6 +9,7 @@ export function forecastReservation(opts: {
   materialId: string;
   qty: number;
   needId?: string;
+  toPhaseId?: string;
   by: string;
   today: string;
   structural: boolean;
@@ -17,6 +18,7 @@ export function forecastReservation(opts: {
     id: opts.id,
     forecastId: opts.forecastId,
     needId: opts.needId,
+    toPhaseId: opts.toPhaseId,
     fromSiteId: opts.fromSiteId,
     toSiteId: opts.toSiteId,
     materialId: opts.materialId,
@@ -40,6 +42,7 @@ export function heroReservation(today: string, qty = 800): Transfer {
     materialId: "tile-porcelain",
     qty,
     needId: HERO_NEED_ID,
+    toPhaseId: "bbr-2b",
     by: people.procurement.name,
     today,
     structural: false,

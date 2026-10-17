@@ -20,6 +20,8 @@ export interface ListingAllocation {
   qty: number;
   needsApproval: boolean;
   savings: Savings;
+  /** Already reserved by this buyer. */
+  secured?: boolean;
 }
 
 export interface Exclusion {
@@ -38,6 +40,8 @@ export interface ForecastCandidate {
   scoreParts: { coverage: number; distance: number; timing: number; confidence: number };
   availableQty: number;
   reservedQty: number;
+  /** Quantity this buyer already holds against the forecast. */
+  alreadyReserved: number;
   savings: Savings;
   explanation: string[];
 }
@@ -54,6 +58,7 @@ export interface PreOrderResult {
   risk: "High" | "Medium" | "Low" | null;
   decisionDate: string;
   leadTimeDays: number;
+  securedQty: number;
   exclusions: Exclusion[];
   expected: ReturnType<typeof sumSavings>;
   bestCase: ReturnType<typeof sumSavings> & { qty: number };
@@ -61,10 +66,19 @@ export interface PreOrderResult {
   explanation: string[];
 }
 
+/** Transfers this buyer (same site, phase and material) has already set up. */
+export function buyerTransfers(data: EngineData, input: Pick<PreOrderInput, "siteId" | "phaseId" | "materialId">) {
+  return data.transfers.filter((t) => {
+    if (t.status === "Cancelled" || t.toSiteId !== input.siteId || t.materialId !== input.materialId) return false;
+    const phaseId = t.toPhaseId ?? data.needs.find((n) => n.id === t.needId)?.phaseId;
+    return phaseId === input.phaseId;
+  });
+}
+
 /** Forecast quantity already promised to other buyers through forecast reservations. */
-function heldAgainstForecast(data: EngineData, forecastId: string): number {
+function heldAgainstForecast(data: EngineData, forecastId: string, excludeIds: Set<string>): number {
   return data.transfers
-    .filter((t) => t.forecastId === forecastId && t.status !== "Cancelled")
+    .filter((t) => t.forecastId === forecastId && !t.listingId && t.status !== "Cancelled" && !excludeIds.has(t.id))
     .reduce((a, t) => a + t.qty, 0);
 }
 
@@ -76,15 +90,30 @@ export function preOrderCheck(data: EngineData, input: PreOrderInput): PreOrderR
   const exclusions: Exclusion[] = [];
   const explanation: string[] = [];
   let remaining = Math.max(0, input.qty);
+  const mine = buyerTransfers(data, input);
+  const mineIds = new Set(mine.map((t) => t.id));
+  const securedQty = mine.reduce((a, t) => a + t.qty, 0);
+  if (securedQty > 0) explanation.push(`You already hold ${fmtNum(securedQty)} ${unit} for this phase. It is counted first.`);
 
   // 1. Actual unclaimed listings that pass hard filters.
   const fromListings: ListingAllocation[] = [];
+  const securedListingIds = new Set<string>();
+  for (const t of mine.filter((x) => x.listingId)) {
+    const l = data.listings.find((x) => x.id === t.listingId);
+    if (!l || remaining <= 0) continue;
+    const d = siteDistanceKm(data.sites, l.siteId, input.siteId);
+    const take = Math.min(remaining, t.qty);
+    remaining -= take;
+    securedListingIds.add(l.id);
+    fromListings.push({ listing: l, distanceKm: d, qty: take, needsApproval: mat.structural, secured: true, savings: savingsFor(l.materialId, take, d, data.assumptions, unit) });
+  }
   const listingCands = data.listings
     .filter((l) => materialById(data, l.materialId).category === mat.category && l.materialId === input.materialId)
     .map((l) => ({ l, d: siteDistanceKm(data.sites, l.siteId, input.siteId) }))
     .sort((a, b) => a.d - b.d);
 
   for (const { l, d } of listingCands) {
+    if (securedListingIds.has(l.id)) continue;
     let reason: string | null = null;
     if (l.status !== "available") reason = `Already ${l.status}.`;
     else if (l.availableFrom > input.neededBy) reason = `Available ${fmtDate(l.availableFrom)}, after the need date.`;
@@ -119,10 +148,12 @@ export function preOrderCheck(data: EngineData, input: PreOrderInput): PreOrderR
   const cands: ForecastCandidate[] = [];
   for (const f of forecasts) {
     const d = siteDistanceKm(data.sites, f.siteId, input.siteId);
-    const held = heldAgainstForecast(data, f.id);
+    const held = heldAgainstForecast(data, f.id, mineIds);
     const availableQty = Math.max(0, f.qty - held);
+    const alreadyReserved = mine.filter((t) => t.forecastId === f.id && !t.listingId).reduce((a, t) => a + t.qty, 0);
     let reason: string | null = null;
-    if (f.status !== "Forecast") reason = `Already ${f.status.toLowerCase()} as actual surplus. See logged listings.`;
+    if (alreadyReserved > 0) reason = null;
+    else if (f.status !== "Forecast") reason = `Already ${f.status.toLowerCase()} as actual surplus. See logged listings.`;
     else if (f.availableFrom > latestAvail)
       reason = `Expected ${fmtDate(f.availableFrom)}, later than ${fmtDate(latestAvail)} (need date minus ${g.handlingBufferDays} days handling).`;
     else if (d > g.maxHaulKm) reason = `${fmtNum(d)} km away, beyond the ${g.maxHaulKm} km haul limit.`;
@@ -148,6 +179,7 @@ export function preOrderCheck(data: EngineData, input: PreOrderInput): PreOrderR
       scoreParts: parts,
       availableQty,
       reservedQty: 0,
+      alreadyReserved,
       savings: savingsFor(f.materialId, 0, d, data.assumptions, unit),
       explanation: [
         `Score ${score.toFixed(2)} = ${g.weightCoverage} × coverage ${parts.coverage.toFixed(2)} + ${g.weightDistance} × distance ${parts.distance.toFixed(2)} + ${g.weightTiming} × timing ${parts.timing.toFixed(2)} + ${g.weightConfidence} × confidence ${parts.confidence.toFixed(2)}.`,
@@ -155,14 +187,14 @@ export function preOrderCheck(data: EngineData, input: PreOrderInput): PreOrderR
       ],
     });
   }
-  cands.sort((a, b) => b.score - a.score);
+  cands.sort((a, b) => b.alreadyReserved - a.alreadyReserved || b.score - a.score);
 
   // 3. Reserve against ranked forecasts.
   let reservedForecast = 0;
   let confWeighted = 0;
   for (const c of cands) {
     if (remaining <= 0) break;
-    const usable = input.conservative ? Math.floor(c.availableQty * c.forecast.confidence) : c.availableQty;
+    const usable = Math.max(c.alreadyReserved, input.conservative ? Math.floor(c.availableQty * c.forecast.confidence) : c.availableQty);
     const take = Math.min(remaining, usable);
     if (take <= 0) continue;
     c.reservedQty = take;
@@ -226,6 +258,7 @@ export function preOrderCheck(data: EngineData, input: PreOrderInput): PreOrderR
     risk,
     decisionDate,
     leadTimeDays: mv.leadTimeDays,
+    securedQty,
     exclusions,
     expected,
     bestCase: scenario(false),

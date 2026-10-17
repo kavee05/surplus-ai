@@ -107,6 +107,7 @@ export interface Transfer {
   id: string;
   listingId?: string;
   forecastId?: string; // set when reserved against a forecast before surplus exists
+  toPhaseId?: string; // the buying phase, used to find the buyer's own reservations
   needId?: string;
   fromSiteId: string;
   toSiteId: string;

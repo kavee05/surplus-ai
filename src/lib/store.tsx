@@ -79,6 +79,13 @@ function reducer(s: AppState, a: Action): AppState {
               ],
             };
           });
+          if (held > 0 && held < listing.qty) {
+            // Split: the held part is reserved, the rest stays available to everyone.
+            const rest: Listing = { ...listing, id: `${listing.id}-rest`, qty: listing.qty - held, forecastId: undefined, notes: "Remainder after the forecast reservation was filled." };
+            listing.qty = held;
+            listing.status = "reserved";
+            return { ...s, listings: [listing, rest, ...s.listings], outcomes, transfers, phases };
+          }
           if (held >= listing.qty) listing.status = "reserved";
         }
       }
