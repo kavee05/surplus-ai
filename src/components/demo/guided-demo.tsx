@@ -86,7 +86,7 @@ const STEPS: Step[] = [
   },
   {
     title: "Collect and complete the transfer",
-    body: "The tiles move 13 km from Elmina to Bandar Bukit Raja. Each step is recorded: Matched, Reserved, Collected, Completed.",
+    body: "The tiles move about 13 km from Elmina to Bandar Bukit Raja. Each step is recorded: Matched, Reserved, Collected, Completed.",
     route: "/app/transfers",
     role: "procurement",
     target: "hero-transfer",
@@ -192,7 +192,7 @@ export function GuidedDemoProvider({ children }: { children: React.ReactNode }) 
       el = document.querySelector(`[data-demo="${target}"]`);
       if (el) {
         el.classList.add("demo-highlight");
-        el.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+        el.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
       }
     }, 350);
     return () => {

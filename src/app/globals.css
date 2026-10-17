@@ -170,6 +170,7 @@
   .demo-highlight {
     outline: 3px solid var(--forecast);
     outline-offset: 4px;
+    scroll-margin-top: 72px;
     border-radius: var(--radius-lg);
     transition: outline-color 200ms ease;
   }
