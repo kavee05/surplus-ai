@@ -19,7 +19,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <AppSidebar />
           <SidebarInset className="min-w-0">
             <TopBar />
-            <div id="main" className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 pb-40 sm:px-6 lg:px-8">
+            <div id="main" className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 pb-12 sm:px-6 lg:px-8">
               {children}
             </div>
           </SidebarInset>

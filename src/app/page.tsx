@@ -1,4 +1,4 @@
-import { Camera, ClipboardCheck, HardHat, LineChart, Radar, Repeat, ShoppingCart } from "lucide-react";
+import { Camera, Check, ClipboardCheck, HardHat, LineChart, Radar, Repeat, ShoppingCart } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SimulatedBadge } from "@/components/app/simulated-badge";
@@ -61,7 +61,7 @@ export default function Landing() {
       <SiteHeader />
       <main id="main">
         {/* Hero */}
-        <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 pt-12 pb-16 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:pt-20 lg:pb-24">
+        <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 pt-10 pb-14 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12 lg:pt-16 lg:pb-16">
           <div className="flex flex-col gap-6">
             <h1 className="text-5xl leading-[1.02] font-semibold tracking-[-0.035em] text-balance sm:text-6xl">Check before you buy.</h1>
             <p className="max-w-xl text-lg text-muted-foreground text-pretty">
@@ -82,9 +82,9 @@ export default function Landing() {
 
         {/* Problem */}
         <section aria-labelledby="problem-h" className="border-y bg-card">
-          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+          <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:py-16">
             <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
-              <div>
+              <div className="lg:sticky lg:top-24 lg:self-start">
                 <h2 id="problem-h" className="text-3xl font-semibold tracking-tight text-balance">Buffers become waste because nobody sees across sites.</h2>
                 <p className="mt-4 text-muted-foreground text-pretty">
                   Teams order a little extra to stay safe. At the end of each phase, usable tiles, timber, paving, steel offcuts and safety items are left over. Another phase a few kilometres away buys the same things new.
@@ -110,19 +110,22 @@ export default function Landing() {
         </section>
 
         {/* How it works */}
-        <section id="how" aria-labelledby="how-h" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-16 sm:px-6 lg:py-20">
+        <section id="how" aria-labelledby="how-h" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-14 sm:px-6 lg:py-16">
           <h2 id="how-h" className="max-w-2xl text-3xl font-semibold tracking-tight text-balance">
             How it works
           </h2>
-          <ol className="mt-10 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <ol className="mt-8 grid gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-4">
             {steps.map((s, i) => (
-              <li key={s.title} className="flex flex-col gap-3">
+              <li key={s.title} className="relative flex flex-col gap-3">
                 <span className="flex items-center gap-3">
-                  <span className="tabular grid size-8 place-items-center rounded-full border-2 border-brand text-sm font-semibold text-brand">{i + 1}</span>
-                  <s.icon className="size-5 text-muted-foreground" aria-hidden />
+                  <span className="grid size-10 place-items-center rounded-xl bg-brand text-primary-foreground">
+                    <s.icon className="size-5" aria-hidden />
+                  </span>
+                  <span className="tabular text-sm font-medium text-muted-foreground">Step {i + 1}</span>
+                  {i < steps.length - 1 && <span className="ml-1 hidden h-px flex-1 bg-border lg:block" aria-hidden />}
                 </span>
                 <h3 className="font-semibold">{s.title}</h3>
-                <p className="text-sm text-muted-foreground text-pretty">{s.body}</p>
+                <p className="text-sm text-muted-foreground">{s.body}</p>
               </li>
             ))}
           </ol>
@@ -130,7 +133,7 @@ export default function Landing() {
 
         {/* Radar deep-dive */}
         <section id="radar" aria-labelledby="radar-h" className="scroll-mt-16 bg-brand-strong text-white">
-          <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-20">
+          <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 lg:grid-cols-2 lg:py-16">
             <div>
               <h2 id="radar-h" className="text-3xl font-semibold tracking-tight text-balance">
                 Surplus Radar works before the surplus exists.
@@ -138,13 +141,20 @@ export default function Landing() {
               <p className="mt-4 text-white/80 text-pretty">
                 A normal exchange can only help once leftovers are logged, which is usually after the next site has already ordered. Radar reads the purchase plans instead, so the buyer can order less in the first place.
               </p>
-              <ul className="mt-6 flex flex-col gap-3 text-sm text-white/85">
-                <li>Every number has a &ldquo;how this was calculated&rdquo; drawer. No black box.</li>
-                <li>Conservative mode reserves only the confidence-weighted share.</li>
-                <li>A decision date says when to confirm the forecast or top up the order.</li>
-                <li>Change an assumption on the Settings page and every result updates.</li>
+              <ul className="mt-6 flex flex-col gap-2.5 text-sm text-white/85">
+                {[
+                  "Every number has a “how this was calculated” drawer. No black box.",
+                  "Conservative mode reserves only the confidence-weighted share.",
+                  "A decision date says when to confirm the forecast or top up the order.",
+                  "Change an assumption on the Settings page and every result updates.",
+                ].map((t) => (
+                  <li key={t} className="flex gap-2.5">
+                    <Check className="mt-0.5 size-4 shrink-0 text-forecast" aria-hidden />
+                    <span>{t}</span>
+                  </li>
+                ))}
               </ul>
-              <Button asChild size="lg" variant="secondary" className="mt-8 h-11 px-5 text-base">
+              <Button asChild size="lg" variant="secondary" className="mt-7 h-11 px-5 text-base">
                 <Link href="/app/radar">Open Surplus Radar</Link>
               </Button>
             </div>
@@ -162,11 +172,11 @@ export default function Landing() {
                   ["Bandar Bukit Raja needs", `${fmtNum(HERO_INPUT.qty)} tiles by ${fmtDate(HERO_INPUT.neededBy)}`],
                   ["Recommendation", `Reserve ${fmtNum(r.reservedForecast)}, order ${fmtNum(r.orderNow)} now`],
                   ["Conservative mode", `Reserve ${fmtNum(rc.reservedForecast)}, order ${fmtNum(rc.orderNow)} now`],
-                  ["Decision date", `${fmtDate(r.decisionDate)}: ${fmtDate(HERO_INPUT.neededBy)} minus ${tile.leadTimeDays} days lead time and ${g.handlingBufferDays} days handling`],
+                  ["Decision date", `${fmtDate(r.decisionDate)} (need date minus ${tile.leadTimeDays + g.handlingBufferDays} days)`],
                   ["Estimated saving", `${fmtRm(r.expected.savedRm)}, ${fmtNum(r.expected.tonnes, 1)} t diverted`],
                 ].map(([k, v]) => (
                   <div key={k} className="flex flex-col gap-0.5 py-2.5 sm:flex-row sm:justify-between sm:gap-6">
-                    <dt className="text-white/70">{k}</dt>
+                    <dt className="shrink-0 text-white/70">{k}</dt>
                     <dd className="tabular font-medium sm:text-right">{v}</dd>
                   </div>
                 ))}
@@ -176,12 +186,12 @@ export default function Landing() {
         </section>
 
         {/* Roles */}
-        <section id="roles" aria-labelledby="roles-h" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-16 sm:px-6 lg:py-20">
+        <section id="roles" aria-labelledby="roles-h" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-14 sm:px-6 lg:py-16">
           <h2 id="roles-h" className="text-3xl font-semibold tracking-tight">
             One habit, three roles
           </h2>
           <p className="mt-3 max-w-2xl text-muted-foreground">These users are our assumption. We have not interviewed SDP staff yet.</p>
-          <div className="mt-10 grid gap-4 md:grid-cols-3">
+          <div className="mt-8 grid gap-4 md:grid-cols-3">
             {roles.map((x) => (
               <div key={x.title} className="flex flex-col gap-3 rounded-xl border bg-card p-6 shadow-card">
                 <x.icon className="size-6 text-brand" aria-hidden />
@@ -195,7 +205,7 @@ export default function Landing() {
 
         {/* Impact + model */}
         <section aria-labelledby="impact-h" className="border-y bg-card">
-          <div className="mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-20">
+          <div className="mx-auto grid max-w-6xl gap-12 px-4 py-14 sm:px-6 lg:grid-cols-2 lg:py-16">
             <div>
               <div className="flex flex-wrap items-center gap-3">
                 <h2 id="impact-h" className="text-3xl font-semibold tracking-tight">
@@ -238,11 +248,11 @@ export default function Landing() {
         </section>
 
         {/* FAQ */}
-        <section id="faq" aria-labelledby="faq-h" className="mx-auto max-w-3xl scroll-mt-20 px-4 py-16 sm:px-6 lg:py-20">
+        <section id="faq" aria-labelledby="faq-h" className="mx-auto max-w-3xl scroll-mt-20 px-4 py-14 sm:px-6 lg:py-16">
           <h2 id="faq-h" className="text-3xl font-semibold tracking-tight">
             Honest answers
           </h2>
-          <Accordion type="single" collapsible className="mt-8">
+          <Accordion type="single" collapsible className="mt-6">
             {faqs.map((f) => (
               <AccordionItem key={f.q} value={f.q}>
                 <AccordionTrigger className="text-base">{f.q}</AccordionTrigger>
@@ -253,7 +263,7 @@ export default function Landing() {
         </section>
 
         {/* CTA */}
-        <section aria-labelledby="cta-h" className="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
+        <section aria-labelledby="cta-h" className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
           <div className="flex flex-col items-start gap-6 rounded-2xl border bg-card p-8 shadow-card sm:p-10 md:flex-row md:items-center md:justify-between">
             <div>
               <h2 id="cta-h" className="text-2xl font-semibold tracking-tight">

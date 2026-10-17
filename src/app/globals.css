@@ -175,3 +175,8 @@
     transition: outline-color 200ms ease;
   }
 }
+
+/* Room for the guided demo panel, only while it is open */
+body:has([aria-label="Guided demo"]) #main {
+  padding-bottom: 16rem;
+}

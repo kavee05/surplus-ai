@@ -96,7 +96,7 @@ export function TimelineCore({
 
   return (
     <>
-      <div className={cn("relative", compact ? "min-w-[640px]" : "min-w-[760px]")}>
+      <div className={cn("relative", compact ? "min-w-[520px]" : "min-w-[760px]")}>
         <div className="flex border-b text-xs text-muted-foreground">
           <div data-label-col className={cn("sticky left-0 z-20 shrink-0 border-r bg-card px-3 py-2 font-medium text-foreground", labelW)}>
             Township and phase
