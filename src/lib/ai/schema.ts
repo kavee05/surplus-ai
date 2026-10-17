@@ -33,19 +33,6 @@ export const PhotoAnalysis = z.object({
 
 export type PhotoAnalysis = z.infer<typeof PhotoAnalysis>;
 
-/** Same fields without bounds, sent to the provider as the output format. */
-export const PhotoWire = z.object({
-  materialId: z.enum(materialIds),
-  itemName: z.string(),
-  category: z.string(),
-  condition: z.enum(["new", "good", "usable", "poor"]),
-  estimatedQty: z.number(),
-  unit: z.string(),
-  needsEngineerApproval: z.boolean(),
-  confidence: z.number(),
-  notes: z.string(),
-});
-
 export const photoGeminiSchema = {
   type: "OBJECT",
   properties: {

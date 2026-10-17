@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils";
 export interface AiStatus {
   mode: "live" | "demo";
   reason: string | null;
-  provider?: string;
   model?: string;
   loaded: boolean;
 }
@@ -23,7 +22,7 @@ export function AiStatusProvider({ children }: { children: React.ReactNode }) {
     let alive = true;
     fetch("/api/ai-status", { cache: "no-store" })
       .then((r) => r.json())
-      .then((j) => alive && setS({ mode: j.mode === "live" ? "live" : "demo", reason: j.reason ?? null, provider: j.provider, model: j.model, loaded: true }))
+      .then((j) => alive && setS({ mode: j.mode === "live" ? "live" : "demo", reason: j.reason ?? null, model: j.model, loaded: true }))
       .catch(() => alive && setS({ mode: "demo", reason: "Could not reach the AI status check. Demo mode is on.", loaded: true }));
     return () => {
       alive = false;

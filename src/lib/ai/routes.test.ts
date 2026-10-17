@@ -21,7 +21,6 @@ const facts = briefFacts(r, explainPreOrder(r, s), s);
 
 beforeEach(() => {
   vi.stubEnv("LIVE_AI", "true");
-  vi.stubEnv("LLM_PROVIDER", "gemini");
   vi.stubEnv("GEMINI_API_KEY", "test-key-not-real");
   vi.stubEnv("UPSTASH_REDIS_REST_URL", "");
   vi.stubEnv("UPSTASH_REDIS_REST_TOKEN", "");

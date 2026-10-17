@@ -41,14 +41,14 @@ Set these (see [.env.example](.env.example)), in Vercel for both Production and 
 
 ```
 LIVE_AI=true
-LLM_PROVIDER=gemini            # or anthropic
-GEMINI_API_KEY=...             # or ANTHROPIC_API_KEY
+GEMINI_API_KEY=...             # from Google AI Studio
+GEMINI_MODEL=gemini-3.5-flash-lite
 LIVE_AI_DAILY_CAP=200
 UPSTASH_REDIS_REST_URL=...     # optional, shares limits across instances
 UPSTASH_REDIS_REST_TOKEN=...
 ```
 
-Check the result at `/api/ai-status?check=1`. It reports the mode, model and whether each variable exists, never the key.
+Step-by-step instructions: [docs/LIVE_AI_SETUP.md](docs/LIVE_AI_SETUP.md). Check the result at `/api/ai-status?check=1`. It reports the mode, model and setup checks, never the key. The app uses the Google Gemini API only.
 
 ## Explainable recommendations
 

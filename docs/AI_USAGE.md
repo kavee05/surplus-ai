@@ -12,16 +12,15 @@ Principle: **AI reads messy input and writes plain-language summaries. Determini
 
 Not AI, on purpose: forecasting, the Pre-Order Check, matching, ranking, savings and carbon, certainty levels, the decision queue. These are plain TypeScript in `src/lib/engine` and `src/lib/explain` with unit tests, because a buyer has to be able to check the quantity.
 
-## Providers and configuration
+## Provider and configuration
 
-`src/lib/ai/provider.ts` supports two providers behind one function:
+Surplus AI uses the **Google Gemini API only**, through its REST endpoint (`src/lib/ai/provider.ts`, one function: `generateStructured`). The model comes from `GEMINI_MODEL` and defaults to `gemini-3.5-flash-lite`, Google's current fast, cost-effective multimodal model (stable, no shutdown date announced as of October 2026). `gemini-3.8-flash` is a stronger alternative.
 
-- **Gemini** (default) over the REST API, model from `GEMINI_MODEL` (default `gemini-3.5-flash-lite`).
-- **Anthropic** through the official `@anthropic-ai/sdk` with structured output (`messages.parse` + `zodOutputFormat`), model from `ANTHROPIC_MODEL` (default `claude-opus-5-5`; set `claude-haiku-5-5` for lower cost).
+Live AI runs only when `LIVE_AI=true` and `GEMINI_API_KEY` is set. The key is read on the server only, at request time. Variables: `LIVE_AI`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `LIVE_AI_DAILY_CAP`, and optionally `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`. Setup steps: [LIVE_AI_SETUP.md](LIVE_AI_SETUP.md).
 
-Choose with `LLM_PROVIDER=gemini` or `anthropic`. Live AI runs only when `LIVE_AI=true` and the provider's key is set. Keys are read on the server only, at request time.
+Every call uses Gemini structured JSON output, has a timeout (10 to 20 seconds), one retry for transient failures, and strict zod validation. Failures are reported as a category (auth, bad model, quota, timeout, invalid output, refused, provider error, network) and never include a key or raw provider message.
 
-Every call has a timeout (15 to 25 seconds), one retry for transient failures, and strict zod validation of the output. Failures are reported as a category (auth, bad model, quota, timeout, invalid output, refused, provider error, network) and never include a key or raw provider message.
+Photos sent in live mode go to Google's Gemini API. The upload box warns users not to upload private or sensitive images. Surplus AI does not store uploaded photos.
 
 ## Guardrails
 
@@ -34,7 +33,7 @@ Every call has a timeout (15 to 25 seconds), one retry for transient failures, a
 
 ## Diagnostics
 
-`GET /api/ai-status` returns the mode, provider, model name, whether each variable exists (true or false), and the usage limits. `GET /api/ai-status?check=1` also runs one tiny test call (cached for 10 minutes per instance) and reports `ok` or a failure category. It never returns a key or its length.
+`GET /api/ai-status` returns the mode, model name and a plain reason. On Preview and local deployments it also returns non-secret setup checks (whether each variable is set, whether the key looks like a Google key, whether the model is a current one, the deployed branch and commit, and recent failure categories). `GET /api/ai-status?check=1` also runs one tiny test call (cached for 10 minutes per instance) and reports `ok` or a failure category. It never returns a key or its length.
 
 ## Tests
 

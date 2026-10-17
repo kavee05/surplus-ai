@@ -249,6 +249,7 @@ export function LogSurplus() {
           <Button variant="outline" onClick={() => fileRef.current?.click()}>
             <ImageUp aria-hidden /> Take or upload a photo
           </Button>
+          <p className="text-xs text-muted-foreground">Do not upload private or sensitive images. Photos may be sent to Google&rsquo;s Gemini API in live mode.</p>
           {aiStatus.loaded && mode === "demo" && (
             <p className="rounded-md border border-info/30 bg-info-soft px-3 py-2 text-xs text-info" role="status">
               Live AI is off in this deployment. Choose a sample photo or enter the details yourself.

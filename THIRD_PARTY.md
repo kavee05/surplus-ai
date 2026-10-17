@@ -20,7 +20,6 @@ Surplus AI itself is MIT licensed (see LICENSE). It depends on the open-source p
 
 | Package | Licence |
 | --- | --- |
-| @anthropic-ai/sdk | MIT |
 | @tanstack/react-table | MIT |
 | class-variance-authority | Apache-2.0 |
 | clsx | MIT |

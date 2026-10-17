@@ -52,14 +52,6 @@ export const AskQuery = z.object({
 });
 export type AskQuery = z.infer<typeof AskQuery>;
 
-export const AskQueryWire = z.object({
-  materialId: z.string().nullable(),
-  siteId: z.string().nullable(),
-  qty: z.number().nullable(),
-  neededBy: z.string().nullable(),
-  phaseHint: z.string().nullable(),
-});
-
 export const askGeminiSchema = {
   type: "OBJECT",
   properties: {
@@ -278,7 +270,6 @@ export function verifyBriefing(text: string, f: BriefFacts): GuardResult {
   return { ok: offending.length === 0, offending };
 }
 
-export const BriefWire = z.object({ summary: z.string() });
 export const Brief = z.object({ summary: z.string().min(10).max(800) });
 export const briefGeminiSchema = { type: "OBJECT", properties: { summary: { type: "STRING" } }, required: ["summary"] };
 

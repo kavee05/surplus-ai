@@ -4,7 +4,7 @@ import { aiConfig } from "@/lib/ai/config";
 import { checkLimits, defaultStore } from "@/lib/ai/limits";
 import { failureMessage, generateStructured } from "@/lib/ai/provider";
 import { samples, uploadFallback } from "@/lib/ai/samples";
-import { AnalyzeRequest, MAX_IMAGE_BASE64, normalizePhoto, PhotoAnalysis, photoGeminiSchema, PhotoWire, type AnalyzeResponse } from "@/lib/ai/schema";
+import { AnalyzeRequest, MAX_IMAGE_BASE64, normalizePhoto, PhotoAnalysis, photoGeminiSchema, type AnalyzeResponse } from "@/lib/ai/schema";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -58,7 +58,6 @@ export async function POST(req: Request) {
 
   const res = await generateStructured(cfg, {
     schema: PhotoAnalysis,
-    wire: PhotoWire,
     geminiSchema: photoGeminiSchema,
     system: SYSTEM,
     text: "Identify the leftover material in this photo and estimate its quantity.",
@@ -66,7 +65,7 @@ export async function POST(req: Request) {
     normalize: normalizePhoto,
   });
   if (!res.ok) {
-    console.error(`[analyze-photo] live call failed: provider=${cfg.provider} model=${cfg.model} category=${res.category} status=${res.status ?? "-"}`);
+    console.error(`[analyze-photo] live call failed: model=${cfg.model} category=${res.category} status=${res.status ?? "-"}`);
     return json({ mode: "demo", result: uploadFallback, reason: `Live AI could not read this photo: ${failureMessage[res.category]}. Fill in the details yourself.` });
   }
   return json({ mode: "live", result: res.data });

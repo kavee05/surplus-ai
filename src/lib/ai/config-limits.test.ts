@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { aiConfig, DEFAULT_MODELS } from "./config";
+import { aiConfig, DEFAULT_GEMINI_MODEL } from "./config";
 import { checkLimits, memoryStore } from "./limits";
 
 describe("aiConfig", () => {
@@ -15,15 +15,16 @@ describe("aiConfig", () => {
     expect(c.key).toBe("abc");
   });
 
-  it("explains a missing key for the chosen provider", () => {
-    const c = aiConfig({ LIVE_AI: "true", LLM_PROVIDER: "anthropic", GEMINI_API_KEY: "k" });
+  it("explains a missing Gemini key", () => {
+    const c = aiConfig({ LIVE_AI: "true" });
     expect(c.live).toBe(false);
-    expect(c.offReason).toMatch(/no Anthropic API key/);
+    expect(c.offReason).toMatch(/no Gemini API key/);
   });
 
   it("defaults models and daily cap, and reports only booleans for variables", () => {
     const c = aiConfig({ LIVE_AI: "true", GEMINI_API_KEY: "secret" });
-    expect(c.model).toBe(DEFAULT_MODELS.gemini);
+    expect(c.model).toBe(DEFAULT_GEMINI_MODEL);
+    expect(aiConfig({ GEMINI_MODEL: " gemini-3.8-flash " }).model).toBe("gemini-3.8-flash");
     expect(c.dailyCap).toBe(200);
     expect(Object.values(c.env).every((v) => typeof v === "boolean")).toBe(true);
     expect(JSON.stringify(c.env)).not.toContain("secret");
