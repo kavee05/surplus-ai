@@ -65,7 +65,7 @@ export function Overview() {
         <KpiCard label="Active transfers" value={fmtNum(impact.activeMatches)} hint="Matched to collected" icon={ArrowLeftRight} />
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-5">
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-5">
         <Card className="lg:col-span-3">
           <CardHeader>
             <CardTitle>Surplus on the way</CardTitle>
