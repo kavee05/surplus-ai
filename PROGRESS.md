@@ -1,16 +1,22 @@
 # Progress
 
 ## Done
-- M1 scaffold: Next.js 15, Tailwind v4, shadcn/ui (Radix), tokens in `src/app/globals.css`, logo, favicon, OG image, app shell (sidebar, top bar, role switcher, breadcrumbs, guided demo provider), assumptions config `src/lib/assumptions.ts`, seed data `src/data/seed.ts` with the hero scenario.
-- M7 landing `/`, `/app/evidence`, `/app/settings` (assumptions, ownership policy, reset), SHOULD pages `/app/community` and `/app/pilot`, 404, error boundary, robots, sitemap.
-- M6 Guided Demo verified end to end (8 steps).
-- M5 `/app/impact`: KPIs, charts by month, township, material, forecast vs actual (simulated history), alerts, scale projection. Chart colours validated with the dataviz validator (#00809E, #C47D12).
-- M4 site flow: `/app/surplus` table + drawer, `/app/surplus/log` photo log (demo AI via `/api/analyze-photo`, live Gemini opt-in), `/app/needs` with ranked matches, `/app/transfers` workflow with engineer approval.
-- M3 Radar view `/app/radar`: timeline (shared component), filters, Pre-Order Check with Conservative mode, explain drawers, reserve-from-forecast.
-- M2 Radar engine `src/lib/engine/*` (forecast, pre-order check, matching, savings, transfers, impact) with Vitest tests (`npm test`).
+- M1 to M8 complete and verified (see the final report in the session, and README.md).
+- M1 scaffold, tokens (`src/app/globals.css`), brand (logo, `src/app/icon.svg`, `src/app/opengraph-image.tsx`), app shell, assumptions config (`src/lib/assumptions.ts`), seed data with hero scenario (`src/data/seed.ts`).
+- M2 engine in `src/lib/engine` with 26 Vitest tests.
+- M3 `/app/radar`: timeline (core in `src/components/radar/timeline-core.tsx`, interactive wrapper `radar-timeline.tsx`), Pre-Order Check, Conservative mode, explain drawers, reserve-from-forecast.
+- M4 `/app/surplus`, `/app/surplus/log` (demo AI, live Gemini opt-in via `/api/analyze-photo`), `/app/needs`, `/app/transfers`.
+- M5 `/app/impact`.
+- M6 Guided Demo (`src/components/demo/guided-demo.tsx`), verified end to end in production build.
+- M7 landing `/`, `/app/evidence`, `/app/settings`, `/app/community`, `/app/pilot`, 404, error boundary.
+- M8 screenshots in `screenshots/` (13 screens at 375, 768, 1280), Lighthouse on landing (perf 89 to 90, a11y 100, best practices 100, SEO 100), README, PITCH_NOTES, DEMO_SCRIPT, SUBMISSION_NOTES, MIT licence.
 
 ## Next step
-- M8 design review pass at 375, 768, 1280; Lighthouse; README and docs; screenshots folder.
+- Owner tasks in SUBMISSION_NOTES.md (GitHub, Vercel, video, form).
+- Optional COULD items: dark theme, command palette.
 
 ## Known issues
-- Pages other than Overview not built yet.
+- Live Gemini mode is implemented but not tested against the real API (no key was used).
+- npm audit reports advisories in Next 15's bundled postcss (build-time only). The fix is a breaking upgrade to Next 16.
+- Rate limit is in-memory, so on serverless it is per instance, not global.
+- localStorage state is per browser; there is no shared backend.
