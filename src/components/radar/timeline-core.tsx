@@ -191,7 +191,7 @@ export function TimelineCore({
 /** Non-interactive timeline for server rendering (landing page). */
 export function RadarTimelineStatic({ className, ...props }: TimelineProps & { className?: string }) {
   return (
-    <div className={cn("relative overflow-x-auto rounded-xl border bg-card", className)}>
+    <div className={cn("blueprint relative overflow-x-auto rounded-xl border", className)}>
       <TimelineCore
         {...props}
         renderMarker={(m) => (

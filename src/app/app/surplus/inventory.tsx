@@ -118,7 +118,7 @@ export function Inventory() {
           </Button>
         }
       />
-      <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="mb-6 grid grid-cols-2 gap-px overflow-hidden rounded-xl border bg-border lg:grid-cols-4">
         <KpiCard label="Available items" value={fmtNum(available.length)} />
         <KpiCard label="Available value" value={fmtRm(available.reduce((a, l) => a + listingValueRm(state, l), 0))} />
         <KpiCard label="Reserved" value={fmtNum(state.listings.filter((l) => l.status === "reserved").length)} />

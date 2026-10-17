@@ -191,9 +191,9 @@ export default function Landing() {
             One habit, three roles
           </h2>
           <p className="mt-3 max-w-2xl text-muted-foreground">These users are our assumption. We have not interviewed SDP staff yet.</p>
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
+          <div className="mt-8 grid gap-px overflow-hidden rounded-xl border bg-border md:grid-cols-3">
             {roles.map((x) => (
-              <div key={x.title} className="flex flex-col gap-3 rounded-xl border bg-card p-6 shadow-card">
+              <div key={x.title} className="flex flex-col gap-3 bg-card p-6">
                 <x.icon className="size-6 text-brand" aria-hidden />
                 <h3 className="font-semibold">{x.title}</h3>
                 <p className="text-xs text-muted-foreground">{x.device}</p>
@@ -214,14 +214,14 @@ export default function Landing() {
                 <SimulatedBadge />
               </div>
               <p className="mt-3 text-muted-foreground">Simulated transfers between eight townships over seven months. These are not results; they show what the dashboard would measure.</p>
-              <dl className="mt-8 grid grid-cols-2 gap-6">
+              <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-xl border bg-border">
                 {[
                   [fmtRm(impact.savedRm), "saved on completed transfers"],
                   [`${fmtNum(impact.tonnes, 1)} t`, "kept out of disposal"],
                   [`${fmtNum(impact.co2eKg / 1000, 1)} t`, "CO2e avoided, illustrative"],
                   [`${Math.round((impact.accuracy ?? 0) * 100)}%`, "forecast accuracy, simulated history"],
                 ].map(([v, k]) => (
-                  <div key={k}>
+                  <div key={k} className="bg-card p-5">
                     <dt className="sr-only">{k}</dt>
                     <dd className="tabular text-3xl font-semibold tracking-tight">{v}</dd>
                     <dd className="mt-1 text-sm text-muted-foreground">{k}</dd>

@@ -52,9 +52,9 @@ export function Overview() {
         }
       />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border bg-border lg:grid-cols-4">
         <KpiCard
-          label="Forecast surplus, next 90 days"
+          label="Forecast surplus, 90 days"
           value={fmtRm(upcoming.reduce((a, x) => a + x.value, 0))}
           hint={`${upcoming.length} forecasts, estimates only`}
           icon={Radar}

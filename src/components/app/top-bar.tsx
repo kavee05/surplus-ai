@@ -114,7 +114,7 @@ export function TopBar() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-9 gap-2 px-1.5" aria-label={`${person.name}, ${person.title}: user menu`}>
-              <span className="grid size-7 place-items-center rounded-full bg-brand text-xs font-semibold text-primary-foreground">{initials}</span>
+              <span className="grid size-7 place-items-center rounded-full bg-brand text-xs font-semibold text-primary-foreground" aria-hidden>{initials}</span>
               <span className="hidden flex-col items-start leading-tight lg:flex">
                 <span className="text-sm font-medium">{person.name}</span>
                 <span className="text-xs text-muted-foreground">{person.title}</span>

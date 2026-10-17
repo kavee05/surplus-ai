@@ -29,20 +29,25 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="h-14 justify-center border-b">
+      <SidebarHeader className="h-14 justify-center border-b border-sidebar-border">
         <Link href="/" className="flex items-center rounded-md px-1" aria-label="Surplus AI home">
-          {state === "collapsed" ? <LogoMark className="size-7" /> : <Logo />}
+          {state === "collapsed" ? <LogoMark className="size-7" onDark /> : <Logo onDark />}
         </Link>
       </SidebarHeader>
       <SidebarContent>
         {navGroups.map((group) => (
           <SidebarGroup key={group.label}>
-            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-[11px] font-medium text-sidebar-foreground/60">{group.label}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map((item) => (
                   <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton asChild isActive={isActive(item.href)} tooltip={item.label}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive(item.href)}
+                      tooltip={item.label}
+                      className="relative text-sidebar-foreground before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:rounded-full before:bg-forecast before:opacity-0 data-[active=true]:text-white data-[active=true]:before:opacity-100"
+                    >
                       <Link href={item.href} onClick={() => setOpenMobile(false)}>
                         <item.icon aria-hidden />
                         <span>{item.label}</span>
@@ -60,7 +65,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip="Start guided demo"
-              className="bg-forecast-soft text-forecast-ink hover:bg-forecast/25 hover:text-forecast-ink"
+              className="border border-forecast/30 bg-forecast/10 text-forecast hover:bg-forecast/20 hover:text-forecast"
               onClick={() => {
                 setOpenMobile(false);
                 start();

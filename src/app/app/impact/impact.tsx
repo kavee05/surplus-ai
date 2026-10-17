@@ -51,7 +51,7 @@ export function Impact() {
         description={`Results across ${state.sites.length} townships up to ${fmtDate(state.today)}. Every figure here comes from simulated data; carbon figures are illustrative.`}
       />
 
-      <div data-demo="impact-kpis" className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div data-demo="impact-kpis" className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border bg-border xl:grid-cols-3">
         <KpiCard label="RM saved" value={fmtRm(s.savedRm)} hint={`${s.completed.length} completed transfers, net of haulage`} icon={Wallet} tone="success" action={<Explain title="RM saved" iconOnly lines={["Sum over completed transfers of (quantity × unit cost) minus haul cost.", "Unit costs and haul rate come from the assumptions page.", ...s.completed.slice(-3).map((x) => `${materialById(state, x.t.materialId).name}: ${fmtRm(x.s.savedRm)}.`)]} />} />
         <KpiCard label="Tonnes diverted" value={`${fmtNum(s.tonnes, 1)} t`} hint="Kept out of disposal" icon={Scale} action={<Explain title="Tonnes diverted" iconOnly lines={["Sum over completed transfers of quantity × kg per unit, divided by 1,000."]} />} />
         <KpiCard label="CO2e avoided (illustrative)" value={`${fmtNum(s.co2eKg / 1000, 1)} t`} hint="Embodied carbon of new material not bought" icon={Leaf} action={<Explain title="CO2e avoided" iconOnly lines={["Sum of kg diverted × kg CO2e per kg for that material.", "Factors are illustrative placeholders to confirm against ICE or supplier EPDs.", "Transport emissions are not deducted."]} />} />

@@ -9,7 +9,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4 sm:px-6">
-        <Link href="/" aria-label="Surplus AI home" className="rounded-md">
+        <Link href="/" className="rounded-md">
           <Logo />
         </Link>
         <nav aria-label="Main" className="hidden items-center gap-1 text-sm md:flex">
