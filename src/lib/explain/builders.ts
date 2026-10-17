@@ -235,7 +235,7 @@ export function explainPreOrder(r: PreOrderResult, data: EngineData): Explanatio
         ? "Relies only on surplus already logged on site."
         : "No surplus passes the filters today, so ordering in full is the safe default. New surplus could still be logged.",
     calibrated: false,
-    score: r.confidence !== null ? { value: r.confidence, label: `Progress-based score ${r.confidence.toFixed(2)} for the forecast part (not a calibrated probability)` } : undefined,
+    score: r.confidence !== null ? { value: r.confidence, label: `The forecast part has a progress-based score of ${r.confidence.toFixed(2)}. It is a rule of thumb, not a calibrated probability.` } : undefined,
     missing: [...new Set(missing)],
     couldChange: [
       ...(used.length ? [`The source site logging a different quantity before ${fmtDate(r.decisionDate)}.`] : []),

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeftRight, Boxes, Gauge, HandHeart, Leaf, Scale, TriangleAlert, Wallet } from "lucide-react";
+import { HandHeart, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -56,16 +56,15 @@ export function Impact() {
       />
 
       <div data-demo="impact-kpis" className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border bg-border xl:grid-cols-3">
-        <KpiCard label="RM saved, estimated" value={fmtRm(s.savedRm)} hint={`${s.completed.length} completed transfers. Quantities recorded, prices assumed`} icon={Wallet} tone="success" action={<Explain title="RM saved" iconOnly lines={["Sum over completed transfers of (quantity × unit cost) minus haul cost.", "Unit costs and haul rate come from the assumptions page.", ...s.completed.slice(-3).map((x) => `${materialById(state, x.t.materialId).name}: ${fmtRm(x.s.savedRm)}.`)]} />} />
-        <KpiCard label="Material reused" value={`${fmtNum(s.tonnes, 1)} t`} hint="Recorded quantity × assumed weight" icon={Scale} action={<Explain title="Tonnes diverted" iconOnly lines={["Sum over completed transfers of quantity × kg per unit, divided by 1,000."]} />} />
-        <KpiCard label="CO2e avoided (illustrative)" value={`${fmtNum(s.co2eKg / 1000, 1)} t`} hint="Placeholder factors, not a verified reduction" icon={Leaf} action={<Explain title="CO2e avoided" iconOnly lines={["Sum of kg diverted × kg CO2e per kg for that material.", "Factors are illustrative placeholders to confirm against ICE or supplier EPDs.", "Transport emissions are not deducted."]} />} />
-        <KpiCard label="Active transfers" value={fmtNum(s.activeMatches)} hint="Not counted until completed" icon={ArrowLeftRight} />
-        <KpiCard label="Unclaimed surplus value" value={fmtRm(s.unclaimedValueRm)} hint={`${s.alerts.length} items over ${state.assumptions.global.unclaimedAlertDays} days`} icon={Boxes} tone="warning" />
+        <KpiCard label="RM saved, estimated" value={fmtRm(s.savedRm)} trend={months.map((m) => m.cumulativeRm)} hint={`${s.completed.length} completed transfers. Quantities recorded, prices assumed`} tone="success" action={<Explain title="RM saved" iconOnly lines={["Sum over completed transfers of (quantity × unit cost) minus haul cost.", "Unit costs and haul rate come from the assumptions page.", ...s.completed.slice(-3).map((x) => `${materialById(state, x.t.materialId).name}: ${fmtRm(x.s.savedRm)}.`)]} />} />
+        <KpiCard label="Material reused" value={`${fmtNum(s.tonnes, 1)} t`} trend={months.reduce<number[]>((a, m) => [...a, (a.at(-1) ?? 0) + m.tonnes], [])} hint="Recorded quantity × assumed weight" action={<Explain title="Tonnes diverted" iconOnly lines={["Sum over completed transfers of quantity × kg per unit, divided by 1,000."]} />} />
+        <KpiCard label="CO2e avoided (illustrative)" value={`${fmtNum(s.co2eKg / 1000, 1)} t`} hint="Placeholder factors, not a verified reduction" action={<Explain title="CO2e avoided" iconOnly lines={["Sum of kg diverted × kg CO2e per kg for that material.", "Factors are illustrative placeholders to confirm against ICE or supplier EPDs.", "Transport emissions are not deducted."]} />} />
+        <KpiCard label="Active transfers" value={fmtNum(s.activeMatches)} hint="Not counted until completed" />
+        <KpiCard label="Unclaimed surplus value" value={fmtRm(s.unclaimedValueRm)} hint={`${s.alerts.length} items over ${state.assumptions.global.unclaimedAlertDays} days`} tone="warning" />
         <KpiCard
           label="Forecast accuracy"
           value={s.accuracy === null ? "No data" : fmtPct(s.accuracy)}
           hint={`${s.outcomes} outcomes, ${simulatedCount} simulated. Too few real ones to rely on`}
-          icon={Gauge}
           tone="forecast"
           action={<Explain title="Forecast accuracy" iconOnly lines={["Accuracy = 1 minus the mean absolute percentage error between forecast and actual surplus.", "Each error is capped at 100%.", `${simulatedCount} of ${s.outcomes} records are simulated history, seeded so the panel is not empty.`]} />}
         />
@@ -83,7 +82,7 @@ export function Impact() {
               <XAxis dataKey="month" tick={axis} tickLine={false} axisLine={false} />
               <YAxis tick={axis} tickLine={false} axisLine={false} tickFormatter={rmShort} width={68} />
               <Tooltip cursor={{ fill: "var(--muted)" }} content={<ChartTooltip format={fmtRm} />} />
-              <Bar dataKey="savedRm" name="RM saved" fill="var(--chart-1)" radius={[4, 4, 0, 0]} maxBarSize={36} />
+              <Bar isAnimationActive={false} dataKey="savedRm" name="RM saved" fill="var(--chart-1)" radius={[2, 2, 0, 0]} maxBarSize={36} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -97,9 +96,9 @@ export function Impact() {
             <BarChart data={towns} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
               <CartesianGrid horizontal={false} stroke="var(--border)" />
               <XAxis type="number" tick={axis} tickLine={false} axisLine={false} tickFormatter={rmShort} />
-              <YAxis type="category" dataKey="township" tick={axis} tickLine={false} axisLine={false} width={150} />
+              <YAxis type="category" dataKey="township" interval={0} tick={axis} tickLine={false} axisLine={false} width={150} />
               <Tooltip cursor={{ fill: "var(--muted)" }} content={<ChartTooltip format={fmtRm} />} />
-              <Bar dataKey="savedRm" name="RM saved" fill="var(--chart-1)" radius={[0, 4, 4, 0]} maxBarSize={18} />
+              <Bar isAnimationActive={false} dataKey="savedRm" name="RM saved" fill="var(--chart-1)" radius={[0, 2, 2, 0]} maxBarSize={18} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -113,9 +112,9 @@ export function Impact() {
             <BarChart data={cats} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
               <CartesianGrid horizontal={false} stroke="var(--border)" />
               <XAxis type="number" tick={axis} tickLine={false} axisLine={false} tickFormatter={rmShort} />
-              <YAxis type="category" dataKey="category" tick={axis} tickLine={false} axisLine={false} width={150} />
+              <YAxis type="category" dataKey="category" interval={0} tick={axis} tickLine={false} axisLine={false} width={150} />
               <Tooltip cursor={{ fill: "var(--muted)" }} content={<ChartTooltip format={fmtRm} />} />
-              <Bar dataKey="savedRm" name="RM saved" fill="var(--chart-1)" radius={[0, 4, 4, 0]} maxBarSize={18} />
+              <Bar isAnimationActive={false} dataKey="savedRm" name="RM saved" fill="var(--chart-1)" radius={[0, 2, 2, 0]} maxBarSize={18} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -133,8 +132,8 @@ export function Impact() {
               <YAxis tick={axis} tickLine={false} axisLine={false} width={44} />
               <Tooltip cursor={{ fill: "var(--muted)" }} content={<ChartTooltip format={(v) => fmtNum(v)} />} />
               <Legend iconType="square" iconSize={10} wrapperStyle={{ fontSize: 12 }} />
-              <Bar dataKey="Forecast" fill="var(--chart-2)" radius={[4, 4, 0, 0]} maxBarSize={14} />
-              <Bar dataKey="Actual" fill="var(--chart-1)" radius={[4, 4, 0, 0]} maxBarSize={14} />
+              <Bar isAnimationActive={false} dataKey="Forecast" fill="var(--chart-2)" radius={[2, 2, 0, 0]} maxBarSize={14} />
+              <Bar isAnimationActive={false} dataKey="Actual" fill="var(--chart-1)" radius={[2, 2, 0, 0]} maxBarSize={14} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -182,14 +181,14 @@ export function Impact() {
                         {siteName(state, t.fromSiteId)} to {siteName(state, t.toSiteId)}
                       </span>
                     </td>
-                    <td className="tabular px-3 py-2 text-right whitespace-nowrap">
+                    <td className="tabular whitespace-nowrap px-3 py-2 text-right whitespace-nowrap">
                       {fmtNum(t.qty)} {m.unit}
                     </td>
-                    <td className="tabular px-3 py-2 text-right">{fmtRm(sv.valueRm)}</td>
-                    <td className="tabular px-3 py-2 text-right text-muted-foreground">−{fmtRm(sv.haulRm)}</td>
-                    <td className="tabular px-3 py-2 text-right font-medium">{fmtRm(sv.savedRm)}</td>
-                    <td className="tabular px-3 py-2 text-right">{fmtNum(sv.tonnes, 2)} t</td>
-                    <td className="tabular px-4 py-2 text-right sm:px-5">{fmtNum(sv.co2eKg)} kg</td>
+                    <td className="tabular whitespace-nowrap px-3 py-2 text-right">{fmtRm(sv.valueRm)}</td>
+                    <td className="tabular whitespace-nowrap px-3 py-2 text-right text-muted-foreground">−{fmtRm(sv.haulRm)}</td>
+                    <td className="tabular whitespace-nowrap px-3 py-2 text-right font-medium">{fmtRm(sv.savedRm)}</td>
+                    <td className="tabular whitespace-nowrap px-3 py-2 text-right">{fmtNum(sv.tonnes, 2)} t</td>
+                    <td className="tabular whitespace-nowrap px-4 py-2 text-right sm:px-5">{fmtNum(sv.co2eKg)} kg</td>
                   </tr>
                 );
               })}
@@ -199,11 +198,11 @@ export function Impact() {
                 <td className="px-4 py-2 sm:px-5" colSpan={3}>
                   Total, {ledger.length} transfers
                 </td>
-                <td className="tabular px-3 py-2 text-right">{fmtRm(ledger.reduce((a, x) => a + x.s.valueRm, 0))}</td>
-                <td className="tabular px-3 py-2 text-right text-muted-foreground">−{fmtRm(ledger.reduce((a, x) => a + x.s.haulRm, 0))}</td>
-                <td className="tabular px-3 py-2 text-right">{fmtRm(s.savedRm)}</td>
-                <td className="tabular px-3 py-2 text-right">{fmtNum(s.tonnes, 1)} t</td>
-                <td className="tabular px-4 py-2 text-right sm:px-5">{fmtNum(s.co2eKg)} kg</td>
+                <td className="tabular whitespace-nowrap px-3 py-2 text-right">{fmtRm(ledger.reduce((a, x) => a + x.s.valueRm, 0))}</td>
+                <td className="tabular whitespace-nowrap px-3 py-2 text-right text-muted-foreground">−{fmtRm(ledger.reduce((a, x) => a + x.s.haulRm, 0))}</td>
+                <td className="tabular whitespace-nowrap px-3 py-2 text-right">{fmtRm(s.savedRm)}</td>
+                <td className="tabular whitespace-nowrap px-3 py-2 text-right">{fmtNum(s.tonnes, 1)} t</td>
+                <td className="tabular whitespace-nowrap px-4 py-2 text-right sm:px-5">{fmtNum(s.co2eKg)} kg</td>
               </tr>
             </tfoot>
           </table>
@@ -268,7 +267,7 @@ export function Impact() {
               <XAxis dataKey="townships" tick={axis} tickLine={false} axisLine={false} tickFormatter={(v) => (v === 1 ? "1 town" : `${v} towns`)} />
               <YAxis tick={axis} tickLine={false} axisLine={false} tickFormatter={rmShort} width={68} />
               <Tooltip cursor={{ fill: "var(--muted)" }} content={<ChartTooltip format={fmtRm} />} labelFormatter={(v) => `${v} townships`} />
-              <Bar dataKey="annualRm" name="Annual RM saved" fill="var(--chart-1)" radius={[4, 4, 0, 0]} maxBarSize={40} />
+              <Bar isAnimationActive={false} dataKey="annualRm" name="Annual RM saved" fill="var(--chart-1)" radius={[2, 2, 0, 0]} maxBarSize={40} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>

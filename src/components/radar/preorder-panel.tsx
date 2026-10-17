@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarClock, Check, Leaf, PackageCheck, Scale, ShoppingCart, ThumbsDown, Wallet } from "lucide-react";
+import { Check, Leaf, PackageCheck, Scale, ShoppingCart, ThumbsDown, Wallet } from "lucide-react";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -199,17 +199,15 @@ export function PreOrderPanel({
           <p className="text-sm text-muted-foreground">{e.outcome}</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className="-mx-4 grid grid-cols-2 gap-px border-y bg-border sm:-mx-5 sm:grid-cols-3">
           {result.listingQty > 0 && (
             <Figure label={result.fromListings.some((a) => a.secured) ? "Reserved, logged surplus" : "From logged surplus"} value={`${fmtNum(result.listingQty)}`} unit={mat.unit} icon={PackageCheck} tone="brand" />
           )}
           <Figure label="Reserve from forecast" value={fmtNum(result.reservedForecast)} unit={mat.unit} icon={Scale} tone="forecast" big />
           <Figure label="Order now" value={fmtNum(result.orderNow)} unit={mat.unit} icon={ShoppingCart} tone="neutral" big />
-          <div className={cn("col-span-2 flex flex-col justify-between rounded-lg border p-3 sm:col-span-1", result.listingQty > 0 && "sm:col-span-3")}>
-            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <CalendarClock className="size-3.5" aria-hidden /> Decision date
-            </span>
-            <span className="mt-1 font-semibold">{fmtDate(result.decisionDate)}</span>
+          <div className={cn("col-span-2 flex flex-col bg-card px-4 py-3 sm:col-span-1 sm:px-5", result.listingQty > 0 && "sm:col-span-3")}>
+            <span className="text-xs text-muted-foreground">Decision date</span>
+            <span className="tabular mt-1 text-xl font-semibold tracking-tight">{fmtDate(result.decisionDate)}</span>
             <span className="text-xs text-muted-foreground">Confirm the forecast or top up</span>
           </div>
         </div>
@@ -228,7 +226,7 @@ export function PreOrderPanel({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-3">
+        <div className="grid grid-cols-3 gap-x-4 border-b pb-4">
           <Saving icon={Wallet} label="Estimated saving" value={fmtRm(result.expected.savedRm)} note="Assumed unit cost minus haulage" />
           <Saving icon={Scale} label="Material reused" value={fmtTonnes(result.expected.tonnes)} note="Quantity × assumed weight" />
           <Saving icon={Leaf} label="CO2e avoided" value={`${fmtNum(result.expected.co2eKg / 1000, 1)} t`} note="Illustrative carbon factor" />
@@ -320,42 +318,37 @@ function Figure({
   label,
   value,
   unit,
-  icon: Icon,
   tone,
   big,
 }: {
   label: string;
   value: string;
   unit: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon?: React.ComponentType<{ className?: string }>;
   tone: "forecast" | "neutral" | "brand";
   big?: boolean;
 }) {
   return (
     <div
       className={cn(
-        "flex flex-col rounded-lg border p-3",
-        tone === "forecast" && "border-forecast/50 bg-forecast-soft",
-        tone === "brand" && "border-brand/25 bg-brand-soft",
+        "flex flex-col bg-card px-4 py-3 sm:px-5",
+        tone === "forecast" && "bg-forecast-soft",
+        tone === "brand" && "bg-brand-soft",
       )}
     >
-      <span className={cn("flex items-center gap-1.5 text-xs", tone === "forecast" ? "text-forecast-ink" : "text-muted-foreground")}>
-        <Icon className="size-3.5" aria-hidden /> {label}
-      </span>
+      <span className={cn("text-xs", tone === "forecast" ? "text-forecast-ink" : "text-muted-foreground")}>{label}</span>
       <span className={cn("tabular mt-1 font-semibold tracking-tight", big ? "text-3xl" : "text-xl")}>{value}</span>
       <span className="text-xs text-muted-foreground">{unit}</span>
     </div>
   );
 }
 
-function Saving({ icon: Icon, label, value, note }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string; note: string }) {
+function Saving({ label, value, note }: { icon?: React.ComponentType<{ className?: string }>; label: string; value: string; note: string }) {
   return (
-    <div className="flex flex-col bg-card p-3">
-      <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-        <Icon className="size-3.5" aria-hidden /> {label}
-      </span>
-      <span className="tabular mt-1 text-lg font-semibold">{value}</span>
-      <span className="text-[11px] text-muted-foreground">{note}</span>
+    <div className="flex min-w-0 flex-col">
+      <span className="text-xs text-muted-foreground">{label}</span>
+      <span className="tabular mt-1 text-base font-semibold sm:text-lg">{value}</span>
+      <span className="hidden text-[11px] text-muted-foreground sm:block">{note}</span>
     </div>
   );
 }

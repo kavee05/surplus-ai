@@ -110,7 +110,7 @@ export function DataTable<T>({
 
       <div className="overflow-hidden rounded-xl border bg-card">
         <Table>
-          <TableHeader className="bg-muted/40">
+          <TableHeader className="bg-muted/70">
             {table.getHeaderGroups().map((hg) => (
               <TableRow key={hg.id} className="hover:bg-transparent">
                 {hg.headers.map((h) => {
@@ -155,7 +155,7 @@ export function DataTable<T>({
                   className={cn(onRowClick && "cursor-pointer focus-visible:bg-muted focus-visible:outline-none", rowClassName?.(r.original))}
                 >
                   {r.getVisibleCells().map((c) => (
-                    <TableCell key={c.id} className="px-3 py-2.5">
+                    <TableCell key={c.id} className="px-3 py-2">
                       {flexRender(c.column.columnDef.cell, c.getContext())}
                     </TableCell>
                   ))}

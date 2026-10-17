@@ -77,7 +77,7 @@ export function ExplanationPanel({
         </section>
       )}
 
-      <section aria-label="How sure" className="rounded-lg border bg-muted/40 p-3">
+      <section aria-label="How sure" className="border-l-2 border-info/40 pl-3">
         <div className="flex flex-wrap items-center gap-2">
           <h4 className="text-xs font-medium text-muted-foreground">How sure</h4>
           {!showRecommendation && <CertaintyBadge level={e.certainty.level} />}
