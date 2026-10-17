@@ -51,7 +51,7 @@ export function RadarTimeline({ className, onSelect, ...props }: TimelineProps &
               <p>
                 {fmtNum(m.f.qty)} {m.unit} {m.confirmed ? m.f.status.toLowerCase() : "forecast"} from {fmtDate(m.f.availableFrom)}
               </p>
-              <p>Confidence {m.f.confidence.toFixed(2)}</p>
+              <p>Progress-based score {m.f.confidence.toFixed(2)}</p>
             </TooltipContent>
           </Tooltip>
         )}

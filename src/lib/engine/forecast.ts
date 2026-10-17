@@ -49,7 +49,7 @@ export function forecastForPlan(
     `Ordered ${fmtNum(plan.orderedQty)} ${m.unit} against a BoQ quantity of ${fmtNum(plan.plannedQty)} ${m.unit}.`,
     `With a ${fmtPct(mv.wastageAllowance)} wastage allowance the phase should use ${fmtNum(plan.plannedQty)} × ${fmtNum(1 + mv.wastageAllowance, 2)} = ${fmtNum(needed)} ${m.unit}.`,
     `Expected surplus: ${fmtNum(plan.orderedQty)} − ${fmtNum(needed)} = ${fmtNum(qty)} ${m.unit}.`,
-    `The phase is ${phase.progressPct}% complete, so confidence is ${confidence.toFixed(2)} (it starts at ${g.confidenceMin.toFixed(2)} below ${g.progressLow}% progress and rises to ${g.confidenceMax.toFixed(2)} at ${g.progressHigh}%).`,
+    `The phase is ${phase.progressPct}% complete, so the progress-based score is ${confidence.toFixed(2)} (it starts at ${g.confidenceMin.toFixed(2)} below ${g.progressLow}% progress and rises to ${g.confidenceMax.toFixed(2)} at ${g.progressHigh}%).`,
     `Available from ${fmtDate(phase.plannedEnd)}, the planned end of the phase.`,
   ];
   if (outcome) {

@@ -154,7 +154,7 @@ export function TimelineCore({
                           name: m.name,
                           unit: m.unit,
                           confirmed,
-                          label: `${m.name}: ${fmtNum(f.qty)} ${m.unit} ${confirmed ? f.status.toLowerCase() : "forecast"} at ${site.township}, from ${fmtDate(f.availableFrom)}, ${f.confidence.toFixed(2)} confidence`,
+                          label: `${m.name}: ${fmtNum(f.qty)} ${m.unit} ${confirmed ? f.status.toLowerCase() : "forecast"} at ${site.township}, from ${fmtDate(f.availableFrom)}, progress-based score ${f.confidence.toFixed(2)}`,
                           className: cn(
                             "absolute top-1/2 z-10 grid -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2",
                             confirmed ? "border-success bg-success text-white" : "border-forecast-ink/40",
@@ -215,7 +215,7 @@ export function RadarLegend({ today, className }: { today: string; className?: s
         <span className="h-2.5 w-6 rounded-full border border-dashed border-brand/50 bg-brand-soft" /> Planned phase
       </span>
       <span className="inline-flex items-center gap-1.5">
-        <span className="size-3 rounded-full border border-forecast-ink/40 bg-forecast" /> Forecast surplus (size: quantity, shade: confidence)
+        <span className="size-3 rounded-full border border-forecast-ink/40 bg-forecast" /> Forecast surplus (size: quantity, shade: progress-based score)
       </span>
       <span className="inline-flex items-center gap-1.5">
         <span className="grid size-3 place-items-center rounded-full bg-success" /> Confirmed

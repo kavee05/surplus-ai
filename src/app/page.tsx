@@ -31,7 +31,7 @@ const rc = preOrderCheck(state, { ...HERO_INPUT, conservative: true });
 const impact = impactSummary(state);
 
 const steps = [
-  { icon: Radar, title: "Forecast surplus from purchase plans", body: "For every phase, compare what was ordered with what the bill of quantities needs plus a wastage allowance. The difference is likely surplus, with a confidence that rises as the phase progresses." },
+  { icon: Radar, title: "Forecast surplus from purchase plans", body: "For every phase, compare what was ordered with what the bill of quantities needs plus a wastage allowance. The difference is likely surplus, with an evidence level that rises as the phase progresses." },
   { icon: ShoppingCart, title: "Check before you buy", body: "A buyer enters an item, quantity and date. Logged surplus is used first, then forecast surplus from nearby sites. The answer: reserve this much, order the rest now, and confirm by a set date." },
   { icon: Camera, title: "Log the real surplus by photo", body: "When the phase ends, the site engineer photographs what is left. The AI suggests the item and an estimated quantity; the engineer confirms. The forecast is marked Confirmed or Revised." },
   { icon: Repeat, title: "Transfer and measure", body: "The transfer moves from Matched to Completed, with engineer approval for structural items. Management sees money saved, tonnes diverted and forecast accuracy." },
@@ -144,7 +144,7 @@ export default function Landing() {
               <ul className="mt-6 flex flex-col gap-2.5 text-sm text-white/85">
                 {[
                   "Every number has a “how this was calculated” drawer. No black box.",
-                  "Conservative mode reserves only the confidence-weighted share.",
+                  "Every recommendation shows its evidence, its arithmetic and what is still unknown.",
                   "A decision date says when to confirm the forecast or top up the order.",
                   "Change an assumption on the Settings page and every result updates.",
                 ].map((t) => (
@@ -168,7 +168,7 @@ export default function Landing() {
                   ["City of Elmina Phase 3 ordered", `${fmtNum(plan.orderedQty)} tiles`],
                   ["The plans need, with 5% wastage", `${fmtNum(plan.plannedQty)} × ${(1 + tile.wastageAllowance).toFixed(2)} = ${fmtNum(plan.plannedQty * (1 + tile.wastageAllowance))}`],
                   ["Expected surplus", `${fmtNum(hero.qty)} tiles from ${fmtDate(hero.availableFrom)}`],
-                  [`Confidence at ${state.phases.find((p) => p.id === hero.phaseId)!.progressPct}% progress`, `${hero.confidence.toFixed(2)} (${r.risk} risk)`],
+                  [`Evidence at ${state.phases.find((p) => p.id === hero.phaseId)!.progressPct}% progress`, `Moderate (score ${hero.confidence.toFixed(2)}, not calibrated)`],
                   ["Bandar Bukit Raja needs", `${fmtNum(HERO_INPUT.qty)} tiles by ${fmtDate(HERO_INPUT.neededBy)}`],
                   ["Recommendation", `Reserve ${fmtNum(r.reservedForecast)}, order ${fmtNum(r.orderNow)} now`],
                   ["Conservative mode", `Reserve ${fmtNum(rc.reservedForecast)}, order ${fmtNum(rc.orderNow)} now`],

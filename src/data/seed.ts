@@ -1,4 +1,6 @@
 import type {
+  DecisionRecord,
+  DismissedMatch,
   ForecastOutcome,
   Listing,
   Material,
@@ -56,14 +58,14 @@ export const materials: Material[] = [
 ];
 
 export const phases: Phase[] = [
-  { id: "elm-p3", siteId: "elmina", name: "Phase 3 link homes", start: "2026-03-02", plannedEnd: "2026-11-23", progressPct: 62, status: "active" },
+  { id: "elm-p3", siteId: "elmina", name: "Phase 3 link homes", start: "2026-03-02", plannedEnd: "2026-11-23", progressPct: 62, status: "active", progressAsOf: "2026-10-30" },
   { id: "bbr-2b", siteId: "bbr", name: "Phase 2B terrace homes", start: "2026-12-07", plannedEnd: "2027-09-30", progressPct: 0, status: "planned" },
-  { id: "ser-1c", siteId: "serenia", name: "Phase 1C townhouses", start: "2026-02-02", plannedEnd: "2026-12-14", progressPct: 70, status: "active" },
-  { id: "kle-2", siteId: "kleast", name: "Phase 2 condominium podium", start: "2025-11-03", plannedEnd: "2027-01-31", progressPct: 40, status: "active" },
-  { id: "ph-4a", siteId: "putra", name: "Phase 4A shop offices", start: "2026-01-12", plannedEnd: "2026-12-21", progressPct: 78, status: "active" },
-  { id: "sjcc-t2", siteId: "sjcc", name: "Tower 2 fit-out", start: "2026-06-01", plannedEnd: "2027-02-15", progressPct: 35, status: "active" },
-  { id: "ain-5", siteId: "ainsdale", name: "Phase 5 semi-detached", start: "2026-01-05", plannedEnd: "2026-11-30", progressPct: 85, status: "active" },
-  { id: "nil-3", siteId: "nilai", name: "Phase 3B terrace homes", start: "2026-08-03", plannedEnd: "2027-03-31", progressPct: 20, status: "active" },
+  { id: "ser-1c", siteId: "serenia", name: "Phase 1C townhouses", start: "2026-02-02", plannedEnd: "2026-12-14", progressPct: 70, status: "active", progressAsOf: "2026-10-28" },
+  { id: "kle-2", siteId: "kleast", name: "Phase 2 condominium podium", start: "2025-11-03", plannedEnd: "2027-01-31", progressPct: 40, status: "active", progressAsOf: "2026-09-14" },
+  { id: "ph-4a", siteId: "putra", name: "Phase 4A shop offices", start: "2026-01-12", plannedEnd: "2026-12-21", progressPct: 78, status: "active", progressAsOf: "2026-10-31" },
+  { id: "sjcc-t2", siteId: "sjcc", name: "Tower 2 fit-out", start: "2026-06-01", plannedEnd: "2027-02-15", progressPct: 35, status: "active", progressAsOf: "2026-10-26" },
+  { id: "ain-5", siteId: "ainsdale", name: "Phase 5 semi-detached", start: "2026-01-05", plannedEnd: "2026-11-30", progressPct: 85, status: "active", progressAsOf: "2026-10-29" },
+  { id: "nil-3", siteId: "nilai", name: "Phase 3B terrace homes", start: "2026-08-03", plannedEnd: "2027-03-31", progressPct: 20, status: "active", progressAsOf: "2026-10-20" },
   { id: "ser-2a", siteId: "serenia", name: "Phase 2A link homes", start: "2027-01-11", plannedEnd: "2027-12-31", progressPct: 0, status: "planned" },
   { id: "kle-3", siteId: "kleast", name: "Phase 3 residences", start: "2027-02-01", plannedEnd: "2028-01-31", progressPct: 0, status: "planned" },
   { id: "elm-p2", siteId: "elmina", name: "Phase 2 terrace homes", start: "2025-10-06", plannedEnd: "2026-09-30", progressPct: 100, status: "completed" },
@@ -265,3 +267,29 @@ export const forecastHistory: ForecastOutcome[] = [
 /** What the Elmina engineer logs in the Guided Demo, three weeks later. */
 export const HERO_ACTUAL_QTY = 820;
 export const HERO_FORECAST_ID = "fc-elm-p3-tile";
+
+/** SIMULATED decision history so the activity log is not empty on first load. */
+export const dismissedMatches: DismissedMatch[] = [
+  { needId: "N02", listingId: "L29", reason: "Paver colour batch differs from the Phase 3B specification.", by: "Farah Idris", at: "2026-10-27" },
+];
+
+export const decisionHistory: DecisionRecord[] = [
+  {
+    id: "D-H1", at: "2026-10-20", by: "Hafiz Osman", role: "procurement", kind: "match", subjectId: "N04", subjectLabel: "Need N04, Serenia City",
+    recommendation: "Transfer 24 pcs of water-filled safety barrier from Bandar Bukit Raja to Serenia City.", certainty: "strong", outcome: "accepted", href: "/app/transfers?transfer=T04", simulated: true,
+  },
+  {
+    id: "D-H2", at: "2026-10-24", by: "Hafiz Osman", role: "procurement", kind: "match", subjectId: "N05", subjectLabel: "Need N05, Serenia City",
+    recommendation: "Transfer 120 pcs of porcelain floor tile 600 x 600 from City of Elmina to Serenia City.", certainty: "strong", outcome: "accepted", href: "/app/transfers?transfer=T05", simulated: true,
+  },
+  {
+    id: "D-H3", at: "2026-10-27", by: "Farah Idris", role: "procurement", kind: "match", subjectId: "N02", subjectLabel: "Need N02, Nilai Impian",
+    recommendation: "Transfer 90 m² of interlocking concrete paver from Bandar Ainsdale to Nilai Impian.", certainty: "moderate", outcome: "rejected",
+    reason: "Paver colour batch differs from the Phase 3B specification.", href: "/app/needs?need=N02", simulated: true,
+  },
+  {
+    id: "D-H4", at: "2026-10-28", by: "Ravi Kumar", role: "procurement", kind: "match", subjectId: "N11", subjectLabel: "Need N11, Putra Heights",
+    recommendation: "Transfer 8 pcs of precast U-drain 600 mm from KL East to Putra Heights.", certainty: "tentative", outcome: "accepted",
+    detail: "Sent for engineer approval (structural item).", href: "/app/transfers?transfer=T06", simulated: true,
+  },
+];

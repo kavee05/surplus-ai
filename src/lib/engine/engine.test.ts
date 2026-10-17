@@ -228,3 +228,14 @@ describe("transfer workflow", () => {
     expect(nextStatus({ status: "Matched", requiresApproval: false })).toBeNull();
   });
 });
+
+describe("pre-order check respects a modified hold", () => {
+  it("uses the buyer's held quantity instead of re-expanding to the full forecast", () => {
+    const s = seedState();
+    s.transfers.push(heroReservation(s.today, 700));
+    const r = preOrderCheck(s, { ...HERO_INPUT });
+    expect(r.securedQty).toBe(700);
+    expect(r.reservedForecast).toBe(700);
+    expect(r.orderNow).toBe(300);
+  });
+});

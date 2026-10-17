@@ -1,11 +1,13 @@
 "use client";
 
-import { CalendarClock, Check, Leaf, PackageCheck, Scale, ShoppingCart, Wallet } from "lucide-react";
+import { CalendarClock, Check, Leaf, PackageCheck, Scale, ShoppingCart, ThumbsDown, Wallet } from "lucide-react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Explain } from "@/components/app/explain";
-import { riskTone, StatusBadge } from "@/components/app/status-badge";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { StatusBadge } from "@/components/app/status-badge";
+import { CertaintyBadge } from "@/components/explain/certainty";
+import { DecisionDialog, type DecisionMode } from "@/components/explain/decision-dialog";
+import { ExplanationPanel } from "@/components/explain/explanation-panel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +15,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { HERO_FORECAST_ID, HERO_NEED_ID } from "@/data/seed";
 import { forecastReservation, HERO_TRANSFER_ID } from "@/lib/actions";
-import { materialById, siteName } from "@/lib/engine/context";
+import { makeDecision } from "@/lib/decisions";
+import { materialById } from "@/lib/engine/context";
+import { explainPreOrder } from "@/lib/explain/builders";
 import type { PreOrderInput, PreOrderResult } from "@/lib/engine/preorder";
 import { fmtDate, fmtNum, fmtRm, fmtTonnes } from "@/lib/format";
 import { useNewId, useStore } from "@/lib/store";
@@ -35,9 +39,17 @@ export function PreOrderPanel({
   const reserving = result.forecasts.filter((c) => c.reservedQty > 0);
   const isHero = input.siteId === "bbr" && input.materialId === "tile-porcelain";
 
-  const reserve = () => {
-    for (const c of reserving.filter((x) => x.alreadyReserved === 0)) {
+  const e = useMemo(() => explainPreOrder(result, state), [result, state]);
+  const [dialog, setDialog] = useState<DecisionMode | null>(null);
+  const newHolds = reserving.filter((x) => x.alreadyReserved === 0);
+  const subjectId = `${input.siteId}:${input.phaseId}:${input.materialId}`;
+  const lastDecision = state.decisions.find((d) => d.kind === "preorder" && d.subjectId === subjectId);
+  const subjectLabel = `Pre-Order Check, ${mat.name}`;
+
+  const reserve = (qtyOverride?: number) => {
+    for (const c of newHolds) {
       const heroCase = isHero && c.forecast.id === HERO_FORECAST_ID;
+      const qty = newHolds.length === 1 && qtyOverride ? qtyOverride : c.reservedQty;
       dispatch({
         type: "createTransfer",
         transfer: forecastReservation({
@@ -46,7 +58,7 @@ export function PreOrderPanel({
           fromSiteId: c.forecast.siteId,
           toSiteId: input.siteId,
           materialId: input.materialId,
-          qty: c.reservedQty,
+          qty,
           needId: heroCase ? HERO_NEED_ID : undefined,
           toPhaseId: input.phaseId,
           by: person.name,
@@ -55,9 +67,34 @@ export function PreOrderPanel({
         }),
       });
     }
-    toast.success(`Reserved ${fmtNum(result.reservedForecast)} ${mat.unit} against forecast surplus`, {
-      description: `Order ${fmtNum(result.orderNow)} now. Confirm or top up by ${fmtDate(result.decisionDate)}.`,
+    const modified = newHolds.length === 1 && qtyOverride !== undefined && qtyOverride !== newHolds[0].reservedQty;
+    const held = modified ? qtyOverride! : newHolds.reduce((a, c) => a + c.reservedQty, 0);
+    dispatch({
+      type: "logDecision",
+      decision: makeDecision({
+        e,
+        kind: "preorder",
+        outcome: modified ? "modified" : "accepted",
+        subjectId,
+        subjectLabel,
+        by: person.name,
+        role: state.role,
+        today: state.today,
+        detail: modified ? `Held ${fmtNum(held)} instead of ${fmtNum(newHolds[0].reservedQty)} ${mat.unit}.` : `Held ${fmtNum(held)} ${mat.unit}.`,
+        href: "/app/transfers",
+      }),
     });
+    toast.success(`Held ${fmtNum(held)} ${mat.unit} of forecast surplus`, {
+      description: `This is a hold in Surplus AI only. Place your supplier order for the rest yourself, and confirm or top up by ${fmtDate(result.decisionDate)}.`,
+    });
+  };
+
+  const rejectRec = (reason?: string) => {
+    dispatch({
+      type: "logDecision",
+      decision: makeDecision({ e, kind: "preorder", outcome: "rejected", subjectId, subjectLabel, by: person.name, role: state.role, today: state.today, reason, href: "/app/radar" }),
+    });
+    toast("Recommendation rejected and logged", { description: "Nothing was reserved. See Activity for the record." });
   };
 
   const total = Math.max(1, input.qty);
@@ -66,7 +103,7 @@ export function PreOrderPanel({
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
       {/* Form */}
-      <form data-demo="preorder-form" className="flex flex-col gap-4 rounded-xl border bg-card p-4 shadow-card sm:p-5 lg:col-span-2" onSubmit={(e) => e.preventDefault()} aria-label="Pre-Order Check inputs">
+      <form data-demo="preorder-form" className="flex flex-col gap-4 rounded-xl border bg-card p-4 sm:p-5 lg:sticky lg:top-20 lg:col-span-2 lg:self-start" onSubmit={(e) => e.preventDefault()} aria-label="Pre-Order Check inputs">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
           <Field label="Buying site" id="po-site">
             <Select
@@ -138,7 +175,7 @@ export function PreOrderPanel({
             <Label htmlFor="po-conservative" className="font-medium">
               Conservative mode
             </Label>
-            <p className="mt-0.5 text-xs text-muted-foreground">Reserve only the confidence-weighted quantity (forecast × confidence).</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">Reserve only forecast × progress-based score, leaving room for a smaller surplus.</p>
           </div>
           <Switch id="po-conservative" checked={!!input.conservative} onCheckedChange={(v) => setInput({ ...input, conservative: v })} />
         </div>
@@ -151,14 +188,15 @@ export function PreOrderPanel({
       </form>
 
       {/* Result */}
-      <div data-demo="preorder-result" className="flex flex-col gap-4 rounded-xl border bg-card p-4 shadow-card sm:p-5 lg:col-span-3" aria-live="polite">
-        <div className="flex flex-wrap items-center justify-between gap-2">
+      <div data-demo="preorder-result" className="flex flex-col gap-4 rounded-xl border bg-card p-4 sm:p-5 lg:col-span-3" aria-live="polite">
+        <div className="flex flex-col gap-1.5">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-semibold">Recommendation</h3>
-            {result.risk && <StatusBadge tone={riskTone(result.risk)}>{result.risk} risk, {result.confidence?.toFixed(2)} confidence</StatusBadge>}
+            <h3 className="text-xs font-medium text-muted-foreground">Recommendation</h3>
+            <CertaintyBadge level={e.certainty.level} />
             {input.conservative && <StatusBadge tone="brand">Conservative</StatusBadge>}
           </div>
-          <Explain title="Pre-Order Check, step by step" lines={result.explanation} />
+          <p className="text-[15px] leading-snug font-semibold text-pretty">{e.recommendation}</p>
+          <p className="text-sm text-muted-foreground">{e.outcome}</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -176,9 +214,8 @@ export function PreOrderPanel({
           </div>
         </div>
 
-        {/* Split bar */}
         <div>
-          <div className="flex h-3 overflow-hidden rounded-full bg-muted" role="img" aria-label={`${fmtNum(result.listingQty)} from logged surplus, ${fmtNum(result.reservedForecast)} reserved from forecast, ${fmtNum(result.orderNow)} to order now`}>
+          <div className="flex h-2.5 overflow-hidden rounded-full bg-muted" role="img" aria-label={`${fmtNum(result.listingQty)} from logged surplus, ${fmtNum(result.reservedForecast)} reserved from forecast, ${fmtNum(result.orderNow)} to order now`}>
             <span className="bg-brand" style={{ width: pct(result.listingQty) }} />
             <span className="bg-forecast" style={{ width: pct(result.reservedForecast) }} />
             <span className="bg-[var(--stone-300)]" style={{ width: pct(result.orderNow) }} />
@@ -191,93 +228,81 @@ export function PreOrderPanel({
           </div>
         </div>
 
-        {/* Savings */}
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <Saving icon={Wallet} label="Estimated RM saved" value={fmtRm(result.expected.savedRm)} lines={[...result.fromListings.flatMap((a) => a.savings.explanation), ...reserving.flatMap((c) => c.savings.explanation)]} />
-          <Saving icon={Scale} label="Tonnes diverted" value={fmtTonnes(result.expected.tonnes)} lines={[...result.fromListings.flatMap((a) => a.savings.explanation.slice(3, 4)), ...reserving.flatMap((c) => c.savings.explanation.slice(3, 4))]} />
-          <Saving icon={Leaf} label="CO2e avoided (illustrative)" value={`${fmtNum(result.expected.co2eKg / 1000, 1)} t`} lines={[...result.fromListings.flatMap((a) => a.savings.explanation.slice(4)), ...reserving.flatMap((c) => c.savings.explanation.slice(4))]} />
+        <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-3">
+          <Saving icon={Wallet} label="Estimated saving" value={fmtRm(result.expected.savedRm)} note="Assumed unit cost minus haulage" />
+          <Saving icon={Scale} label="Material reused" value={fmtTonnes(result.expected.tonnes)} note="Quantity × assumed weight" />
+          <Saving icon={Leaf} label="CO2e avoided" value={`${fmtNum(result.expected.co2eKg / 1000, 1)} t`} note="Illustrative carbon factor" />
         </div>
-        <div className="grid grid-cols-2 gap-3 rounded-lg bg-muted/60 p-3 text-sm">
-          <div>
-            <p className="text-xs text-muted-foreground">Best case: full forecast arrives</p>
-            <p className="tabular font-medium">
-              {fmtNum(result.bestCase.qty)} {mat.unit}, {fmtRm(result.bestCase.savedRm)}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs text-muted-foreground">Worst case: forecast × confidence</p>
-            <p className="tabular font-medium">
-              {fmtNum(result.worstCase.qty)} {mat.unit}, {fmtRm(result.worstCase.savedRm)}
-            </p>
-          </div>
-        </div>
-
-        {/* Sources */}
-        {result.forecasts.length > 0 && (
-          <div>
-            <h4 className="mb-2 text-sm font-medium">Ranked forecast sources</h4>
-            <ul className="flex flex-col gap-2">
-              {result.forecasts.map((c) => (
-                <li key={c.forecast.id} className="flex items-center gap-3 rounded-lg border p-3">
-                  <span className="tabular grid size-10 shrink-0 place-items-center rounded-lg bg-forecast-soft text-sm font-semibold text-forecast-ink" title="Score">
-                    {c.score.toFixed(2)}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">
-                      {siteName(state, c.forecast.siteId)}, {fmtNum(c.availableQty)} {mat.unit}
-                    </p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      From {fmtDate(c.forecast.availableFrom)}, {fmtNum(c.distanceKm, 1)} km, {c.forecast.confidence.toFixed(2)} confidence
-                    </p>
-                  </div>
-                  <Explain title={`Score for ${siteName(state, c.forecast.siteId)}`} lines={[...c.explanation, ...c.forecast.explanation]} iconOnly />
-                </li>
-              ))}
-            </ul>
+        {result.reservedForecast > 0 && (
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <p className="text-xs text-muted-foreground">If the full forecast appears</p>
+              <p className="tabular font-medium">
+                {fmtNum(result.bestCase.qty)} {mat.unit}, {fmtRm(result.bestCase.savedRm)}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">If only forecast × score appears</p>
+              <p className="tabular font-medium">
+                {fmtNum(result.worstCase.qty)} {mat.unit}, {fmtRm(result.worstCase.savedRm)}
+              </p>
+            </div>
           </div>
         )}
 
-        {result.exclusions.length > 0 && (
-          <Accordion type="single" collapsible>
-            <AccordionItem value="ex" className="border-b-0">
-              <AccordionTrigger className="py-2 text-sm">Why {result.exclusions.length} other sources were not used</AccordionTrigger>
-              <AccordionContent>
-                <ul className="flex flex-col gap-2">
-                  {result.exclusions.map((e) => (
-                    <li key={e.id} className="flex gap-2 text-sm">
-                      <StatusBadge tone={e.kind === "forecast" ? "forecast" : "neutral"} className="mt-0.5">
-                        {e.kind === "forecast" ? "Forecast" : "Logged"}
-                      </StatusBadge>
-                      <span>
-                        <span className="font-medium">
-                          {siteName(state, e.siteId)}, {fmtNum(e.qty)} {mat.unit}.
-                        </span>{" "}
-                        <span className="text-muted-foreground">{e.reason}</span>
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        )}
+        <div className="border-t pt-4">
+          <h4 className="mb-3 text-sm font-semibold">Why this recommendation</h4>
+          <ExplanationPanel e={e} showRecommendation={false} />
+        </div>
 
-        <div className="flex flex-col gap-2 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-muted-foreground">Estimates from simulated data. Forecasts are not guaranteed.</p>
-          {(reserving.length > 0 || result.securedQty > 0) &&
-            (result.securedQty > 0 ? (
+        <div className="flex flex-col gap-3 border-t pt-4">
+          {lastDecision && (
+            <p className="text-xs text-muted-foreground">
+              Last decision: {lastDecision.outcome} by {lastDecision.by} on {fmtDate(lastDecision.at)}
+              {lastDecision.reason ? `: "${lastDecision.reason}"` : ""}
+              {lastDecision.detail ? `. ${lastDecision.detail}` : ""}{" "}
+              <Link href="/app/activity" className="font-medium text-brand hover:underline">
+                View activity
+              </Link>
+            </p>
+          )}
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end">
+            {newHolds.length > 0 && (
+              <Button variant="outline" onClick={() => setDialog("reject")}>
+                <ThumbsDown aria-hidden /> Reject
+              </Button>
+            )}
+            {result.securedQty > 0 && newHolds.length === 0 ? (
               <Button variant="secondary" asChild data-demo="reserve-button">
                 <Link href="/app/transfers">
-                  <Check aria-hidden /> {fmtNum(result.securedQty)} reserved. View transfer
+                  <Check aria-hidden /> {fmtNum(result.securedQty)} held. View transfer
                 </Link>
               </Button>
-            ) : (
-              <Button onClick={reserve} data-demo="reserve-button">
-                <Scale aria-hidden /> Reserve {fmtNum(result.reservedForecast)} from forecast
+            ) : newHolds.length > 0 ? (
+              <Button onClick={() => setDialog("approve")} data-demo="reserve-button">
+                <Scale aria-hidden /> Review and hold {fmtNum(newHolds.reduce((a, c) => a + c.reservedQty, 0))}
               </Button>
-            ))}
+            ) : null}
+          </div>
         </div>
       </div>
+
+      <DecisionDialog
+        open={dialog !== null}
+        onOpenChange={(o) => !o && setDialog(null)}
+        mode={dialog ?? "approve"}
+        e={e}
+        title={dialog === "reject" ? "Reject this recommendation" : "Hold forecast surplus"}
+        consequence={
+          dialog === "reject"
+            ? "Nothing is held. Your reason is saved so the team can see why."
+            : `This places a hold on another site's forecast surplus inside Surplus AI. It does not place or change any supplier order. Order the remaining ${fmtNum(result.orderNow)} ${mat.unit} through your normal process.`
+        }
+        confirmLabel={dialog === "reject" ? "Reject and log" : "Confirm hold"}
+        quantity={dialog === "approve" && newHolds.length === 1 ? { value: newHolds[0].reservedQty, max: newHolds[0].availableQty, unit: mat.unit, label: "Quantity to hold" } : undefined}
+        quickReasons={["Need date is too tight", "Need one supplier batch for a consistent finish", "Source site has been unreliable", "Plan quantities look wrong"]}
+        onConfirm={({ reason, qty }) => (dialog === "reject" ? rejectRec(reason) : reserve(qty))}
+      />
     </div>
   );
 }
@@ -323,16 +348,14 @@ function Figure({
   );
 }
 
-function Saving({ icon: Icon, label, value, lines }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string; lines: string[] }) {
+function Saving({ icon: Icon, label, value, note }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string; note: string }) {
   return (
-    <div className="flex items-start justify-between gap-2 rounded-lg border p-3">
-      <div className="min-w-0">
-        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Icon className="size-3.5" aria-hidden /> {label}
-        </span>
-        <span className="tabular mt-1 block text-lg font-semibold">{value}</span>
-      </div>
-      <Explain title={label} lines={lines.length ? lines : ["Nothing is reserved, so there is no saving yet."]} iconOnly />
+    <div className="flex flex-col bg-card p-3">
+      <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <Icon className="size-3.5" aria-hidden /> {label}
+      </span>
+      <span className="tabular mt-1 text-lg font-semibold">{value}</span>
+      <span className="text-[11px] text-muted-foreground">{note}</span>
     </div>
   );
 }

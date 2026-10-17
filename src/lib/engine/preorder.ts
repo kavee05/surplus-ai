@@ -194,7 +194,8 @@ export function preOrderCheck(data: EngineData, input: PreOrderInput): PreOrderR
   let confWeighted = 0;
   for (const c of cands) {
     if (remaining <= 0) break;
-    const usable = Math.max(c.alreadyReserved, input.conservative ? Math.floor(c.availableQty * c.forecast.confidence) : c.availableQty);
+    // A hold the buyer already placed (possibly a modified quantity) is respected as-is.
+    const usable = c.alreadyReserved > 0 ? c.alreadyReserved : input.conservative ? Math.floor(c.availableQty * c.forecast.confidence) : c.availableQty;
     const take = Math.min(remaining, usable);
     if (take <= 0) continue;
     c.reservedQty = take;
@@ -212,9 +213,9 @@ export function preOrderCheck(data: EngineData, input: PreOrderInput): PreOrderR
   if (top) {
     const f = top.forecast;
     explanation.push(
-      `Step 2: ${siteName(data, f.siteId)} is forecast to have ${fmtNum(top.availableQty)} ${unit} spare from ${fmtDate(f.availableFrom)} at ${f.confidence.toFixed(2)} confidence (${risk} risk).`,
+      `Step 2: ${siteName(data, f.siteId)} is forecast to have ${fmtNum(top.availableQty)} ${unit} spare from ${fmtDate(f.availableFrom)} with a progress-based score of ${f.confidence.toFixed(2)}.`,
       input.conservative
-        ? `Conservative mode: reserve only the confidence-weighted quantity, ${fmtNum(top.availableQty)} × ${f.confidence.toFixed(2)} = ${fmtNum(top.reservedQty)} ${unit}.`
+        ? `Conservative mode: reserve only forecast × score, ${fmtNum(top.availableQty)} × ${f.confidence.toFixed(2)} = ${fmtNum(top.reservedQty)} ${unit}.`
         : `Reserve min(${fmtNum(listingQty > 0 ? input.qty - listingQty : input.qty)} still needed, ${fmtNum(top.availableQty)} forecast) = ${fmtNum(top.reservedQty)} ${unit}.`,
     );
   } else {

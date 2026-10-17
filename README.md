@@ -42,6 +42,10 @@ Photo analysis runs on the server only (`src/app/api/analyze-photo/route.ts`). T
 
 Never commit `.env.local`. It is already ignored by git.
 
+## Explainable recommendations
+
+Every recommendation, match, forecast, photo suggestion and impact figure comes with a structured explanation built from the same data and logic that produced it: what to do, why, the evidence records, the calculation, the assumptions, the alternatives, and how strong the evidence is. Nothing shows a calibrated probability, because none exists yet. Consequential actions need confirmation, rejections need a reason, and every decision is kept on the Activity page. Details: [docs/EXPLAINABILITY.md](docs/EXPLAINABILITY.md).
+
 ## What is real and what is simulated
 
 | Real | Simulated or assumed |
@@ -56,7 +60,7 @@ Carbon figures are illustrative. Forecasts are estimates.
 
 ## The hero scenario
 
-A procurement officer at Bandar Bukit Raja plans 1,000 floor tiles for Phase 2B, starting 7 Dec 2026 (five weeks after the demo date of 2 Nov 2026). City of Elmina Phase 3 ordered 5,000 tiles against 4,000 planned plus 5% wastage, so about 800 will be left when it finishes on 23 Nov, at 0.70 confidence (62% progress).
+A procurement officer at Bandar Bukit Raja plans 1,000 floor tiles for Phase 2B, starting 7 Dec 2026 (five weeks after the demo date of 2 Nov 2026). City of Elmina Phase 3 ordered 5,000 tiles against 4,000 planned plus 5% wastage, so about 800 will be left when it finishes on 23 Nov, with a progress-based score of 0.70 at 62% progress (moderate evidence, not a calibrated probability).
 
 - Recommendation: reserve 800, order 200 now, confirm by 24 Nov.
 - Conservative mode: reserve 560, order 440.

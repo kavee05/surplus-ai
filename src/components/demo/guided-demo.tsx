@@ -5,8 +5,12 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { createContext, Suspense, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { HERO_INPUT } from "@/data/initial";
 import { HERO_ACTUAL_QTY } from "@/data/seed";
 import { heroListing, heroReservation, HERO_LISTING_ID, HERO_TRANSFER_ID } from "@/lib/actions";
+import { makeDecision } from "@/lib/decisions";
+import { preOrderCheck } from "@/lib/engine/preorder";
+import { explainPreOrder } from "@/lib/explain/builders";
 import { useStore } from "@/lib/store";
 import type { Role } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -33,14 +37,14 @@ const STEPS: Step[] = [
   },
   {
     title: "Radar sees surplus before it exists",
-    body: "City of Elmina Phase 3 ordered 5,000 tiles against 4,200 needed, and it finishes on 23 Nov. That is about 800 spare tiles, forecast at 0.70 confidence. Nobody has logged them yet.",
+    body: "City of Elmina Phase 3 ordered 5,000 tiles against 4,200 needed, and it finishes on 23 Nov. That is about 800 spare tiles. At 62% progress the evidence is moderate (progress-based score 0.70, not a calibrated probability). Nobody has logged them yet.",
     route: "/app/radar",
     role: "procurement",
     target: "radar-timeline",
   },
   {
     title: "Reserve 800, order only 200",
-    body: "The check recommends reserving 800 from the Elmina forecast and ordering 200 now. Confirm by 24 Nov or top up. Turn on Conservative mode to see the cautious version: reserve 560, order 440.",
+    body: "The check recommends reserving 800 from the Elmina forecast and ordering 200 now. Confirm by 24 Nov or top up. Open “Why this recommendation” to see the evidence, the arithmetic and the alternatives. Turn on Conservative mode for the cautious version: reserve 560, order 440.",
     route: "/app/radar",
     role: "procurement",
     target: "preorder-result",
@@ -53,7 +57,14 @@ const STEPS: Step[] = [
     target: "reserve-button",
     action: {
       label: "Reserve 800 tiles",
-      run: ({ state, dispatch }) => dispatch({ type: "createTransfer", transfer: heroReservation(state.today) }),
+      run: ({ state, dispatch, person }) => {
+        dispatch({ type: "createTransfer", transfer: heroReservation(state.today) });
+        const e = explainPreOrder(preOrderCheck(state, { ...HERO_INPUT }), state);
+        dispatch({
+          type: "logDecision",
+          decision: makeDecision({ e, kind: "preorder", outcome: "accepted", subjectId: "bbr:bbr-2b:tile-porcelain", subjectLabel: "Pre-Order Check, Porcelain floor tile 600 x 600", by: person.name, role: state.role, today: state.today, detail: "Held 800 pcs.", href: "/app/transfers" }),
+        });
+      },
       done: ({ state }) => state.transfers.some((t) => t.id === HERO_TRANSFER_ID),
     },
   },

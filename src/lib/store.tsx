@@ -6,7 +6,7 @@ import { DEMO_LATER, HERO_FORECAST_ID, people } from "@/data/seed";
 import { defaultAssumptions, type GlobalAssumptionKey } from "./assumptions";
 import { computeForecasts, recordActual } from "./engine/forecast";
 import { nextStatus } from "./engine/transfers";
-import type { Listing, MaterialValues, Need, OwnershipPolicy, Role, Transfer, TransferEvent } from "./types";
+import type { DecisionRecord, Listing, MaterialValues, Need, OwnershipPolicy, Role, Transfer, TransferEvent } from "./types";
 
 const STORAGE_KEY = "surplus-ai:state";
 
@@ -24,13 +24,17 @@ type Action =
   | { type: "advanceTransfer"; id: string; by: string }
   | { type: "approveTransfer"; id: string; by: string }
   | { type: "offerCommunity"; listingId: string; projectId: string }
-  | { type: "advanceClock" };
+  | { type: "advanceClock" }
+  | { type: "logDecision"; decision: DecisionRecord }
+  | { type: "dismissMatch"; needId: string; listingId: string; reason: string; by: string }
+  | { type: "restoreMatch"; needId: string; listingId: string }
+  | { type: "rejectTransfer"; id: string; by: string; reason: string };
 
 function event(status: TransferEvent["status"], at: string, by: string, note?: string): TransferEvent {
   return { status, at, by, note };
 }
 
-function reducer(s: AppState, a: Action): AppState {
+export function reducer(s: AppState, a: Action): AppState {
   switch (a.type) {
     case "hydrate":
       return a.state;
@@ -135,11 +139,34 @@ function reducer(s: AppState, a: Action): AppState {
         communityOffers: [...s.communityOffers, { listingId: a.listingId, projectId: a.projectId, at: s.today }],
         listings: s.listings.map((l) => (l.id === a.listingId ? { ...l, status: "community" } : l)),
       };
+    case "logDecision":
+      return { ...s, decisions: [a.decision, ...s.decisions] };
+    case "dismissMatch":
+      return {
+        ...s,
+        dismissedMatches: [...s.dismissedMatches.filter((d) => !(d.needId === a.needId && d.listingId === a.listingId)), { needId: a.needId, listingId: a.listingId, reason: a.reason, by: a.by, at: s.today }],
+      };
+    case "restoreMatch":
+      return { ...s, dismissedMatches: s.dismissedMatches.filter((d) => !(d.needId === a.needId && d.listingId === a.listingId)) };
+    case "rejectTransfer": {
+      const t = s.transfers.find((x) => x.id === a.id);
+      if (!t || t.status === "Completed" || t.status === "Cancelled") return s;
+      const transfers = s.transfers.map((x) =>
+        x.id === a.id ? { ...x, status: "Cancelled" as const, history: [...x.history, event("Cancelled", s.today, a.by, a.reason)] } : x,
+      );
+      const stillActive = (needId?: string) => transfers.some((x) => x.needId === needId && x.status !== "Cancelled" && x.status !== "Completed");
+      return {
+        ...s,
+        transfers,
+        listings: t.listingId ? s.listings.map((l) => (l.id === t.listingId && l.status === "reserved" ? { ...l, status: "available" } : l)) : s.listings,
+        needs: t.needId && !stillActive(t.needId) ? s.needs.map((n) => (n.id === t.needId && n.status === "matched" ? { ...n, status: "open" } : n)) : s.needs,
+      };
+    }
     case "advanceClock":
       return {
         ...s,
         today: DEMO_LATER,
-        phases: s.phases.map((p) => (p.id === "elm-p3" ? { ...p, progressPct: 100 } : p)),
+        phases: s.phases.map((p) => (p.id === "elm-p3" ? { ...p, progressPct: 100, progressAsOf: DEMO_LATER } : p)),
       };
   }
 }

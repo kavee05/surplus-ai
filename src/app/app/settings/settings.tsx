@@ -6,7 +6,8 @@ import { useMemo } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/app/page-header";
 import { PageSkeleton } from "@/components/app/page-skeleton";
-import { riskTone, StatusBadge } from "@/components/app/status-badge";
+import { StatusBadge } from "@/components/app/status-badge";
+import { CertaintyBadge } from "@/components/explain/certainty";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,12 +18,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HERO_INPUT } from "@/data/initial";
 import { globalAssumptions, materialAssumptions, type GlobalAssumptionKey } from "@/lib/assumptions";
 import { preOrderCheck } from "@/lib/engine/preorder";
+import { explainPreOrder } from "@/lib/explain/builders";
 import { fmtDate, fmtNum, fmtRm } from "@/lib/format";
 import { useStore } from "@/lib/store";
 import type { MaterialValues, OwnershipPolicy } from "@/lib/types";
 
 const groups: { title: string; description: string; keys: GlobalAssumptionKey[] }[] = [
-  { title: "Forecast confidence", description: "How confidence rises with phase progress, and the risk bands.", keys: ["confidenceMin", "confidenceMax", "progressLow", "progressHigh", "riskHigh", "riskMedium", "confirmTolerancePct"] },
+  { title: "Forecast score", description: "A rule of thumb that rises with phase progress. It is not a calibrated probability; a pilot would back-test it.", keys: ["confidenceMin", "confidenceMax", "progressLow", "progressHigh", "riskHigh", "riskMedium", "confirmTolerancePct"] },
   { title: "Logistics", description: "Distance, timing and haulage.", keys: ["maxHaulKm", "handlingBufferDays", "truckCapacityT", "haulCostRmPerKm"] },
   { title: "Ranking weights", description: "How forecast sources and matches are scored. They should add up to 1.", keys: ["weightCoverage", "weightDistance", "weightTiming", "weightConfidence"] },
   { title: "Alerts and community", description: "When unclaimed surplus is flagged and offered onward.", keys: ["unclaimedAlertDays", "communityOfferDays"] },
@@ -45,6 +47,7 @@ const matFields: { key: keyof MaterialValues; label: string; step: string }[] = 
 export function Settings() {
   const { state, ready, dispatch } = useStore();
   const preview = useMemo(() => preOrderCheck(state, { ...HERO_INPUT }), [state]);
+  const previewE = useMemo(() => explainPreOrder(preview, state), [preview, state]);
   if (!ready) return <PageSkeleton cards={0} />;
   const g = state.assumptions.global;
   const wsum = g.weightCoverage + g.weightDistance + g.weightTiming + g.weightConfidence;
@@ -85,7 +88,7 @@ export function Settings() {
         </span>
         <span>Decide by {fmtDate(preview.decisionDate)}</span>
         <span>Saves about {fmtRm(preview.expected.savedRm)}</span>
-        {preview.risk && <StatusBadge tone={riskTone(preview.risk)}>{preview.risk} risk</StatusBadge>}
+        <CertaintyBadge level={previewE.certainty.level} />
         <Link href="/app/radar" className="font-medium text-brand underline-offset-2 hover:underline sm:ml-auto">
           Open in Radar
         </Link>

@@ -1,18 +1,23 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowLeftRight, ArrowRight, Check, Clock, ShieldCheck } from "lucide-react";
-import { useMemo, useState } from "react";
+import { ArrowLeftRight, ArrowRight, Check, Clock, ShieldCheck, XCircle } from "lucide-react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { DataTable } from "@/components/app/data-table";
 import { EmptyState } from "@/components/app/empty-state";
-import { Explain } from "@/components/app/explain";
 import { PageHeader } from "@/components/app/page-header";
 import { PageSkeleton } from "@/components/app/page-skeleton";
 import { StatusBadge, type Tone } from "@/components/app/status-badge";
+import { DecisionDialog, type DecisionMode } from "@/components/explain/decision-dialog";
+import { ExplanationPanel } from "@/components/explain/explanation-panel";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { HERO_TRANSFER_ID } from "@/lib/actions";
+import { makeDecision } from "@/lib/decisions";
+import { explainTransferImpact } from "@/lib/explain/builders";
 import { materialById, siteName } from "@/lib/engine/context";
 import { siteDistanceKm } from "@/lib/engine/geo";
 import { transferSavings } from "@/lib/engine/impact";
@@ -41,12 +46,18 @@ interface Row {
 }
 
 function statusText(t: Transfer) {
+  if (t.status === "Cancelled") return "Cancelled";
   return t.forecastId && !t.listingId ? "Held on forecast" : t.status;
 }
 
 export function Transfers() {
   const { state, ready } = useStore();
   const [openId, setOpenId] = useState<string | null>(null);
+  const params = useSearchParams();
+  const linked = params.get("transfer");
+  useEffect(() => {
+    if (linked) setOpenId(linked);
+  }, [linked]);
 
   const rows: Row[] = useMemo(
     () =>
@@ -118,7 +129,7 @@ export function Transfers() {
         empty={<EmptyState className="m-4 border-0" icon={ArrowLeftRight} title="No transfers here" description="Match a need to surplus, or reserve forecast surplus in the Radar." />}
       />
       <Sheet open={!!open} onOpenChange={(o) => !o && setOpenId(null)}>
-        <SheetContent className="w-full overflow-y-auto sm:max-w-md">{open && <TransferDetail t={open} />}</SheetContent>
+        <SheetContent className="w-full overflow-y-auto sm:max-w-xl">{open && <TransferDetail t={open} />}</SheetContent>
       </Sheet>
     </>
   );
@@ -130,10 +141,20 @@ function TransferDetail({ t }: { t: Transfer }) {
   const steps = visibleSteps(t);
   const current = steps.indexOf(t.status);
   const action = nextActionLabel(t);
-  const sv = transferSavings(state, t);
+  const e = useMemo(() => explainTransferImpact(t, state), [t, state]);
   const needsEngineer = t.status === "Awaiting approval" && !t.approvedBy;
   const canApprove = state.role === "engineer";
-  const held = t.forecastId && !t.listingId;
+  const held = t.forecastId && !t.listingId && t.status !== "Cancelled";
+  const closed = t.status === "Completed" || t.status === "Cancelled";
+  const [dialog, setDialog] = useState<DecisionMode | null>(null);
+  const subjectLabel = `Transfer ${t.id}, ${m.name}`;
+  const cancelled = t.history.find((h) => h.status === "Cancelled");
+
+  const log = (outcome: "accepted" | "rejected", reason?: string, detail?: string) =>
+    dispatch({
+      type: "logDecision",
+      decision: makeDecision({ e, kind: "transfer-approval", outcome, subjectId: t.id, subjectLabel, by: person.name, role: state.role, today: state.today, reason, detail, href: `/app/transfers?transfer=${t.id}` }),
+    });
 
   return (
     <>
@@ -142,60 +163,73 @@ function TransferDetail({ t }: { t: Transfer }) {
           {fmtNum(t.qty)} {m.unit}, {m.name}
         </SheetTitle>
         <SheetDescription>
-          {siteName(state, t.fromSiteId)} to {siteName(state, t.toSiteId)}, {fmtNum(siteDistanceKm(state.sites, t.fromSiteId, t.toSiteId), 1)} km (approximate)
+          {siteName(state, t.fromSiteId)} to {siteName(state, t.toSiteId)}, {fmtNum(siteDistanceKm(state.sites, t.fromSiteId, t.toSiteId), 1)} km straight-line (approximate)
         </SheetDescription>
       </SheetHeader>
       <div className="flex flex-col gap-5 px-4 pb-6">
         <ol className="flex flex-col gap-0" aria-label="Workflow">
-          {held && (
-            <Step label="Held on forecast" state="current" note="Waiting for the source site to log the actual surplus." />
+          {held && <Step label="Held on forecast" state="current" note="Waiting for the source site to log the actual surplus." />}
+          {t.status === "Cancelled" ? (
+            <Step label="Cancelled" state="current" note={cancelled ? `${fmtDate(cancelled.at)}, ${cancelled.by}${cancelled.note ? `: ${cancelled.note}` : ""}` : undefined} />
+          ) : (
+            steps.map((s, i) => (
+              <Step
+                key={s}
+                label={s === "Awaiting approval" ? "Engineer approval" : s}
+                state={held ? "todo" : i < current || t.status === "Completed" ? "done" : i === current ? "current" : "todo"}
+                note={t.history
+                  .filter((h) => h.status === s || (s === "Awaiting approval" && h.status === "Approved"))
+                  .map((h) => `${fmtDate(h.at)}, ${h.by}`)
+                  .join("; ")}
+              />
+            ))
           )}
-          {steps.map((s, i) => (
-            <Step
-              key={s}
-              label={s === "Awaiting approval" ? "Engineer approval" : s}
-              state={held ? "todo" : i < current || t.status === "Completed" ? "done" : i === current ? "current" : "todo"}
-              note={t.history.filter((h) => h.status === s || (s === "Awaiting approval" && h.status === "Approved")).map((h) => `${fmtDate(h.at)}, ${h.by}`).join("; ")}
-            />
-          ))}
         </ol>
+
+        {held && t.forecastId && (
+          <p className="rounded-lg border bg-muted/40 p-3 text-sm">
+            This hold relies on a forecast, not on logged surplus.{" "}
+            <Link href={`/app/radar?forecast=${t.forecastId}`} className="font-medium text-brand hover:underline">
+              See the forecast and its evidence
+            </Link>
+          </p>
+        )}
 
         {needsEngineer && (
           <div className="flex gap-2 rounded-lg border border-warning/30 bg-warning-soft p-3 text-sm text-warning">
             <ShieldCheck className="mt-0.5 size-4 shrink-0" aria-hidden />
-            Structural item. A site engineer must approve it before it can be reserved.
-            {!canApprove && " Switch to Site engineer in the user menu to approve."}
+            <span>
+              Structural item. A site engineer must approve it before it can be reserved.
+              {!canApprove && " Switch to Site engineer in the user menu to approve or reject."}
+            </span>
           </div>
         )}
 
-        {action && (
-          <Button
-            disabled={needsEngineer && !canApprove}
-            onClick={() => {
-              if (needsEngineer) {
-                dispatch({ type: "approveTransfer", id: t.id, by: person.name });
-                toast.success("Approved and reserved");
-              } else {
-                dispatch({ type: "advanceTransfer", id: t.id, by: person.name });
-                toast.success(`${action}: done`);
-              }
-            }}
-          >
-            {needsEngineer ? <ShieldCheck aria-hidden /> : <ArrowRight aria-hidden />} {action}
-          </Button>
+        {!closed && (
+          <div className="flex flex-col-reverse gap-2 sm:flex-row">
+            <Button variant="ghost" className="sm:flex-1" disabled={needsEngineer && !canApprove} onClick={() => setDialog("reject")}>
+              <XCircle aria-hidden /> {needsEngineer ? "Reject" : "Cancel transfer"}
+            </Button>
+            {action && (
+              <Button
+                className="sm:flex-1"
+                disabled={needsEngineer && !canApprove}
+                onClick={() => {
+                  if (needsEngineer) return setDialog("approve");
+                  dispatch({ type: "advanceTransfer", id: t.id, by: person.name });
+                  toast.success(`${action}: done`);
+                }}
+              >
+                {needsEngineer ? <ShieldCheck aria-hidden /> : <ArrowRight aria-hidden />} {action}
+              </Button>
+            )}
+          </div>
         )}
 
-        <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="rounded-lg bg-muted p-3">
-            <p className="text-xs text-muted-foreground">Estimated saving</p>
-            <p className="tabular mt-1 font-semibold">{fmtRm(sv.savedRm)}</p>
-          </div>
-          <div className="rounded-lg bg-muted p-3">
-            <p className="text-xs text-muted-foreground">Weight diverted</p>
-            <p className="tabular mt-1 font-semibold">{fmtNum(sv.tonnes, 2)} t</p>
-          </div>
-        </div>
-        <Explain title="Transfer saving" lines={sv.explanation} />
+        <section className="border-t pt-4">
+          <h3 className="mb-3 text-sm font-semibold">Impact of this transfer</h3>
+          <ExplanationPanel e={e} />
+        </section>
 
         <div>
           <h3 className="mb-2 text-sm font-medium">History</h3>
@@ -204,7 +238,10 @@ function TransferDetail({ t }: { t: Transfer }) {
               <li key={i} className="flex gap-2">
                 <Clock className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" aria-hidden />
                 <span>
-                  <span className="font-medium">{h.status}</span> <span className="text-muted-foreground">{fmtDate(h.at)}, {h.by}</span>
+                  <span className="font-medium">{h.status}</span>{" "}
+                  <span className="text-muted-foreground">
+                    {fmtDate(h.at)}, {h.by}
+                  </span>
                   {h.note && <span className="block text-xs text-muted-foreground">{h.note}</span>}
                 </span>
               </li>
@@ -212,6 +249,31 @@ function TransferDetail({ t }: { t: Transfer }) {
           </ul>
         </div>
       </div>
+      <DecisionDialog
+        open={dialog !== null}
+        onOpenChange={(o) => !o && setDialog(null)}
+        mode={dialog ?? "approve"}
+        e={e}
+        title={dialog === "reject" ? (needsEngineer ? "Reject this structural transfer" : "Cancel this transfer") : "Approve structural reuse"}
+        consequence={
+          dialog === "reject"
+            ? "The transfer is cancelled and the listing becomes available again. Your reason is saved."
+            : "You confirm, as site engineer, that this structural item is fit for reuse at the receiving site. The transfer moves to Reserved."
+        }
+        confirmLabel={dialog === "reject" ? (needsEngineer ? "Reject and log" : "Cancel transfer") : "Approve and reserve"}
+        quickReasons={needsEngineer ? ["Visible corrosion or damage", "Specification does not match the design", "Needs testing first"] : ["No longer needed", "Sourced elsewhere", "Collection not possible in time"]}
+        onConfirm={({ reason }) => {
+          if (dialog === "reject") {
+            dispatch({ type: "rejectTransfer", id: t.id, by: person.name, reason: reason ?? "No reason given" });
+            log("rejected", reason);
+            toast("Transfer cancelled and logged");
+          } else {
+            dispatch({ type: "approveTransfer", id: t.id, by: person.name });
+            log("accepted", undefined, "Engineer approved structural reuse.");
+            toast.success("Approved and reserved");
+          }
+        }}
+      />
     </>
   );
 }

@@ -5,6 +5,7 @@ import {
   Boxes,
   ClipboardList,
   Flag,
+  History,
   HandHeart,
   LayoutDashboard,
   Radar,
@@ -27,6 +28,7 @@ export const navGroups: { label: string; items: NavItem[] }[] = [
       { href: "/app/surplus", label: "Surplus inventory", icon: Boxes },
       { href: "/app/needs", label: "Needs", icon: ClipboardList },
       { href: "/app/transfers", label: "Transfers", icon: ArrowLeftRight },
+      { href: "/app/activity", label: "Activity", icon: History },
     ],
   },
   {

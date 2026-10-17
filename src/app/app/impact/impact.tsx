@@ -11,10 +11,12 @@ import { PageHeader } from "@/components/app/page-header";
 import { PageSkeleton } from "@/components/app/page-skeleton";
 import { SimulatedBadge } from "@/components/app/simulated-badge";
 import { StatusBadge } from "@/components/app/status-badge";
+import { ProvenanceTag } from "@/components/explain/certainty";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { materialById, siteName } from "@/lib/engine/context";
 import { impactSummary, savingsByCategory, savingsByMonth, savingsByTownship, scaleProjection } from "@/lib/engine/impact";
+import { impactStages } from "@/lib/engine/queue";
 import { fmtDate, fmtNum, fmtPct, fmtRm, fmtShortDate } from "@/lib/format";
 import { useStore } from "@/lib/store";
 
@@ -24,6 +26,8 @@ const rmShort = (v: number) => (v >= 1000 ? `RM ${fmtNum(v / 1000, v >= 10000 ? 
 export function Impact() {
   const { state, ready } = useStore();
   const s = useMemo(() => impactSummary(state), [state]);
+  const stages = useMemo(() => impactStages(state), [state]);
+  const ledger = useMemo(() => [...s.completed].sort((a, b) => (b.t.completedAt ?? "").localeCompare(a.t.completedAt ?? "")), [s]);
   const months = useMemo(() => savingsByMonth(state), [state]);
   const towns = useMemo(() => savingsByTownship(state), [state]);
   const cats = useMemo(() => savingsByCategory(state), [state]);
@@ -52,15 +56,15 @@ export function Impact() {
       />
 
       <div data-demo="impact-kpis" className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border bg-border xl:grid-cols-3">
-        <KpiCard label="RM saved" value={fmtRm(s.savedRm)} hint={`${s.completed.length} completed transfers, net of haulage`} icon={Wallet} tone="success" action={<Explain title="RM saved" iconOnly lines={["Sum over completed transfers of (quantity × unit cost) minus haul cost.", "Unit costs and haul rate come from the assumptions page.", ...s.completed.slice(-3).map((x) => `${materialById(state, x.t.materialId).name}: ${fmtRm(x.s.savedRm)}.`)]} />} />
-        <KpiCard label="Tonnes diverted" value={`${fmtNum(s.tonnes, 1)} t`} hint="Kept out of disposal" icon={Scale} action={<Explain title="Tonnes diverted" iconOnly lines={["Sum over completed transfers of quantity × kg per unit, divided by 1,000."]} />} />
-        <KpiCard label="CO2e avoided (illustrative)" value={`${fmtNum(s.co2eKg / 1000, 1)} t`} hint="Embodied carbon of new material not bought" icon={Leaf} action={<Explain title="CO2e avoided" iconOnly lines={["Sum of kg diverted × kg CO2e per kg for that material.", "Factors are illustrative placeholders to confirm against ICE or supplier EPDs.", "Transport emissions are not deducted."]} />} />
-        <KpiCard label="Active matches" value={fmtNum(s.activeMatches)} hint="Matched, held, reserved or collected" icon={ArrowLeftRight} />
+        <KpiCard label="RM saved, estimated" value={fmtRm(s.savedRm)} hint={`${s.completed.length} completed transfers. Quantities recorded, prices assumed`} icon={Wallet} tone="success" action={<Explain title="RM saved" iconOnly lines={["Sum over completed transfers of (quantity × unit cost) minus haul cost.", "Unit costs and haul rate come from the assumptions page.", ...s.completed.slice(-3).map((x) => `${materialById(state, x.t.materialId).name}: ${fmtRm(x.s.savedRm)}.`)]} />} />
+        <KpiCard label="Material reused" value={`${fmtNum(s.tonnes, 1)} t`} hint="Recorded quantity × assumed weight" icon={Scale} action={<Explain title="Tonnes diverted" iconOnly lines={["Sum over completed transfers of quantity × kg per unit, divided by 1,000."]} />} />
+        <KpiCard label="CO2e avoided (illustrative)" value={`${fmtNum(s.co2eKg / 1000, 1)} t`} hint="Placeholder factors, not a verified reduction" icon={Leaf} action={<Explain title="CO2e avoided" iconOnly lines={["Sum of kg diverted × kg CO2e per kg for that material.", "Factors are illustrative placeholders to confirm against ICE or supplier EPDs.", "Transport emissions are not deducted."]} />} />
+        <KpiCard label="Active transfers" value={fmtNum(s.activeMatches)} hint="Not counted until completed" icon={ArrowLeftRight} />
         <KpiCard label="Unclaimed surplus value" value={fmtRm(s.unclaimedValueRm)} hint={`${s.alerts.length} items over ${state.assumptions.global.unclaimedAlertDays} days`} icon={Boxes} tone="warning" />
         <KpiCard
           label="Forecast accuracy"
           value={s.accuracy === null ? "No data" : fmtPct(s.accuracy)}
-          hint={`${s.confirmed} of ${s.outcomes} confirmed; ${simulatedCount} simulated history`}
+          hint={`${s.outcomes} outcomes, ${simulatedCount} simulated. Too few real ones to rely on`}
           icon={Gauge}
           tone="forecast"
           action={<Explain title="Forecast accuracy" iconOnly lines={["Accuracy = 1 minus the mean absolute percentage error between forecast and actual surplus.", "Each error is capped at 100%.", `${simulatedCount} of ${s.outcomes} records are simulated history, seeded so the panel is not empty.`]} />}
@@ -135,6 +139,88 @@ export function Impact() {
           </ResponsiveContainer>
         </ChartCard>
       </div>
+
+      <section id="ledger" aria-labelledby="ledger-h" className="mt-6 scroll-mt-20 rounded-xl border bg-card">
+        <div className="flex flex-col gap-2 border-b px-4 py-3 sm:flex-row sm:items-end sm:justify-between sm:px-5">
+          <div>
+            <h2 id="ledger-h" className="font-semibold">
+              Impact ledger
+            </h2>
+            <p className="text-xs text-muted-foreground">Every completed transfer behind the totals above. Totals are the column sums, so they reconcile.</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+            <ProvenanceTag provenance="recorded" /> quantity
+            <ProvenanceTag provenance="calculated" /> money and weight
+            <ProvenanceTag provenance="assumption" /> carbon factor
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[760px] text-sm">
+            <thead className="bg-muted/40 text-left text-xs text-muted-foreground">
+              <tr>
+                <th className="px-4 py-2 font-medium sm:px-5">Completed</th>
+                <th className="px-3 py-2 font-medium">Transfer</th>
+                <th className="px-3 py-2 text-right font-medium">Quantity</th>
+                <th className="px-3 py-2 text-right font-medium">Purchase avoided</th>
+                <th className="px-3 py-2 text-right font-medium">Haulage</th>
+                <th className="px-3 py-2 text-right font-medium">Saving</th>
+                <th className="px-3 py-2 text-right font-medium">Weight</th>
+                <th className="px-4 py-2 text-right font-medium sm:px-5">CO2e</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {ledger.map(({ t, s: sv }) => {
+                const m = materialById(state, t.materialId);
+                return (
+                  <tr key={t.id}>
+                    <td className="px-4 py-2 whitespace-nowrap text-muted-foreground sm:px-5">{fmtDate(t.completedAt!)}</td>
+                    <td className="px-3 py-2">
+                      <Link href={`/app/transfers?transfer=${t.id}`} className="font-medium hover:underline">
+                        {m.name}
+                      </Link>
+                      <span className="block text-xs text-muted-foreground">
+                        {siteName(state, t.fromSiteId)} to {siteName(state, t.toSiteId)}
+                      </span>
+                    </td>
+                    <td className="tabular px-3 py-2 text-right whitespace-nowrap">
+                      {fmtNum(t.qty)} {m.unit}
+                    </td>
+                    <td className="tabular px-3 py-2 text-right">{fmtRm(sv.valueRm)}</td>
+                    <td className="tabular px-3 py-2 text-right text-muted-foreground">−{fmtRm(sv.haulRm)}</td>
+                    <td className="tabular px-3 py-2 text-right font-medium">{fmtRm(sv.savedRm)}</td>
+                    <td className="tabular px-3 py-2 text-right">{fmtNum(sv.tonnes, 2)} t</td>
+                    <td className="tabular px-4 py-2 text-right sm:px-5">{fmtNum(sv.co2eKg)} kg</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+            <tfoot className="border-t-2 bg-muted/30 font-semibold">
+              <tr>
+                <td className="px-4 py-2 sm:px-5" colSpan={3}>
+                  Total, {ledger.length} transfers
+                </td>
+                <td className="tabular px-3 py-2 text-right">{fmtRm(ledger.reduce((a, x) => a + x.s.valueRm, 0))}</td>
+                <td className="tabular px-3 py-2 text-right text-muted-foreground">−{fmtRm(ledger.reduce((a, x) => a + x.s.haulRm, 0))}</td>
+                <td className="tabular px-3 py-2 text-right">{fmtRm(s.savedRm)}</td>
+                <td className="tabular px-3 py-2 text-right">{fmtNum(s.tonnes, 1)} t</td>
+                <td className="tabular px-4 py-2 text-right sm:px-5">{fmtNum(s.co2eKg)} kg</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <div className="grid gap-3 border-t px-4 py-3 text-xs text-muted-foreground sm:grid-cols-3 sm:px-5">
+          <p>
+            <span className="font-medium text-foreground">Not counted yet:</span> {fmtNum(stages.inProgress.count)} transfers in progress ({fmtRm(stages.inProgress.savedRm)}) and {fmtNum(stages.onForecast.count)} held on forecast (
+            {fmtRm(stages.onForecast.savedRm)}). They join the ledger only when completed.
+          </p>
+          <p>
+            <span className="font-medium text-foreground">Method:</span> saving = quantity × assumed unit cost − loads × straight-line km × 2 × haul rate. Weight = quantity × assumed kg per unit.
+          </p>
+          <p>
+            <span className="font-medium text-foreground">Carbon:</span> weight × placeholder factor per material, transport not deducted. Illustrative only, not a verified reduction.
+          </p>
+        </div>
+      </section>
 
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-5">
         <Card className="lg:col-span-2">

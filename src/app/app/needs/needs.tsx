@@ -1,16 +1,19 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { ClipboardList, Plus, Radar, SearchX } from "lucide-react";
+import { Check, ChevronDown, ClipboardList, Plus, Radar, SearchX, ThumbsDown } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { DataTable } from "@/components/app/data-table";
 import { EmptyState } from "@/components/app/empty-state";
-import { Explain } from "@/components/app/explain";
 import { PageHeader } from "@/components/app/page-header";
 import { PageSkeleton } from "@/components/app/page-skeleton";
 import { StatusBadge, type Tone } from "@/components/app/status-badge";
+import { CertaintyBadge } from "@/components/explain/certainty";
+import { DecisionDialog, type DecisionMode } from "@/components/explain/decision-dialog";
+import { ExplanationPanel } from "@/components/explain/explanation-panel";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -18,10 +21,13 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { materialById, siteName } from "@/lib/engine/context";
-import { matchNeed } from "@/lib/engine/matching";
+import { makeDecision } from "@/lib/decisions";
+import { matchNeed, type Match } from "@/lib/engine/matching";
+import { explainMatch } from "@/lib/explain/builders";
 import { addDays, fmtDate, fmtNum, fmtRm } from "@/lib/format";
 import { useNewId, useStore } from "@/lib/store";
 import type { Need } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 const needTone: Record<Need["status"], Tone> = { open: "warning", matched: "brand", fulfilled: "success" };
 const needLabel: Record<Need["status"], string> = { open: "Open", matched: "Matched", fulfilled: "Fulfilled" };
@@ -39,11 +45,16 @@ export function Needs() {
   const { state, ready } = useStore();
   const [openId, setOpenId] = useState<string | null>(null);
   const [posting, setPosting] = useState(false);
+  const params = useSearchParams();
+  const linked = params.get("need");
+  useEffect(() => {
+    if (linked) setOpenId(linked);
+  }, [linked]);
 
   const rows: Row[] = useMemo(
     () =>
       state.needs.map((n) => {
-        const r = n.status === "open" ? matchNeed(state, n) : { matches: [] };
+        const r = n.status === "open" ? { matches: matchNeed(state, n).matches.filter((x) => !state.dismissedMatches.some((d) => d.needId === n.id && d.listingId === x.listing.id)) } : { matches: [] };
         return {
           n,
           item: materialById(state, n.materialId).name,
@@ -120,7 +131,7 @@ export function Needs() {
       />
       <PostNeedDialog open={posting} onOpenChange={setPosting} onPosted={(id) => setOpenId(id)} />
       <Sheet open={!!openNeed} onOpenChange={(o) => !o && setOpenId(null)}>
-        <SheetContent className="w-full overflow-y-auto sm:max-w-lg">{openNeed && <NeedDetail need={openNeed} onDone={() => setOpenId(null)} />}</SheetContent>
+        <SheetContent className="w-full overflow-y-auto sm:max-w-xl">{openNeed && <NeedDetail need={openNeed} onDone={() => setOpenId(null)} />}</SheetContent>
       </Sheet>
     </>
   );
@@ -130,8 +141,65 @@ function NeedDetail({ need, onDone }: { need: Need; onDone: () => void }) {
   const { state, dispatch, person } = useStore();
   const newId = useNewId();
   const m = materialById(state, need.materialId);
-  const { matches, excluded } = useMemo(() => matchNeed(state, need), [state, need]);
-  const transfers = state.transfers.filter((t) => t.needId === need.id);
+  const { matches: all, excluded } = useMemo(() => matchNeed(state, need), [state, need]);
+  const dismissed = state.dismissedMatches.filter((d) => d.needId === need.id);
+  const matches = all.filter((x) => !dismissed.some((d) => d.listingId === x.listing.id));
+  const transfers = state.transfers.filter((t) => t.needId === need.id && t.status !== "Cancelled");
+  const [expanded, setExpanded] = useState<string | null>(matches[0]?.listing.id ?? null);
+  const [dialog, setDialog] = useState<{ mode: DecisionMode; listingId: string } | null>(null);
+  const active = dialog ? matches.find((x) => x.listing.id === dialog.listingId) : undefined;
+  const activeE = active ? explainMatch(active, need, matches, state) : null;
+  const subjectLabel = `Need ${need.id}, ${siteName(state, need.siteId)}`;
+
+  const approve = (x: Match, qty: number) => {
+    const e = explainMatch(x, need, matches, state);
+    const tid = newId("T");
+    dispatch({
+      type: "createTransfer",
+      transfer: {
+        id: tid,
+        listingId: x.listing.id,
+        needId: need.id,
+        fromSiteId: x.listing.siteId,
+        toSiteId: need.siteId,
+        materialId: x.listing.materialId,
+        qty,
+        status: "Matched",
+        requiresApproval: x.needsApproval,
+        createdAt: state.today,
+        history: [{ status: "Matched", at: state.today, by: person.name, note: `Approved from the ranked match list (${e.certainty.level} evidence).` }],
+      },
+    });
+    dispatch({
+      type: "logDecision",
+      decision: makeDecision({
+        e,
+        kind: "match",
+        outcome: qty === x.qty ? "accepted" : "modified",
+        subjectId: need.id,
+        subjectLabel,
+        by: person.name,
+        role: state.role,
+        today: state.today,
+        detail: qty === x.qty ? (x.needsApproval ? "Sent for engineer approval (structural item)." : undefined) : `Matched ${fmtNum(qty)} instead of ${fmtNum(x.qty)} ${m.unit}.`,
+        href: `/app/transfers?transfer=${tid}`,
+      }),
+    });
+    toast.success(`Matched ${fmtNum(qty)} ${m.unit} from ${siteName(state, x.listing.siteId)}`, {
+      description: x.needsApproval ? "Next: a site engineer approves it on the Transfers page." : "Next: reserve it on the Transfers page.",
+    });
+    onDone();
+  };
+
+  const reject = (x: Match, reason: string) => {
+    const e = explainMatch(x, need, matches, state);
+    dispatch({ type: "dismissMatch", needId: need.id, listingId: x.listing.id, reason, by: person.name });
+    dispatch({
+      type: "logDecision",
+      decision: makeDecision({ e, kind: "match", outcome: "rejected", subjectId: need.id, subjectLabel, by: person.name, role: state.role, today: state.today, reason, href: `/app/needs?need=${need.id}` }),
+    });
+    toast("Match rejected and logged", { description: "It is hidden from this need. You can restore it below." });
+  };
 
   return (
     <>
@@ -150,14 +218,15 @@ function NeedDetail({ need, onDone }: { need: Need; onDone: () => void }) {
         </div>
         {transfers.length > 0 && (
           <div className="rounded-lg border bg-muted/50 p-3 text-sm">
-            {transfers.length} transfer{transfers.length > 1 ? "s" : ""} in progress.{" "}
-            <Link href="/app/transfers" className="font-medium text-brand underline-offset-2 hover:underline">
-              Open Transfers
+            {transfers.length} transfer{transfers.length > 1 ? "s" : ""} in progress for this need.{" "}
+            <Link href={`/app/transfers?transfer=${transfers[0].id}`} className="font-medium text-brand underline-offset-2 hover:underline">
+              Open transfer
             </Link>
           </div>
         )}
         <div>
-          <h3 className="mb-2 text-sm font-medium">Ranked matches from logged surplus</h3>
+          <h3 className="mb-1 text-sm font-semibold">Ranked matches from logged surplus</h3>
+          <p className="mb-3 text-xs text-muted-foreground">Ranked by a fixed formula on coverage, distance, timing and condition. Nothing moves until you approve.</p>
           {matches.length === 0 ? (
             <EmptyState
               icon={SearchX}
@@ -173,73 +242,115 @@ function NeedDetail({ need, onDone }: { need: Need; onDone: () => void }) {
             />
           ) : (
             <ol className="flex flex-col gap-2">
-              {matches.map((x, i) => (
-                <li key={x.listing.id} className="rounded-lg border p-3">
-                  <div className="flex items-start gap-3">
-                    <span className="tabular grid size-10 shrink-0 place-items-center rounded-lg bg-brand-soft text-sm font-semibold text-brand-strong">{x.score.toFixed(2)}</span>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium">
-                        {i === 0 && <span className="mr-1.5 text-brand">Best match.</span>}
-                        {siteName(state, x.listing.siteId)}, {fmtNum(x.listing.qty)} {materialById(state, x.listing.materialId).unit}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {x.exactItem ? "Same item" : `Substitute: ${materialById(state, x.listing.materialId).name}`}, {fmtNum(x.distanceKm, 1)} km, {x.listing.condition}, saves about {fmtRm(x.savings.savedRm)}
-                      </p>
+              {matches.map((x, i) => {
+                const e = explainMatch(x, need, matches, state);
+                const open = expanded === x.listing.id;
+                return (
+                  <li key={x.listing.id} className={cn("rounded-lg border", i === 0 && "border-brand/40")}>
+                    <div className="flex items-start gap-3 p-3">
+                      <span className="tabular w-8 shrink-0 pt-0.5 text-xs font-semibold text-muted-foreground" title="Rank">
+                        #{i + 1}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <p className="text-sm font-medium">{siteName(state, x.listing.siteId)}</p>
+                          <CertaintyBadge level={e.certainty.level} />
+                        </div>
+                        <p className="mt-0.5 text-xs text-muted-foreground">
+                          {fmtNum(x.qty)} of {fmtNum(x.listing.qty)} {materialById(state, x.listing.materialId).unit}
+                          {x.exactItem ? "" : `, substitute: ${materialById(state, x.listing.materialId).name}`}, {fmtNum(x.distanceKm, 1)} km, {x.listing.condition}, saves about {fmtRm(x.savings.savedRm)}
+                        </p>
+                        <button
+                          type="button"
+                          aria-expanded={open}
+                          onClick={() => setExpanded(open ? null : x.listing.id)}
+                          className="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-brand hover:underline"
+                        >
+                          <ChevronDown className={cn("size-3.5 transition-transform", open && "rotate-180")} aria-hidden />
+                          {open ? "Hide reasoning" : "Why this match"}
+                        </button>
+                      </div>
                     </div>
-                    <Explain title="Why this match" lines={[...x.explanation, ...x.savings.explanation]} iconOnly />
-                  </div>
-                  {need.status === "open" && (
-                    <Button
-                      size="sm"
-                      variant={i === 0 ? "default" : "outline"}
-                      className="mt-3 w-full"
-                      onClick={() => {
-                        dispatch({
-                          type: "createTransfer",
-                          transfer: {
-                            id: newId("T"),
-                            listingId: x.listing.id,
-                            needId: need.id,
-                            fromSiteId: x.listing.siteId,
-                            toSiteId: need.siteId,
-                            materialId: x.listing.materialId,
-                            qty: x.qty,
-                            status: "Matched",
-                            requiresApproval: x.needsApproval,
-                            createdAt: state.today,
-                            history: [{ status: "Matched", at: state.today, by: person.name }],
-                          },
-                        });
-                        toast.success(`Matched ${fmtNum(x.qty)} ${m.unit} from ${siteName(state, x.listing.siteId)}`, {
-                          description: x.needsApproval ? "Next: engineer approval." : "Next: reserve it on the Transfers page.",
-                        });
-                        onDone();
-                      }}
-                    >
-                      Match {fmtNum(x.qty)} {m.unit}
-                    </Button>
-                  )}
-                </li>
-              ))}
+                    {open && (
+                      <div className="border-t px-3 pt-3 pb-1">
+                        <p className="mb-3 text-sm font-medium">{e.recommendation}</p>
+                        <p className="-mt-2 mb-3 text-sm text-muted-foreground">{e.outcome}</p>
+                        <ExplanationPanel e={e} showRecommendation={false} />
+                      </div>
+                    )}
+                    {need.status === "open" && (
+                      <div className="flex gap-2 border-t p-2.5">
+                        <Button size="sm" variant="ghost" className="flex-1" onClick={() => setDialog({ mode: "reject", listingId: x.listing.id })}>
+                          <ThumbsDown aria-hidden /> Reject
+                        </Button>
+                        <Button size="sm" variant={i === 0 ? "default" : "outline"} className="flex-1" onClick={() => setDialog({ mode: "approve", listingId: x.listing.id })}>
+                          <Check aria-hidden /> Approve match
+                        </Button>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
             </ol>
           )}
         </div>
+        {dismissed.length > 0 && (
+          <div>
+            <h3 className="mb-2 text-sm font-medium">Rejected matches</h3>
+            <ul className="flex flex-col gap-2 text-sm">
+              {dismissed.map((d) => {
+                const l = state.listings.find((x) => x.id === d.listingId);
+                return (
+                  <li key={d.listingId} className="flex items-start justify-between gap-3 rounded-lg border border-dashed p-2.5">
+                    <div className="min-w-0">
+                      <p className="font-medium">{l ? `${siteName(state, l.siteId)}, ${fmtNum(l.qty)} ${materialById(state, l.materialId).unit}` : d.listingId}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Rejected by {d.by} on {fmtDate(d.at)}: {d.reason}
+                      </p>
+                    </div>
+                    <Button size="sm" variant="ghost" onClick={() => dispatch({ type: "restoreMatch", needId: need.id, listingId: d.listingId })}>
+                      Restore
+                    </Button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
         {excluded.length > 0 && (
           <div>
-            <h3 className="mb-2 text-sm font-medium">Not used</h3>
+            <h3 className="mb-2 text-sm font-medium">Ruled out by the filters</h3>
             <ul className="flex flex-col gap-1.5 text-sm">
-              {excluded.map((e) => (
-                <li key={e.listing.id} className="text-muted-foreground">
+              {excluded.map((ex) => (
+                <li key={ex.listing.id} className="text-muted-foreground">
                   <span className="font-medium text-foreground">
-                    {siteName(state, e.listing.siteId)}, {fmtNum(e.listing.qty)} {materialById(state, e.listing.materialId).unit}:
+                    {siteName(state, ex.listing.siteId)}, {fmtNum(ex.listing.qty)} {materialById(state, ex.listing.materialId).unit}:
                   </span>{" "}
-                  {e.reason}
+                  {ex.reason}
                 </li>
               ))}
             </ul>
           </div>
         )}
       </div>
+      {active && activeE && dialog && (
+        <DecisionDialog
+          open
+          onOpenChange={(o) => !o && setDialog(null)}
+          mode={dialog.mode}
+          e={activeE}
+          title={dialog.mode === "reject" ? "Reject this match" : "Approve this match"}
+          consequence={
+            dialog.mode === "reject"
+              ? "The listing stays available to other sites. Your reason is saved."
+              : `Creates a transfer from ${siteName(state, active.listing.siteId)} and marks the listing reserved in Surplus AI.${active.needsApproval ? " A site engineer must approve it before it is reserved." : ""} No truck is booked.`
+          }
+          confirmLabel={dialog.mode === "reject" ? "Reject and log" : "Approve match"}
+          quantity={dialog.mode === "approve" ? { value: active.qty, max: Math.min(active.listing.qty, need.qty), unit: m.unit, label: "Quantity to transfer" } : undefined}
+          quickReasons={["Wrong specification or finish", "Condition not acceptable", "Too far for our haulier", "Already sourced elsewhere"]}
+          onConfirm={({ reason, qty }) => (dialog.mode === "reject" ? reject(active, reason ?? "No reason given") : approve(active, qty ?? active.qty))}
+        />
+      )}
     </>
   );
 }

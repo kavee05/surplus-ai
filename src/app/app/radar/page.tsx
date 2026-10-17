@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import { PageSkeleton } from "@/components/app/page-skeleton";
 import { RadarView } from "./radar-view";
 
 export const metadata: Metadata = {
@@ -7,5 +9,9 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <RadarView />;
+  return (
+    <Suspense fallback={<PageSkeleton cards={0} />}>
+      <RadarView />
+    </Suspense>
+  );
 }

@@ -25,7 +25,7 @@ export function HeroVisual() {
       <div className="p-3 sm:p-4">
         <RadarTimelineStatic data={state} forecasts={forecasts} materialId="tile-porcelain" need={HERO_INPUT} highlightForecastId={HERO_FORECAST_ID} from="2026-10-01" to="2027-02-28" compact className="rounded-lg" />
         <p className="mt-2 text-xs text-muted-foreground">
-          City of Elmina Phase 3 should finish on {fmtDate(hero.availableFrom)} with about {fmtNum(hero.qty)} tiles spare ({hero.confidence.toFixed(2)} confidence). The diamond is the
+          City of Elmina Phase 3 should finish on {fmtDate(hero.availableFrom)} with about {fmtNum(hero.qty)} tiles spare (moderate evidence). The diamond is the
           Bandar Bukit Raja need date.
         </p>
       </div>

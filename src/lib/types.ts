@@ -28,6 +28,8 @@ export interface Phase {
   start: ISODate;
   plannedEnd: ISODate;
   progressPct: number;
+  /** When progress was last reported by the site (simulated). */
+  progressAsOf?: ISODate;
   status: PhaseStatus;
 }
 
@@ -148,3 +150,33 @@ export interface Forecast {
 }
 
 export type OwnershipPolicy = "sdp" | "contractor" | "shared";
+
+export type DecisionKind = "preorder" | "match" | "photo" | "transfer-approval";
+export type DecisionOutcome = "accepted" | "modified" | "rejected";
+
+/** One human decision on a system recommendation, kept as an audit trail. */
+export interface DecisionRecord {
+  id: string;
+  at: ISODate;
+  by: string;
+  role: Role;
+  kind: DecisionKind;
+  subjectId: string;
+  subjectLabel: string;
+  /** The recommendation exactly as it was shown when the decision was made. */
+  recommendation: string;
+  certainty: "strong" | "moderate" | "tentative" | "insufficient";
+  outcome: DecisionOutcome;
+  detail?: string;
+  reason?: string;
+  href?: string;
+  simulated?: boolean;
+}
+
+export interface DismissedMatch {
+  needId: string;
+  listingId: string;
+  reason: string;
+  by: string;
+  at: ISODate;
+}

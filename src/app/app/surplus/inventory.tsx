@@ -4,8 +4,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Boxes, Camera, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
-import { toast } from "sonner";
+import { useEffect, useMemo, useState } from "react";
 import { DataTable } from "@/components/app/data-table";
 import { EmptyState } from "@/components/app/empty-state";
 import { KpiCard } from "@/components/app/kpi-card";
@@ -19,7 +18,7 @@ import { materialById, siteName } from "@/lib/engine/context";
 import { listingAgeDays, listingValueRm } from "@/lib/engine/impact";
 import { matchNeed } from "@/lib/engine/matching";
 import { fmtDate, fmtNum, fmtRm } from "@/lib/format";
-import { useNewId, useStore } from "@/lib/store";
+import { useStore } from "@/lib/store";
 import type { Listing } from "@/lib/types";
 
 export const listingTone: Record<Listing["status"], Tone> = { available: "success", reserved: "brand", transferred: "neutral", community: "info" };
@@ -39,6 +38,12 @@ export function Inventory() {
   const { state, ready } = useStore();
   const params = useSearchParams();
   const [open, setOpen] = useState<Listing | null>(null);
+  const linked = params.get("listing");
+  useEffect(() => {
+    if (!linked || !ready) return;
+    const l = state.listings.find((x) => x.id === linked);
+    if (l) setOpen(l);
+  }, [linked, ready, state.listings]);
 
   const rows: Row[] = useMemo(
     () =>
@@ -152,8 +157,7 @@ export function Inventory() {
 }
 
 function ListingDetail({ listing, onDone }: { listing: Listing; onDone: () => void }) {
-  const { state, dispatch, person } = useStore();
-  const newId = useNewId();
+  const { state } = useStore();
   const m = materialById(state, listing.materialId);
   const sample = samples.find((s) => s.id === listing.sampleId);
   const outcome = listing.forecastId ? state.outcomes.find((o) => o.forecastId === listing.forecastId) : undefined;
@@ -227,30 +231,10 @@ function ListingDetail({ listing, onDone }: { listing: Listing; onDone: () => vo
                         By {fmtDate(n.neededBy)}, {fmtNum(match!.distanceKm, 1)} km, score {match!.score.toFixed(2)}
                       </p>
                     </div>
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        dispatch({
-                          type: "createTransfer",
-                          transfer: {
-                            id: newId("T"),
-                            listingId: listing.id,
-                            needId: n.id,
-                            fromSiteId: listing.siteId,
-                            toSiteId: n.siteId,
-                            materialId: listing.materialId,
-                            qty: match!.qty,
-                            status: "Matched",
-                            requiresApproval: m.structural,
-                            createdAt: state.today,
-                            history: [{ status: "Matched", at: state.today, by: person.name }],
-                          },
-                        });
-                        toast.success("Matched. Track it on the Transfers page.");
-                        onDone();
-                      }}
-                    >
-                      Match
+                    <Button size="sm" variant="outline" asChild>
+                      <Link href={`/app/needs?need=${n.id}`} onClick={onDone}>
+                        Review match
+                      </Link>
                     </Button>
                   </li>
                 ))}

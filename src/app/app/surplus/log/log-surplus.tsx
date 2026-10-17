@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Check, ImageUp, Loader2, ShieldAlert, Sparkles } from "lucide-react";
+import { Camera, Check, ChevronDown, ImageUp, Loader2, ShieldAlert, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/app/page-header";
 import { PageSkeleton } from "@/components/app/page-skeleton";
 import { StatusBadge } from "@/components/app/status-badge";
+import { CertaintyBadge } from "@/components/explain/certainty";
+import { ExplanationPanel } from "@/components/explain/explanation-panel";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -19,8 +21,10 @@ import { HERO_LISTING_ID } from "@/lib/actions";
 import { samples } from "@/lib/ai/samples";
 import type { AnalyzeResponse } from "@/lib/ai/schema";
 import { materialById, siteName } from "@/lib/engine/context";
+import { makeDecision } from "@/lib/decisions";
 import { recordActual } from "@/lib/engine/forecast";
-import { fmtNum, fmtPct } from "@/lib/format";
+import { explainPhoto } from "@/lib/explain/builders";
+import { fmtNum } from "@/lib/format";
 import { useForecasts, useNewId, useStore } from "@/lib/store";
 import type { Condition } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -62,6 +66,8 @@ export function LogSurplus() {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [checked, setChecked] = useState(false);
   const [mode, setMode] = useState<"demo" | "live">("demo");
+  const [showWhy, setShowWhy] = useState(false);
+  const aiExplanation = useMemo(() => (ai ? explainPhoto(ai.result, ai.mode, state) : null), [ai, state]);
 
   useEffect(() => {
     fetch("/api/analyze-photo")
@@ -114,10 +120,11 @@ export function LogSurplus() {
     if (!draft || !checked || draft.qty <= 0) return;
     const fc = draft.forecastId !== "none" ? forecasts.find((f) => f.id === draft.forecastId) : undefined;
     const isHero = draft.forecastId === HERO_FORECAST_ID;
+    const listingId = isHero ? HERO_LISTING_ID : newId("L");
     dispatch({
       type: "addListing",
       listing: {
-        id: isHero ? HERO_LISTING_ID : newId("L"),
+        id: listingId,
         siteId: draft.siteId,
         phaseId: draft.phaseId || undefined,
         materialId: draft.materialId,
@@ -133,6 +140,28 @@ export function LogSurplus() {
         aiEstimated: !!ai && ai.result.materialId !== "unknown",
       },
     });
+    if (ai && ai.result.materialId !== "unknown") {
+      const e = explainPhoto(ai.result, ai.mode, state);
+      const changes: string[] = [];
+      if (draft.materialId !== ai.result.materialId) changes.push(`item changed to ${materialById(state, draft.materialId).name}`);
+      if (draft.qty !== Math.round(ai.result.estimatedQty)) changes.push(`quantity ${fmtNum(ai.result.estimatedQty)} to ${fmtNum(draft.qty)}`);
+      if (draft.condition !== ai.result.condition) changes.push(`condition ${ai.result.condition} to ${draft.condition}`);
+      dispatch({
+        type: "logDecision",
+        decision: makeDecision({
+          e,
+          kind: "photo",
+          outcome: changes.length ? "modified" : "accepted",
+          subjectId: listingId,
+          subjectLabel: `Photo log, ${siteName(state, draft.siteId)}`,
+          by: person.name,
+          role: state.role,
+          today: state.today,
+          detail: changes.length ? `Edited before saving: ${changes.join("; ")}.` : "Saved as suggested after on-site check.",
+          href: `/app/surplus?listing=${listingId}`,
+        }),
+      });
+    }
     if (fc) {
       const o = recordActual(fc, draft.qty, state.today, state.assumptions.global.confirmTolerancePct);
       const diff = draft.qty - fc.qty;
@@ -248,15 +277,33 @@ export function LogSurplus() {
                 save();
               }}
             >
-              {ai && (
-                <div className="flex gap-3 rounded-lg border border-info/30 bg-info-soft p-3 text-sm">
-                  <Sparkles className="mt-0.5 size-4 shrink-0 text-info" aria-hidden />
-                  <div className="min-w-0">
-                    <p className="font-medium text-info">
-                      {ai.result.materialId === "unknown" ? "No suggestion" : `AI suggestion, ${fmtPct(ai.result.confidence)} confidence`}
-                    </p>
-                    <p className="text-foreground/80">{ai.result.notes}</p>
+              {ai && aiExplanation && (
+                <div className="rounded-lg border border-info/30 bg-info-soft/60 text-sm">
+                  <div className="flex gap-3 p-3">
+                    <Sparkles className="mt-0.5 size-4 shrink-0 text-info" aria-hidden />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="font-medium">{ai.mode === "live" ? "AI suggestion" : "Demo suggestion"}</p>
+                        <CertaintyBadge level={aiExplanation.certainty.level} />
+                      </div>
+                      <p className="mt-0.5">{aiExplanation.recommendation}</p>
+                      {aiExplanation.certainty.score && <p className="mt-0.5 text-xs text-muted-foreground">{aiExplanation.certainty.score.label}</p>}
+                      <button
+                        type="button"
+                        aria-expanded={showWhy}
+                        onClick={() => setShowWhy((v) => !v)}
+                        className="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-brand hover:underline"
+                      >
+                        <ChevronDown className={cn("size-3.5 transition-transform", showWhy && "rotate-180")} aria-hidden />
+                        {showWhy ? "Hide details" : "How this was produced"}
+                      </button>
+                    </div>
                   </div>
+                  {showWhy && (
+                    <div className="border-t border-info/20 bg-card p-3">
+                      <ExplanationPanel e={aiExplanation} showRecommendation={false} />
+                    </div>
+                  )}
                 </div>
               )}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

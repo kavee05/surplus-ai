@@ -1,6 +1,6 @@
 import { defaultAssumptions } from "@/lib/assumptions";
 import type { EngineData } from "@/lib/engine/context";
-import type { OwnershipPolicy, Role } from "@/lib/types";
+import type { DecisionRecord, DismissedMatch, OwnershipPolicy, Role } from "@/lib/types";
 import * as seed from "./seed";
 
 export interface AppState extends EngineData {
@@ -8,9 +8,11 @@ export interface AppState extends EngineData {
   role: Role;
   ownership: OwnershipPolicy;
   communityOffers: { listingId: string; projectId: string; at: string }[];
+  decisions: DecisionRecord[];
+  dismissedMatches: DismissedMatch[];
 }
 
-export const STATE_VERSION = 1;
+export const STATE_VERSION = 2;
 
 /** A fresh copy of the simulated seed data. */
 export function seedState(): AppState {
@@ -29,6 +31,8 @@ export function seedState(): AppState {
     role: "procurement" as Role,
     ownership: "shared" as OwnershipPolicy,
     communityOffers: [],
+    decisions: seed.decisionHistory,
+    dismissedMatches: seed.dismissedMatches,
   });
 }
 
