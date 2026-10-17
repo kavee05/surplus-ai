@@ -3,13 +3,13 @@
 import { Camera, Check, ChevronDown, ImageUp, Loader2, ShieldAlert, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/app/page-header";
 import { PageSkeleton } from "@/components/app/page-skeleton";
-import { StatusBadge } from "@/components/app/status-badge";
 import { CertaintyBadge } from "@/components/explain/certainty";
 import { ExplanationPanel } from "@/components/explain/explanation-panel";
+import { AiModeBadge, useAiStatus } from "@/components/ai/ai-status";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -39,6 +39,25 @@ interface Draft {
   forecastId: string | "none";
 }
 
+/** Load any image URL (including our SVG samples) into a resized JPEG for upload. */
+async function urlToBase64Jpeg(url: string): Promise<{ data: string; preview: string }> {
+  const img = document.createElement("img");
+  img.src = url;
+  await img.decode();
+  const w = img.naturalWidth || 960;
+  const h = img.naturalHeight || 720;
+  const scale = Math.min(1, 1280 / Math.max(w, h)) * (url.endsWith(".svg") ? 3 : 1);
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(w * scale);
+  canvas.height = Math.round(h * scale);
+  const ctx = canvas.getContext("2d")!;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  const preview = canvas.toDataURL("image/jpeg", 0.85);
+  return { data: preview.split(",")[1], preview };
+}
+
 async function fileToBase64Jpeg(file: File): Promise<{ data: string; preview: string }> {
   const url = URL.createObjectURL(file);
   const img = document.createElement("img");
@@ -65,18 +84,14 @@ export function LogSurplus() {
   const [ai, setAi] = useState<AnalyzeResponse | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [checked, setChecked] = useState(false);
-  const [mode, setMode] = useState<"demo" | "live">("demo");
+  const aiStatus = useAiStatus();
+  const mode = aiStatus.mode;
   const [showWhy, setShowWhy] = useState(false);
   const aiExplanation = useMemo(() => (ai ? explainPhoto(ai.result, ai.mode, state) : null), [ai, state]);
 
-  useEffect(() => {
-    fetch("/api/analyze-photo")
-      .then((r) => r.json())
-      .then((j) => setMode(j.mode))
-      .catch(() => {});
-  }, []);
 
   const siteId = person.siteId;
+  const isSample = !!photo && samples.some((x) => x.src === photo.src);
   const openForecasts = useMemo(
     () => (draft ? forecasts.filter((f) => f.siteId === draft.siteId && f.materialId === draft.materialId && f.status === "Forecast") : []),
     [forecasts, draft],
@@ -190,7 +205,7 @@ export function LogSurplus() {
             <h2 id="photo-h" className="font-semibold">
               1. Photo
             </h2>
-            <StatusBadge tone={mode === "live" ? "success" : "info"}>{mode === "live" ? "Live AI" : "Demo mode: sample results"}</StatusBadge>
+            <AiModeBadge />
           </div>
           <div className="relative grid aspect-[4/3] place-items-center overflow-hidden rounded-lg border border-dashed bg-muted/50">
             {photo ? (
@@ -234,6 +249,12 @@ export function LogSurplus() {
           <Button variant="outline" onClick={() => fileRef.current?.click()}>
             <ImageUp aria-hidden /> Take or upload a photo
           </Button>
+          {aiStatus.loaded && mode === "demo" && (
+            <p className="rounded-md border border-info/30 bg-info-soft px-3 py-2 text-xs text-info" role="status">
+              Live AI is off in this deployment. Choose a sample photo or enter the details yourself.
+              {aiStatus.reason && <span className="mt-0.5 block text-foreground/70">{aiStatus.reason}</span>}
+            </p>
+          )}
           <div>
             <p className="mb-2 text-sm font-medium">Or try a sample photo</p>
             <div className="grid grid-cols-4 gap-2">
@@ -283,11 +304,36 @@ export function LogSurplus() {
                     <Sparkles className="mt-0.5 size-4 shrink-0 text-info" aria-hidden />
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="font-medium">{ai.mode === "live" ? "AI suggestion" : "Demo suggestion"}</p>
+                        <p className="font-medium">{ai.mode === "live" ? "AI suggestion" : isSample ? "Sample photo: pre-written result" : "No AI suggestion"}</p>
+                        <AiModeBadge mode={ai.mode} />
                         <CertaintyBadge level={aiExplanation.certainty.level} />
                       </div>
                       <p className="mt-0.5">{aiExplanation.recommendation}</p>
                       {aiExplanation.certainty.score && <p className="mt-0.5 text-xs text-muted-foreground">{aiExplanation.certainty.score.label}</p>}
+                      {ai.reason && (
+                        <p className="mt-1 text-xs text-foreground/80" role="status">
+                          {ai.reason}
+                        </p>
+                      )}
+                      {isSample && mode === "live" && photo && (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="mt-2"
+                          disabled={busy}
+                          onClick={async () => {
+                            try {
+                              const { data } = await urlToBase64Jpeg(photo.src);
+                              analyse({ image: data, mimeType: "image/jpeg", source: "sample" });
+                            } catch {
+                              toast.error("Could not prepare the sample image.");
+                            }
+                          }}
+                        >
+                          <Sparkles aria-hidden /> Analyse with live AI
+                        </Button>
+                      )}
                       <button
                         type="button"
                         aria-expanded={showWhy}

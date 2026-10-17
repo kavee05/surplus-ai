@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AiStatusProvider } from "@/components/ai/ai-status";
 import { AppSidebar } from "@/components/app/app-sidebar";
 import { TopBar } from "@/components/app/top-bar";
 import { GuidedDemoProvider } from "@/components/demo/guided-demo";
@@ -14,17 +15,22 @@ export const metadata: Metadata = {
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <StoreProvider>
-      <GuidedDemoProvider>
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset className="min-w-0">
-            <TopBar />
-            <div id="main" className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 pb-12 sm:px-6 lg:px-8">
-              {children}
-            </div>
-          </SidebarInset>
-        </SidebarProvider>
-      </GuidedDemoProvider>
+      <AiStatusProvider>
+        <GuidedDemoProvider>
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset className="min-w-0">
+              <TopBar />
+              <div
+                id="main"
+                className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 pb-12 sm:px-6 lg:px-8"
+              >
+                {children}
+              </div>
+            </SidebarInset>
+          </SidebarProvider>
+        </GuidedDemoProvider>
+      </AiStatusProvider>
       <Toaster position="top-center" />
     </StoreProvider>
   );
