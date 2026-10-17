@@ -45,3 +45,10 @@ next-env.d.ts
 .claude/settings.local.json
 
 !.env.example
+
+# private working notes (kept locally, not published)
+.claude/
+PITCH_NOTES.md
+DEMO_SCRIPT.md
+SUBMISSION_NOTES.md
+PROGRESS.md
