@@ -1,14 +1,14 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState } from "react";
-import { seedState, STATE_VERSION, type AppState } from "@/data/initial";
+import { seedState, type AppState } from "@/data/initial";
 import { DEMO_LATER, HERO_FORECAST_ID, people } from "@/data/seed";
 import { defaultAssumptions, type GlobalAssumptionKey } from "./assumptions";
 import { computeForecasts, recordActual } from "./engine/forecast";
 import { nextStatus } from "./engine/transfers";
+import { loadState, STORAGE_KEY } from "./persist";
 import type { DecisionRecord, Listing, MaterialValues, Need, OwnershipPolicy, Role, Transfer, TransferEvent } from "./types";
 
-const STORAGE_KEY = "surplus-ai:state";
 
 type Action =
   | { type: "hydrate"; state: AppState }
@@ -176,6 +176,9 @@ interface Store {
   ready: boolean;
   dispatch: React.Dispatch<Action>;
   person: (typeof people)[Role];
+  /** Set when saved data was unreadable and the demo fell back to the seed. */
+  notice: string | null;
+  clearNotice: () => void;
 }
 
 const StoreContext = createContext<Store | null>(null);
@@ -183,17 +186,18 @@ const StoreContext = createContext<Store | null>(null);
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, undefined, seedState);
   const [ready, setReady] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
+    let raw: string | null = null;
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as AppState;
-        if (parsed.version === STATE_VERSION) dispatch({ type: "hydrate", state: parsed });
-      }
+      raw = localStorage.getItem(STORAGE_KEY);
     } catch {
-      // Storage unavailable or corrupt: keep seed data.
+      // Storage unavailable (privacy mode): keep seed data.
     }
+    const loaded = loadState(raw);
+    if (loaded.status !== "fresh") dispatch({ type: "hydrate", state: loaded.state });
+    if (loaded.status === "reset") setNotice(`Demo data was reset because ${loaded.reason}.`);
     setReady(true);
   }, []);
 
@@ -206,7 +210,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state, ready]);
 
-  const value = useMemo(() => ({ state, ready, dispatch, person: people[state.role] }), [state, ready]);
+  const value = useMemo(() => ({ state, ready, dispatch, person: people[state.role], notice, clearNotice: () => setNotice(null) }), [state, ready, notice]);
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }
 

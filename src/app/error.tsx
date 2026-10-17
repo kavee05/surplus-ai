@@ -1,9 +1,10 @@
 "use client";
 
-import { RotateCcw, TriangleAlert } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { STORAGE_KEY } from "@/lib/persist";
 
 export default function ErrorPage({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
@@ -13,11 +14,8 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
   return (
     <main className="grid min-h-[60dvh] place-items-center px-4 py-16">
       <div className="flex max-w-md flex-col items-center gap-5 text-center">
-        <span className="grid size-12 place-items-center rounded-full bg-danger-soft text-danger">
-          <TriangleAlert className="size-6" aria-hidden />
-        </span>
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">This screen could not load</h1>
+          <h1 className="font-display text-4xl leading-tight">This screen could not load</h1>
           <p className="mt-2 text-muted-foreground">
             Something in the saved demo data may be out of date. Try again, or reset the demo data to the original simulated seed.
           </p>
@@ -28,7 +26,7 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
             variant="outline"
             onClick={() => {
               try {
-                localStorage.removeItem("surplus-ai:state");
+                localStorage.removeItem(STORAGE_KEY);
               } catch {}
               window.location.href = "/app";
             }}

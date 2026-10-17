@@ -78,6 +78,7 @@ function Crumbs() {
 
 export function TopBar() {
   const { state, dispatch, person } = useStore();
+
   const { start } = useDemo();
   const { open: openPalette } = usePalette();
   const initials = person.name
@@ -155,5 +156,19 @@ export function TopBar() {
         </DropdownMenu>
       </div>
     </header>
+  );
+}
+
+/** Shown once when saved demo data could not be used and the seed was loaded instead. */
+export function StorageNotice() {
+  const { notice, clearNotice } = useStore();
+  if (!notice) return null;
+  return (
+    <div role="status" className="flex items-start justify-between gap-3 border-b border-warning/30 bg-warning-soft px-4 py-2 text-sm text-warning sm:px-6 lg:px-8">
+      <span>{notice} You are looking at the original simulated seed.</span>
+      <button type="button" onClick={clearNotice} className="shrink-0 text-xs font-medium underline underline-offset-2 hover:no-underline">
+        Dismiss
+      </button>
+    </div>
   );
 }

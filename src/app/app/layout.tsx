@@ -4,7 +4,7 @@ import { AppSidebar } from "@/components/app/app-sidebar";
 import { CommandPaletteProvider } from "@/components/app/command-palette";
 import { MobileNav } from "@/components/app/mobile-nav";
 import { CREDIT } from "@/components/landing/site-chrome";
-import { TopBar } from "@/components/app/top-bar";
+import { StorageNotice, TopBar } from "@/components/app/top-bar";
 import { GuidedDemoProvider } from "@/components/demo/guided-demo";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
@@ -25,6 +25,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <AppSidebar />
               <SidebarInset className="min-w-0">
                 <TopBar />
+                <StorageNotice />
                 <div
                   id="main"
                   className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 pb-12 sm:px-6 lg:px-8"
