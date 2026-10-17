@@ -1,8 +1,7 @@
-"use client";
 
 import { CalendarClock, Scale, ShoppingCart } from "lucide-react";
 import { SimulatedBadge } from "@/components/app/simulated-badge";
-import { RadarTimeline } from "@/components/radar/radar-timeline";
+import { RadarTimelineStatic } from "@/components/radar/timeline-core";
 import { HERO_INPUT, seedState } from "@/data/initial";
 import { HERO_FORECAST_ID } from "@/data/seed";
 import { computeForecasts } from "@/lib/engine/forecast";
@@ -24,7 +23,7 @@ export function HeroVisual() {
         <SimulatedBadge />
       </div>
       <div className="p-3 sm:p-4">
-        <RadarTimeline data={state} forecasts={forecasts} materialId="tile-porcelain" need={HERO_INPUT} highlightForecastId={HERO_FORECAST_ID} from="2026-09-01" to="2027-02-28" compact className="rounded-lg" />
+        <RadarTimelineStatic data={state} forecasts={forecasts} materialId="tile-porcelain" need={HERO_INPUT} highlightForecastId={HERO_FORECAST_ID} from="2026-10-01" to="2027-02-28" compact className="rounded-lg" />
         <p className="mt-2 text-xs text-muted-foreground">
           City of Elmina Phase 3 should finish on {fmtDate(hero.availableFrom)} with about {fmtNum(hero.qty)} tiles spare ({hero.confidence.toFixed(2)} confidence). The diamond is the
           Bandar Bukit Raja need date.
