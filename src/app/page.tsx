@@ -47,7 +47,8 @@ const faqs = [
   { q: "Is this validated with SDP?", a: "No. This is a student prototype. We have not validated site-level surplus, ordering data or workflows with Sime Darby Property, and SDP has not endorsed it. The next step would be a short pilot in one township to test the assumptions." },
   { q: "Is the data real?", a: "Township names are real SDP townships, used for realism. Every quantity, person, company, phase and transfer is simulated. Evidence figures on the problem come from cited public sources, listed with their limits on the Evidence page." },
   { q: "Who owns the surplus?", a: "We do not know yet. It could belong to SDP, to the contractor, or be shared. The app has a policy setting for all three, but the answer must be agreed in a pilot before any material moves." },
-  { q: "Does the AI decide what to buy?", a: "No. Forecasts, matching and every explanation come from plain, deterministic arithmetic that you can inspect. AI is only used to suggest what is in a photo, and a person must confirm it before saving." },
+  { q: "Where is the AI?", a: "In three places: reading surplus photos, understanding a plain-language request such as “1,000 floor tiles at Bandar Bukit Raja by 7 December”, and writing a short summary of the result. Each is a suggestion with a visible Live AI or Demo mode badge. The summary is shown only if every number in it matches the engine. Forecasting, matching and savings are deliberately not AI: they are plain arithmetic you can check, because a buyer has to trust the quantity." },
+  { q: "Does the AI decide what to buy?", a: "No. The AI never sets a quantity or takes an action. The deterministic engine calculates the recommendation, and a person confirms every hold, match and transfer. Surplus AI never places a supplier order." },
   { q: "How accurate is the forecast?", a: "Unknown until it runs on real ordering data. The prototype shows how accuracy would be tracked, using simulated history that is labelled as such." },
   { q: "What about steel and other structural items?", a: "They can be listed, but a transfer cannot be reserved until a site engineer approves it." },
 ];
@@ -183,6 +184,61 @@ export default function Landing() {
               </dl>
             </div>
           </div>
+        </section>
+
+        {/* Where AI is used */}
+        <section id="ai" aria-labelledby="ai-h" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-14 sm:px-6 lg:py-16">
+          <h2 id="ai-h" className="max-w-2xl text-3xl font-semibold tracking-tight text-balance">
+            Where AI is used, and where it is not
+          </h2>
+          <p className="mt-3 max-w-2xl text-muted-foreground">AI reads messy input and writes plain-language summaries. Deterministic code does every calculation. People approve every action.</p>
+          <div className="mt-8 grid gap-px overflow-hidden rounded-xl border bg-border md:grid-cols-3">
+            {[
+              {
+                who: "AI model",
+                tone: "bg-info",
+                items: [
+                  ["Reading photos", "Suggests the item, condition and an estimated quantity. The engineer checks and confirms before saving."],
+                  ["Understanding requests", "Turns a sentence like “1,000 floor tiles at Bandar Bukit Raja by 7 December” into fields, checked against the real catalogue."],
+                  ["Writing the summary", "A short briefing, shown only if every number and date in it matches the engine. Otherwise a template is shown."],
+                ],
+              },
+              {
+                who: "Deterministic code",
+                tone: "bg-brand",
+                items: [
+                  ["Forecasting surplus", "Ordered minus planned quantity with wastage, from purchase plans."],
+                  ["Matching and ranking", "Hard filters, then a weighted score you can inspect."],
+                  ["Savings and carbon", "Quantity times assumed factors, with every formula shown."],
+                ],
+              },
+              {
+                who: "People",
+                tone: "bg-forecast",
+                items: [
+                  ["Approving and reserving", "Holds, matches and transfers need a person to confirm. Rejections need a reason."],
+                  ["Structural sign-off", "Steel and precast items need a site engineer's approval."],
+                  ["Ordering", "Surplus AI never places a supplier order or books a truck."],
+                ],
+              },
+            ].map((col) => (
+              <div key={col.who} className="bg-card p-6">
+                <p className="flex items-center gap-2 text-sm font-semibold">
+                  <span className={`size-2 rounded-full ${col.tone}`} aria-hidden />
+                  {col.who}
+                </p>
+                <dl className="mt-4 flex flex-col gap-4">
+                  {col.items.map(([t, d]) => (
+                    <div key={t}>
+                      <dt className="font-medium">{t}</dt>
+                      <dd className="mt-0.5 text-sm text-muted-foreground">{d}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            ))}
+          </div>
+          <p className="mt-4 text-xs text-muted-foreground">The app shows a Live AI or Demo mode badge wherever AI is used. In demo mode no model runs: sample photos and a rule-based reader stand in, and the summary is the template.</p>
         </section>
 
         {/* Roles */}

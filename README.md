@@ -25,22 +25,30 @@ Other scripts:
 | `npm run lint` | ESLint |
 | `npm run build` then `npm start` | Production build and server |
 
-## Demo mode and live AI
+## Where AI is used
 
-Photo analysis runs on the server only (`src/app/api/analyze-photo/route.ts`). The model never decides anything else: forecasts, matching and every explanation come from deterministic code in `src/lib/engine`.
+AI reads messy input and writes plain-language summaries. Deterministic code calculates. People approve.
 
-- **Demo mode (default, also on a public deployment).** No API key needed. Eight sample photos (simple SVG illustrations made for this project, in `public/samples`) return canned, zod-validated results. Uploaded photos are not analysed; the user fills in the details.
-- **Live AI (opt-in).** Uses the Google Gemini API. Copy `.env.example` to `.env.local` and set:
+- **Photo intake:** suggests item, condition and an estimated quantity from an uploaded photo; the engineer confirms before saving.
+- **Ask Surplus AI:** reads a sentence such as "I need 1,000 floor tiles at Bandar Bukit Raja by 7 December", the engine runs the Pre-Order Check, and the model writes a short briefing that is shown only if every number matches the engine.
+- **Not AI:** forecasting, matching, savings, carbon and certainty levels are plain, tested arithmetic.
 
-  ```
-  LIVE_AI=true
-  GEMINI_API_KEY=your-key
-  GEMINI_MODEL=gemini-3.5-flash-lite
-  ```
+Demo mode is the default and needs no key: sample photos have pre-written results, a rule-based reader handles requests, and summaries use a template. Every AI surface shows a Live AI or Demo mode badge. Details, providers, guardrails and limits: [docs/AI_USAGE.md](docs/AI_USAGE.md).
 
-  Safeguards: images are resized in the browser, requests over about 4 MB are refused, there is an in-memory rate limit of 8 analyses per IP per 10 minutes, image text is treated as data, and output is validated with zod. The AI result is only a suggestion: it shows confidence, labels quantities as estimates, and the user must tick a confirmation box before saving.
+### Turning on live AI
 
-Never commit `.env.local`. It is already ignored by git.
+Set these (see [.env.example](.env.example)), in Vercel for both Production and Preview, then redeploy:
+
+```
+LIVE_AI=true
+LLM_PROVIDER=gemini            # or anthropic
+GEMINI_API_KEY=...             # or ANTHROPIC_API_KEY
+LIVE_AI_DAILY_CAP=200
+UPSTASH_REDIS_REST_URL=...     # optional, shares limits across instances
+UPSTASH_REDIS_REST_TOKEN=...
+```
+
+Check the result at `/api/ai-status?check=1`. It reports the mode, model and whether each variable exists, never the key.
 
 ## Explainable recommendations
 

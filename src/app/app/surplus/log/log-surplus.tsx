@@ -252,7 +252,7 @@ export function LogSurplus() {
           {aiStatus.loaded && mode === "demo" && (
             <p className="rounded-md border border-info/30 bg-info-soft px-3 py-2 text-xs text-info" role="status">
               Live AI is off in this deployment. Choose a sample photo or enter the details yourself.
-              {aiStatus.reason && <span className="mt-0.5 block text-foreground/70">{aiStatus.reason}</span>}
+              {aiStatus.reason && !aiStatus.reason.startsWith("Live AI is off in this deployment") && <span className="mt-0.5 block text-foreground/70">{aiStatus.reason}</span>}
             </p>
           )}
           <div>

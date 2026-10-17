@@ -18,6 +18,7 @@ export function SiteHeader() {
           {[
             ["#how", "How it works"],
             ["#radar", "Radar"],
+            ["#ai", "Where AI is used"],
             ["#roles", "Who it is for"],
             ["#faq", "FAQ"],
           ].map(([href, label]) => (
