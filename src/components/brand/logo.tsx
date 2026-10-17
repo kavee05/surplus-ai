@@ -1,0 +1,28 @@
+import { cn } from "@/lib/utils";
+
+/** Mark: a stack of material seen through radar arcs, with one forecast blip. */
+export function LogoMark({ className, title }: { className?: string; title?: string }) {
+  return (
+    <svg viewBox="0 0 32 32" className={cn("size-8 shrink-0", className)} role={title ? "img" : undefined} aria-label={title} aria-hidden={title ? undefined : true}>
+      <rect width="32" height="32" rx="8" fill="#0F4C5C" />
+      <path d="M7 25 A18 18 0 0 1 25 7" fill="none" stroke="#7FB0BC" strokeWidth="2" strokeLinecap="round" />
+      <path d="M7 25 A11 11 0 0 1 18 14" fill="none" stroke="#B9D5DC" strokeWidth="2" strokeLinecap="round" />
+      <rect x="7" y="21" width="9" height="4" rx="1" fill="#FFFFFF" />
+      <rect x="9" y="17" width="7" height="3.2" rx="1" fill="#FFFFFF" opacity="0.8" />
+      <circle cx="22.5" cy="11.5" r="3" fill="#F2A541" />
+    </svg>
+  );
+}
+
+export function Logo({ className, compact = false }: { className?: string; compact?: boolean }) {
+  return (
+    <span className={cn("inline-flex items-center gap-2", className)}>
+      <LogoMark />
+      {!compact && (
+        <span className="text-[17px] font-semibold tracking-tight text-foreground">
+          Surplus<span className="ml-1 font-medium text-brand">AI</span>
+        </span>
+      )}
+    </span>
+  );
+}
