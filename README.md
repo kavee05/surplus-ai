@@ -23,7 +23,7 @@ Construction teams order with a buffer, so usable material is left at the end of
 
 ## Run it
 
-Requirements: Node.js 20 or newer, npm.
+Requirements: Node.js 22 or newer, npm.
 
 ```bash
 npm install
