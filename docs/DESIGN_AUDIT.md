@@ -48,3 +48,12 @@ Filled in during the motion pass (step D5).
 | Mobile camera button | Did not exist | Scale to 0.97 on press | Same press feedback as other buttons |
 | Accordion and "items for other roles" chevron | Default | Rotation only, 150 ms | Small, frequent, so short |
 | Everything | Partly covered | `prefers-reduced-motion` sets all animation and transition durations to near zero | Accessibility first (precedence rank 2) |
+
+## Quality checks after the upgrade
+
+| Check | Result |
+| --- | --- |
+| Axe (WCAG 2.2 AA tags), 13 routes at 1280 and 375 px | One serious issue found (sidebar group labels, 4.15:1) and fixed; now no serious or critical issues. Runs in the e2e suite. |
+| Contrast of every text token on every surface (`node scripts/contrast.mjs`) | All pairs 4.5:1 or higher after darkening the success green to `#1A7046` |
+| Lighthouse, landing page, local production build | Accessibility 100, Best practices 100, SEO 100. Performance 73 to 85 on the mobile preset (varies run to run on this machine; the old production site scored 75 on the same machine), 99 on the desktop preset |
+| Landing first-load JavaScript | 196 kB before, 107 kB after (`optimizePackageImports` for the radix-ui barrel; tooltip provider moved to the app) |

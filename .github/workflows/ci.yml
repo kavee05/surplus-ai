@@ -21,12 +21,15 @@ jobs:
       LIVE_AI: "false"
       NEXT_TELEMETRY_DISABLED: "1"
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      - name: Install
+        # The lockfile is written on Windows; npm can omit nested optional WebAssembly
+        # packages that Linux expects. Fall back to npm install (what Vercel runs) if so.
+        run: npm ci || { echo "::warning::npm ci failed on Linux, falling back to npm install"; npm install --no-audit --no-fund; }
       - name: Lint
         run: npm run lint
       - name: Unit tests
