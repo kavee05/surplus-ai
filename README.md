@@ -35,7 +35,7 @@ Photo analysis runs on the server only (`src/app/api/analyze-photo/route.ts`). T
   ```
   LIVE_AI=true
   GEMINI_API_KEY=your-key
-  GEMINI_MODEL=gemini-2.5-flash
+  GEMINI_MODEL=gemini-3.5-flash-lite
   ```
 
   Safeguards: images are resized in the browser, requests over about 4 MB are refused, there is an in-memory rate limit of 8 analyses per IP per 10 minutes, image text is treated as data, and output is validated with zod. The AI result is only a suggestion: it shows confidence, labels quantities as estimates, and the user must tick a confirmation box before saving.

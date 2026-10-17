@@ -45,21 +45,30 @@ const responseSchema = {
 };
 
 async function analyseLive(image: string, mimeType: string): Promise<PhotoAnalysis> {
-  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+  const model = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
   const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY! },
     body: JSON.stringify({
       contents: [{ role: "user", parts: [{ text: PROMPT }, { inlineData: { mimeType, data: image } }] }],
-      generationConfig: { responseMimeType: "application/json", responseSchema, temperature: 0.2, maxOutputTokens: 600 },
+      generationConfig: { responseMimeType: "application/json", responseSchema, temperature: 0.2, maxOutputTokens: 4096 },
     }),
     signal: AbortSignal.timeout(25_000),
   });
-  if (!res.ok) throw new Error(`Model request failed (${res.status})`);
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(`Model ${model} request failed (${res.status}): ${detail.slice(0, 200)}`);
+  }
   const json = await res.json();
-  const text: string | undefined = json?.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!text) throw new Error("Empty model response");
-  return PhotoAnalysis.parse(JSON.parse(text));
+  // Thinking models can return several parts; the JSON answer is the last text part.
+  const parts: { text?: string; thought?: boolean }[] = json?.candidates?.[0]?.content?.parts ?? [];
+  const text = parts.filter((x) => x.text && !x.thought).pop()?.text;
+  if (!text) throw new Error(`Empty model response (finish reason: ${json?.candidates?.[0]?.finishReason ?? "unknown"})`);
+  const raw = JSON.parse(text);
+  // Tolerate small format slips before strict validation.
+  if (typeof raw.confidence === "number" && raw.confidence > 1) raw.confidence = Math.min(1, raw.confidence / 100);
+  for (const k of ["itemName", "category", "unit", "notes"]) if (typeof raw[k] === "string") raw[k] = raw[k].slice(0, k === "notes" ? 400 : k === "unit" ? 20 : 120);
+  return PhotoAnalysis.parse(raw);
 }
 
 export async function GET() {
@@ -96,7 +105,9 @@ export async function POST(req: Request) {
   try {
     const result = await analyseLive(data.image, data.mimeType);
     return NextResponse.json({ mode: "live", result } satisfies AnalyzeResponse);
-  } catch {
+  } catch (e) {
+    // Logged server-side only (visible in Vercel logs); the key is never included.
+    console.error("[analyze-photo] live analysis failed:", e instanceof Error ? e.message : e);
     return NextResponse.json({ mode: "demo", result: { ...uploadFallback, notes: "The AI service did not return a usable answer. Fill in the details yourself." } } satisfies AnalyzeResponse);
   }
 }
