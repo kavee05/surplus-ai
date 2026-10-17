@@ -1,22 +1,31 @@
-import { CircleDashed, CircleDot, CircleHelp, ShieldCheck } from "lucide-react";
 import type { CertaintyLevel, Provenance } from "@/lib/explain/types";
 import { cn } from "@/lib/utils";
 
-const levels: Record<CertaintyLevel, { label: string; className: string; icon: typeof ShieldCheck }> = {
-  strong: { label: "Strong evidence", className: "border-success/30 bg-success-soft text-success", icon: ShieldCheck },
-  moderate: { label: "Moderate evidence", className: "border-info/30 bg-info-soft text-info", icon: CircleDot },
-  tentative: { label: "Tentative", className: "border-warning/30 bg-warning-soft text-warning", icon: CircleDashed },
-  insufficient: { label: "Not enough evidence", className: "border-danger/30 bg-danger-soft text-danger", icon: CircleHelp },
+const levels: Record<CertaintyLevel, { label: string; bars: number; className: string; explain: string }> = {
+  strong: { label: "strong", bars: 3, className: "text-success", explain: "Recorded facts support this, such as logged surplus or a confirmed record." },
+  moderate: { label: "moderate", bars: 2, className: "text-info", explain: "Good signs but not yet confirmed, for example a phase that is mostly complete." },
+  tentative: { label: "tentative", bars: 1, className: "text-warning", explain: "Early or out-of-date information. Treat it as a heads-up, not a plan." },
+  insufficient: { label: "not enough", bars: 0, className: "text-danger", explain: "Too little information to rely on. Check with the site first." },
 };
 
-export const certaintyLabel = (l: CertaintyLevel) => levels[l].label;
+export const certaintyLabel = (l: CertaintyLevel) => `Evidence: ${levels[l].label}`;
+export const certaintyExplainer = (l: CertaintyLevel) => levels[l].explain;
 
+/** "Evidence: moderate" with a three-step meter. The title explains the level in plain words. */
 export function CertaintyBadge({ level, className }: { level: CertaintyLevel; className?: string }) {
   const c = levels[level];
   return (
-    <span className={cn("inline-flex h-5 shrink-0 items-center gap-1 rounded-md border px-1.5 text-[11px] font-medium whitespace-nowrap", c.className, className)}>
-      <c.icon className="size-3" aria-hidden />
-      {c.label}
+    <span
+      title={c.explain}
+      className={cn("inline-flex h-5 shrink-0 items-center gap-1.5 rounded-[4px] border border-current/25 px-1.5 text-[11px] font-medium whitespace-nowrap", c.className, className)}
+    >
+      <span className="flex items-end gap-px" aria-hidden>
+        {[0, 1, 2].map((i) => (
+          <span key={i} className={cn("w-[3px] rounded-[1px]", i < c.bars ? "bg-current" : "bg-current/20")} style={{ height: 4 + i * 2 }} />
+        ))}
+      </span>
+      Evidence: {c.label}
+      <span className="sr-only">. {c.explain}</span>
     </span>
   );
 }

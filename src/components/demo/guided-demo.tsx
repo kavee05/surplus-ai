@@ -231,7 +231,7 @@ function DemoPanel({ step, go, exit, store }: { step: number; go: (i: number) =>
     <div
       role="dialog"
       aria-label="Guided demo"
-      className="fixed inset-x-3 bottom-3 z-40 rounded-2xl border bg-card p-4 shadow-overlay sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-[380px]"
+      className="fixed inset-x-3 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-50 rounded-2xl border bg-card p-4 shadow-overlay sm:inset-x-auto sm:right-6 sm:w-[380px] md:bottom-6"
     >
       <div className="flex items-center justify-between gap-2">
         <span className="inline-flex items-center gap-1.5 text-xs font-medium text-brand">

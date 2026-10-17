@@ -226,7 +226,11 @@ body:has([aria-label="Guided demo"]) #main {
 }
 
 /* Keep network labels legible when the SVG is scaled down on phones */
-@media (max-width: 640px) {
+@container (max-width: 560px) {
+  .net-svg text { font-size: 16px; }
+  .net-svg text.net-small { font-size: 14px; }
+}
+@container (max-width: 420px) {
   .net-svg text { font-size: 19px; }
   .net-svg text.net-small { font-size: 16px; }
 }

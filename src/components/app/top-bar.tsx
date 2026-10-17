@@ -2,8 +2,8 @@
 
 import { ChevronDown, Home, LogOut, PlayCircle, RotateCcw, Search } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { Fragment, useState } from "react";
+import { usePathname } from "next/navigation";
+import { Fragment } from "react";
 import { toast } from "sonner";
 import { useDemo } from "@/components/demo/guided-demo";
 import {
@@ -25,13 +25,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { people } from "@/data/seed";
 import { fmtDate } from "@/lib/format";
 import { useStore } from "@/lib/store";
 import type { Role } from "@/lib/types";
+import { usePalette } from "./command-palette";
 import { allNav } from "./nav";
 import { SimulatedBadge } from "./simulated-badge";
 
@@ -79,8 +79,7 @@ function Crumbs() {
 export function TopBar() {
   const { state, dispatch, person } = useStore();
   const { start } = useDemo();
-  const router = useRouter();
-  const [q, setQ] = useState("");
+  const { open: openPalette } = usePalette();
   const initials = person.name
     .split(" ")
     .map((w) => w[0])
@@ -92,25 +91,16 @@ export function TopBar() {
       <Separator orientation="vertical" className="mx-1 h-5" />
       <Crumbs />
       <div className="ml-auto flex items-center gap-2">
-        <form
-          role="search"
-          className="relative hidden lg:block"
-          onSubmit={(e) => {
-            e.preventDefault();
-            router.push(`/app/surplus?q=${encodeURIComponent(q)}`);
-          }}
-        >
-          <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
-          <Input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search surplus"
-            aria-label="Search surplus inventory"
-            className="h-8 w-40 pl-8 xl:w-56"
-          />
-        </form>
-        <span className="hidden text-xs whitespace-nowrap text-muted-foreground xl:inline">Demo date {fmtDate(state.today)}</span>
-        <SimulatedBadge className="hidden sm:inline-flex" />
+        <Button variant="outline" size="sm" onClick={openPalette} className="gap-2 text-muted-foreground" aria-label="Search pages and actions (Control or Command K)">
+          <Search aria-hidden />
+          <span className="hidden lg:inline">Search or jump to</span>
+          <kbd className="hidden rounded border bg-muted px-1 font-mono text-[10px] lg:inline">Ctrl K</kbd>
+        </Button>
+        <span className="flex flex-col items-end leading-tight whitespace-nowrap" title="All dates in the demo are relative to this fixed date">
+          <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Demo date</span>
+          <span className="tabular text-xs font-medium">{fmtDate(state.today)}</span>
+        </span>
+        <SimulatedBadge className="hidden md:inline-flex" />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-9 gap-2 px-1.5" aria-label={`${person.name} ${person.title}, user menu`}>

@@ -83,6 +83,7 @@ export function SurplusNetwork({
   const tenKm = (0.09 / (BOUNDS.maxLat - BOUNDS.minLat)) * (H - PAD * 2);
 
   return (
+    <div className="@container">
     <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby="net-title net-desc" className={cn("net-svg h-auto w-full", className)}>
       <title id="net-title">{title}</title>
       <desc id="net-desc">
@@ -199,6 +200,7 @@ export function SurplusNetwork({
         </text>
       </g>
     </svg>
+    </div>
   );
 }
 

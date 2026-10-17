@@ -68,7 +68,7 @@ export function forecastCertainty(f: Forecast, phase: Phase, today: string): Cer
         ? `The phase is ${phase.progressPct}% complete, so most of the ordered material has been used and the remaining quantity is easier to judge.`
         : `The phase is only ${phase.progressPct}% complete${fresh.stale ? " and its progress report is out of date" : ""}, so much of the order is still to be used.`,
     calibrated: false,
-    score: { value: f.confidence, label: `Progress-based score ${f.confidence.toFixed(2)} (rule of thumb from the Assumptions page, not a calibrated probability)` },
+    score: { value: f.confidence, label: `Worked out from phase progress with a rule of thumb you can change on the Assumptions page (score ${f.confidence.toFixed(2)}). It is a guide, not a calibrated probability.` },
     missing,
     couldChange: ["Design changes or breakage that use more material than planned.", "Ordered quantities being returned to the supplier.", "A late or early phase finish."],
   };

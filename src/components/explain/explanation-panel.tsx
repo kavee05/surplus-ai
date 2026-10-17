@@ -7,7 +7,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import type { Explanation, ReasonEffect } from "@/lib/explain/types";
 import { fmtDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { CertaintyBadge, ProvenanceTag } from "./certainty";
+import { CertaintyBadge, certaintyExplainer, certaintyLabel, ProvenanceTag } from "./certainty";
 
 const effectIcon: Record<ReasonEffect, { icon: typeof CheckCircle2; className: string; sr: string }> = {
   supports: { icon: CheckCircle2, className: "text-success", sr: "Supports" },
@@ -83,6 +83,9 @@ export function ExplanationPanel({
           {!showRecommendation && <CertaintyBadge level={e.certainty.level} />}
         </div>
         <p className="mt-1.5">{e.certainty.basis}</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {certaintyLabel(e.certainty.level)} means: {certaintyExplainer(e.certainty.level).toLowerCase()}
+        </p>
         {e.certainty.score && <p className="mt-1 text-xs text-muted-foreground">{e.certainty.score.label}</p>}
         {(e.certainty.missing.length > 0 || e.certainty.couldChange.length > 0) && (
           <div className="mt-2.5 grid gap-3 sm:grid-cols-2">
