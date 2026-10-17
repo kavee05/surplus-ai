@@ -39,5 +39,7 @@
     "typescript": "^5",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.7"
-  }
+  },
+  "author": "Kaveetiran A/L Sitambaram",
+  "license": "MIT"
 }

@@ -92,6 +92,17 @@ The landing page visual, Radar, Guided Demo and unit tests all compute these fro
 - There is no sign-in. The role switcher in the user menu changes the view between site engineer, procurement officer and management.
 - localStorage is per browser, so each visitor sees their own copy of the demo.
 
+## Author and credit
+
+Surplus AI was created by Team ALICE, students of Universiti Teknologi Malaysia, Kuala Lumpur (UTM KL), for the Sime Darby Property University Hackathon 2026.
+
+Code and engineering: Kaveetiran A/L Sitambaram, with Claude Code as the coding assistant.
+Pitch deck, video and submission: Team ALICE.
+
+Team members: Kaveetiran A/L Sitambaram, Kirthiggan A/L Saravanan, Risikesan A/L Yogeswaran, Dakshina Narrayana A/L Selvavinayagam, Kavinnesh A/L R Chandraguptha.
+
+Reuse is welcome under the MIT licence as long as the copyright notice is kept.
+
 ## Licence
 
-MIT. See `LICENSE`.
+MIT. Copyright (c) 2026 Kaveetiran A/L Sitambaram. See [LICENSE](LICENSE). To cite this project, use [CITATION.cff](CITATION.cff).

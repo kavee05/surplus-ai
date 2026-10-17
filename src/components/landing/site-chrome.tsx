@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 export const DISCLAIMER =
   "Surplus AI is a student prototype built for the Sime Darby Property University Hackathon 2026. It is not affiliated with or endorsed by Sime Darby Property. All operational data is simulated.";
 
+export const CREDIT = "Built by Team ALICE, UTM KL. Code by Kaveetiran A/L Sitambaram.";
+
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75">
@@ -60,7 +62,10 @@ export function SiteFooter() {
         </nav>
       </div>
       <div className="border-t">
-        <p className="mx-auto max-w-6xl px-4 py-4 text-xs text-muted-foreground sm:px-6">MIT licence. No SDP logos or trademarks are used. Township names appear for realism only; quantities, people and companies are fictional.</p>
+        <div className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-4 text-xs text-muted-foreground sm:flex-row sm:justify-between sm:px-6">
+          <p>{CREDIT}</p>
+          <p>MIT licence. No SDP logos or trademarks are used. Township names appear for realism only; quantities, people and companies are fictional.</p>
+        </div>
       </div>
     </footer>
   );
