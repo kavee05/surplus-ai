@@ -246,3 +246,22 @@ body:has([aria-label="Guided demo"]) #main {
   background: var(--forecast); opacity: 0; animation: num-flash 600ms var(--ease-out);
 }
 @keyframes num-flash { from { opacity: 0.28; } to { opacity: 0; } }
+
+/* Landing (style A, Fresh): gentle entrance, flowing route, pulsing source, floating card */
+.font-jakarta { font-family: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif; }
+.l-rise { opacity: 0; transform: translateY(14px); animation: l-rise 700ms var(--ease-out) forwards; }
+.l-d1 { animation-delay: 50ms; } .l-d2 { animation-delay: 150ms; } .l-d3 { animation-delay: 250ms; } .l-d4 { animation-delay: 350ms; } .l-d5 { animation-delay: 500ms; }
+@keyframes l-rise { to { opacity: 1; transform: none; } }
+.l-flow { stroke-dasharray: 8 7; animation: l-flow 1.2s linear infinite; }
+@keyframes l-flow { to { stroke-dashoffset: -30; } }
+.l-draw { stroke-dasharray: 600; stroke-dashoffset: 600; animation: l-draw 1.6s 600ms var(--ease-out) forwards; }
+@keyframes l-draw { to { stroke-dashoffset: 0; } }
+.l-pulse { transform-box: fill-box; transform-origin: center; animation: l-pulse 2.2s ease-out infinite; }
+@keyframes l-pulse { 0% { transform: scale(1); opacity: 0.55; } 100% { transform: scale(2.6); opacity: 0; } }
+.l-float { animation: l-rise 700ms 350ms var(--ease-out) forwards, l-float 6s 1.1s ease-in-out infinite; }
+@keyframes l-float { 50% { transform: translateY(-8px); } }
+@media (prefers-reduced-motion: reduce) {
+  .l-rise, .l-float { opacity: 1; transform: none; animation: none; }
+  .l-flow, .l-pulse { animation: none; }
+  .l-draw { stroke-dashoffset: 0; animation: none; }
+}

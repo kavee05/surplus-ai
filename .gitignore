@@ -55,3 +55,4 @@ scripts/.*.mjs
 # Playwright
 /test-results/
 /playwright-report/
+mockups/
