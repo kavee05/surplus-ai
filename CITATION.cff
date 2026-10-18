@@ -3,8 +3,8 @@ message: "If you use or build on this software, please cite it as below."
 type: software
 title: "Surplus AI: check before you buy"
 abstract: >-
-  Surplus AI is a student prototype of a closed-network construction surplus
-  platform for township developers. It forecasts leftover material from
+  Surplus AI is a student prototype of a construction surplus platform for
+  township developers and contractors in Malaysia. It forecasts leftover material from
   ordered versus planned quantities, recommends how much to reserve from other
   sites before ordering new, explains every recommendation with its evidence,
   and keeps people in control of every decision. Built for the Sime Darby
@@ -14,7 +14,6 @@ authors:
     family-names: A/L Sitambaram
 repository-code: "https://github.com/kavee05/surplus-ai"
 url: "https://surplus-ai.vercel.app"
-license: MIT
 version: 1.0.0
 date-released: "2026-10-23"
 keywords:

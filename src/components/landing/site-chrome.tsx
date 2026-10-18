@@ -64,7 +64,7 @@ export function SiteFooter() {
       <div className="border-t border-slate-200">
         <div className="mx-auto flex max-w-6xl 2xl:max-w-[88rem] flex-col gap-1 px-4 py-4 text-xs text-slate-600 sm:flex-row sm:justify-between sm:px-6">
           <p>{CREDIT}</p>
-          <p>MIT licence. No SDP logos or trademarks are used. Township names appear for realism only; quantities, people and companies are fictional.</p>
+          <p>Hackathon submission; IP follows the programme terms. No SDP logos or trademarks are used. Township names appear for realism only; quantities, people and companies are fictional.</p>
         </div>
       </div>
     </footer>

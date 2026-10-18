@@ -15,7 +15,7 @@
   5. [src/components/network/surplus-network.tsx](src/components/network/surplus-network.tsx): the Surplus Network map of townships, transfers and forecasts
 - **Keyboard:** Ctrl K (Cmd K on Mac) opens the command palette anywhere in the app.
 
-**Check before you buy.** Surplus AI is a working prototype of a closed-network surplus platform for township developers, built for the Sime Darby Property (SDP) University Hackathon 2026, theme "Township of Tomorrow", Planet track (circular economy and waste management).
+**Check before you buy.** Surplus AI is a working prototype of a surplus platform that any township developer, contractor or site team in Malaysia could use. The demo uses Sime Darby Property townships as an example first pilot. Built for the Sime Darby Property (SDP) University Hackathon 2026, theme "Township of Tomorrow", Planet track (circular economy and waste management).
 
 Construction teams order with a buffer, so usable material is left at the end of each phase while other phases buy the same items new. Surplus AI shows surplus across sites. Its main feature, **Surplus Radar**, forecasts surplus *before* it exists, from ordered versus planned quantities, and tells a buyer on another site to order less.
 
@@ -149,8 +149,13 @@ Pitch deck, video and submission: Team ALICE.
 
 Team members: Kaveetiran A/L Sitambaram, Kirthiggan A/L Saravanan, Risikesan A/L Yogeswaran, Dakshina Narrayana A/L Selvavinayagam, Kavinnesh A/L R Chandraguptha.
 
-Reuse is welcome under the MIT licence as long as the copyright notice is kept.
+## AI tools disclosure
 
-## Licence
+As required by clause 13 of the Programme Terms and Conditions:
 
-MIT. Copyright (c) 2026 Kaveetiran A/L Sitambaram. See [LICENSE](LICENSE). To cite this project, use [CITATION.cff](CITATION.cff).
+- **Claude Code (Anthropic)** was used as a coding assistant. The team defined the problem, the product, the engine logic and the design decisions, and reviewed and tested every change.
+- **Google Gemini API** runs inside the app to read surplus photos and plain-language requests, and to write short summaries. It never sets a quantity or takes an action; see [docs/AI_USAGE.md](docs/AI_USAGE.md).
+
+## Intellectual property
+
+Submitted to the Sime Darby Property University Hackathon 2026. Intellectual property in this submission is governed by the [Programme Terms and Conditions](https://www.simedarbyproperty.com/universityhackathon/terms-and-conditions/). Third-party packages and fonts keep their own licences ([THIRD_PARTY.md](THIRD_PARTY.md)). To cite this project, use [CITATION.cff](CITATION.cff).

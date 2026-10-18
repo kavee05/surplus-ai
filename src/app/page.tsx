@@ -46,7 +46,7 @@ const roles = [
 
 const faqs = [
   { q: "Is this validated with SDP?", a: "No. This is a student prototype. We have not validated site-level surplus, ordering data or workflows with Sime Darby Property, and SDP has not endorsed it. The next step would be a short pilot in one township." },
-  { q: "Is the data real?", a: "Township names are real SDP townships, used for realism. Every quantity, person, company, phase and transfer is simulated. The figures about the problem come from cited public sources, listed with their limits on the Evidence page." },
+  { q: "Is the data real?", a: "Township names are real Sime Darby Property townships, used as an example first pilot. The platform itself works for any developer. Every quantity, person, company, phase and transfer is simulated. The figures about the problem come from cited public sources, listed with their limits on the Evidence page." },
   { q: "Who owns the surplus?", a: "We do not know yet. It could belong to SDP, to the contractor, or be shared. The app has a policy setting for all three, but it must be agreed in a pilot before any material moves." },
   { q: "Where is the AI?", a: "In three places: reading surplus photos, understanding a request such as “1,000 floor tiles at Bandar Bukit Raja by 7 December”, and writing a short summary that is shown only if every number matches the engine. Forecasting, matching and savings are not AI." },
   { q: "Does the AI decide what to buy?", a: "No. The AI never sets a quantity or takes an action. The engine calculates the recommendation, and a person confirms every hold, match and transfer." },
@@ -79,7 +79,7 @@ export default function Landing() {
                 <br />
                 <span className="bg-gradient-to-r from-emerald-600 to-sky-600 bg-clip-text text-transparent">you buy.</span>
               </h1>
-              <p className="l-rise l-d3 mt-5 max-w-md text-lg leading-relaxed text-slate-600 sm:text-xl">See leftover material across township sites weeks early, and order only what you need.</p>
+              <p className="l-rise l-d3 mt-5 max-w-md text-lg leading-relaxed text-slate-600 sm:text-xl">For any developer or contractor in Malaysia: see leftover material across your sites weeks early, and order only what you need.</p>
               <div className="l-rise l-d4 mt-8 flex flex-wrap gap-3">
                 <Link prefetch={false} href="/app?demo=start" className={PRIMARY}>
                   Try the guided demo <ArrowRight className="size-4" aria-hidden />
@@ -237,7 +237,7 @@ export default function Landing() {
             <h2 id="roles-h" className={H2}>
               One habit, three roles.
             </h2>
-            <p className="mt-3 text-slate-600">Our assumption. We have not interviewed SDP staff yet.</p>
+            <p className="mt-3 text-slate-600">Any developer, contractor or township in Malaysia. These roles are our assumption; we have not interviewed site teams yet.</p>
           </div>
           <div className="mt-10 grid gap-4 md:grid-cols-3">
             {roles.map((x) => (
