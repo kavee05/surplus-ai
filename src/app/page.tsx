@@ -61,7 +61,7 @@ const PRIMARY =
 
 export default function Landing() {
   return (
-    <div className="font-jakarta bg-white text-slate-900">
+    <div className="font-jakarta bg-[#eef6f2] text-slate-900">
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-white focus:px-3 focus:py-2 focus:shadow-lg">
         Skip to content
       </a>
@@ -92,7 +92,7 @@ export default function Landing() {
                   See the evidence
                 </Link>
               </div>
-              <p className="l-rise l-d5 mt-6 text-[13px] text-slate-500">Not affiliated with Sime Darby Property.</p>
+              <p className="l-rise l-d5 mt-6 text-[13px] text-slate-600">Not affiliated with Sime Darby Property.</p>
             </div>
             <HeroVisual />
           </div>
@@ -113,7 +113,7 @@ export default function Landing() {
                 <li key={e.id} className="flex flex-col rounded-3xl bg-white p-6 shadow-card">
                   <span className="text-3xl font-extrabold tracking-tight text-slate-900">{e.figure}</span>
                   <span className="mt-2 text-[15px] leading-snug text-slate-700">{e.figureLabel}</span>
-                  <span className="mt-auto pt-4 text-xs leading-relaxed text-slate-500">
+                  <span className="mt-auto pt-4 text-xs leading-relaxed text-slate-600">
                     {e.who}. Limit: {e.limits}
                   </span>
                 </li>
@@ -125,7 +125,7 @@ export default function Landing() {
         </section>
 
         {/* How it works */}
-        <section id="how" aria-labelledby="how-h" className="scroll-mt-16 bg-slate-50">
+        <section id="how" aria-labelledby="how-h" className="scroll-mt-16 bg-[#e3f0e9]">
           <div className={SECTION}>
             <div className="max-w-2xl">
               <p className={EYEBROW}>How it works</p>
@@ -187,7 +187,7 @@ export default function Landing() {
                   ["Bandar Bukit Raja needs", `${fmtNum(HERO_INPUT.qty)} tiles by ${fmtDate(HERO_INPUT.neededBy)}`],
                 ].map(([k, v]) => (
                   <div key={k} className="flex flex-wrap justify-between gap-x-6 gap-y-0.5">
-                    <dt className="text-slate-500">{k}</dt>
+                    <dt className="text-slate-600">{k}</dt>
                     <dd className="font-semibold tabular-nums">{v}</dd>
                   </div>
                 ))}
@@ -201,13 +201,13 @@ export default function Landing() {
                   Confirm by {fmtDate(r.decisionDate)}. Saves {fmtRm(r.expected.savedRm)}, {fmtNum(r.expected.tonnes, 1)} t diverted.
                 </p>
               </div>
-              <p className="mt-4 text-xs text-slate-500">Evidence levels use a rule of thumb from phase progress, not a measured probability.</p>
+              <p className="mt-4 text-xs text-slate-600">Evidence levels use a rule of thumb from phase progress, not a measured probability.</p>
             </div>
           </div>
         </section>
 
         {/* Where AI is used */}
-        <section id="ai" aria-labelledby="ai-h" className="scroll-mt-16 bg-slate-50">
+        <section id="ai" aria-labelledby="ai-h" className="scroll-mt-16 bg-[#e3f0e9]">
           <div className={SECTION}>
             <div className="max-w-2xl">
               <p className={EYEBROW}>Where AI is used</p>
@@ -226,7 +226,7 @@ export default function Landing() {
                 </div>
               ))}
             </div>
-            <p className="mt-6 text-sm text-slate-500">Every AI feature shows a Live AI or Demo mode badge.</p>
+            <p className="mt-6 text-sm text-slate-600">Every AI feature shows a Live AI or Demo mode badge.</p>
           </div>
         </section>
 
@@ -237,7 +237,7 @@ export default function Landing() {
             <h2 id="roles-h" className={H2}>
               One habit, three roles.
             </h2>
-            <p className="mt-3 text-slate-500">Our assumption. We have not interviewed SDP staff yet.</p>
+            <p className="mt-3 text-slate-600">Our assumption. We have not interviewed SDP staff yet.</p>
           </div>
           <div className="mt-10 grid gap-4 md:grid-cols-3">
             {roles.map((x) => (
@@ -315,7 +315,7 @@ export default function Landing() {
               Try the guided demo <ArrowRight className="size-4" aria-hidden />
             </Link>
           </div>
-          <p className="mx-auto mt-8 max-w-6xl 2xl:max-w-[88rem] text-xs text-slate-500">{DISCLAIMER}</p>
+          <p className="mx-auto mt-8 max-w-6xl 2xl:max-w-[88rem] text-xs text-slate-600">{DISCLAIMER}</p>
         </section>
       </main>
       <SiteFooter />
