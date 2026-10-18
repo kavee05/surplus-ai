@@ -96,15 +96,15 @@ export default function Landing() {
         <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 pt-10 pb-14 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14 lg:pt-16 lg:pb-20">
           <div className="flex flex-col gap-6">
             <h1 className="font-display text-[3.25rem] leading-[0.98] text-balance sm:text-7xl">Check before you buy.</h1>
-            <p className="max-w-xl text-lg text-muted-foreground text-pretty">
+            <p className="max-w-xl text-lg text-muted-foreground">
               Surplus AI forecasts the material each township phase will have left over, from what was ordered against what the plans need. Buyers on other sites see it weeks early and order less.
             </p>
             <div className="flex flex-wrap gap-3">
               <Button asChild size="lg" className="h-11 px-5 text-base">
-                <Link href="/app?demo=start">Try the guided demo</Link>
+                <Link prefetch={false} href="/app?demo=start">Try the guided demo</Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="h-11 px-5 text-base">
-                <Link href="/app/evidence">See the evidence</Link>
+                <Link prefetch={false} href="/app/evidence">See the evidence</Link>
               </Button>
             </div>
             <p className="max-w-md text-sm text-muted-foreground">Student prototype for the Township of Tomorrow hackathon. Not affiliated with Sime Darby Property. Data is simulated.</p>
@@ -119,10 +119,10 @@ export default function Landing() {
               <h2 id="problem-h" className={H2}>
                 Buffers become waste because nobody sees across sites.
               </h2>
-              <p className="mt-4 text-muted-foreground text-pretty">
+              <p className="mt-4 text-muted-foreground">
                 Teams order a little extra to stay safe. At the end of each phase, usable tiles, timber, paving, steel offcuts and safety items are left over. Another phase a few kilometres away buys the same things new.
               </p>
-              <Link href="/app/evidence" className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand underline underline-offset-4 hover:no-underline">
+              <Link prefetch={false} href="/app/evidence" className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand underline underline-offset-4 hover:no-underline">
                 Sources and their limits
               </Link>
             </div>
@@ -156,7 +156,7 @@ export default function Landing() {
                 <span className="absolute top-0 -left-[5px] size-2 rounded-[2px] bg-brand lg:-top-[5px] lg:left-0" aria-hidden />
                 <span className="text-xs font-semibold tracking-wide text-brand uppercase">{s.verb}</span>
                 <h3 className="font-semibold">{s.title}</h3>
-                <p className="text-sm text-muted-foreground text-pretty">{s.body}</p>
+                <p className="text-sm text-muted-foreground">{s.body}</p>
               </li>
             ))}
           </ol>
@@ -169,7 +169,7 @@ export default function Landing() {
               <h2 id="radar-h" className={H2}>
                 Surplus Radar works before the surplus exists.
               </h2>
-              <p className="mt-4 text-muted-foreground text-pretty">
+              <p className="mt-4 text-muted-foreground">
                 A normal exchange can only help once leftovers are logged, which is usually after the next site has already ordered. Radar reads the purchase plans instead, so the buyer can order less in the first place.
               </p>
               <ul className="mt-6 flex flex-col divide-y border-y text-sm">
@@ -185,7 +185,7 @@ export default function Landing() {
                 ))}
               </ul>
               <Button asChild size="lg" className="mt-7 h-11 px-5 text-base">
-                <Link href="/app/radar">Open Surplus Radar</Link>
+                <Link prefetch={false} href="/app/radar">Open Surplus Radar</Link>
               </Button>
             </div>
             <div className="rounded-xl border bg-card">
@@ -235,7 +235,7 @@ export default function Landing() {
                   {col.items.map(([t, d]) => (
                     <div key={t} className="py-3 first:pt-0">
                       <dt className="font-medium">{t}</dt>
-                      <dd className="mt-0.5 text-sm text-muted-foreground text-pretty">{d}</dd>
+                      <dd className="mt-0.5 text-sm text-muted-foreground">{d}</dd>
                     </div>
                   ))}
                 </dl>
@@ -262,7 +262,7 @@ export default function Landing() {
                       <h3 className="font-semibold">{x.title}</h3>
                       <p className="text-xs text-muted-foreground">{x.device}</p>
                     </div>
-                    <p className="text-sm text-muted-foreground text-pretty">{x.body}</p>
+                    <p className="text-sm text-muted-foreground">{x.body}</p>
                   </li>
                 ))}
               </ul>
@@ -322,7 +322,7 @@ export default function Landing() {
             {faqs.map((f) => (
               <div key={f.q} className="border-t py-5">
                 <dt className="font-semibold">{f.q}</dt>
-                <dd className="mt-1.5 text-sm text-muted-foreground text-pretty">{f.a}</dd>
+                <dd className="mt-1.5 text-sm text-muted-foreground">{f.a}</dd>
               </div>
             ))}
           </dl>
@@ -339,10 +339,10 @@ export default function Landing() {
             </div>
             <div className="flex flex-wrap gap-3">
               <Button asChild size="lg" className="h-11 px-5 text-base">
-                <Link href="/app?demo=start">Try the guided demo</Link>
+                <Link prefetch={false} href="/app?demo=start">Try the guided demo</Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="h-11 px-5 text-base">
-                <Link href="/app/evidence">See the evidence</Link>
+                <Link prefetch={false} href="/app/evidence">See the evidence</Link>
               </Button>
             </div>
           </div>

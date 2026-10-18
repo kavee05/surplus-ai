@@ -26,7 +26,7 @@ export function HeroVisual() {
         highlightSiteIds={["elmina", "bbr"]}
         title="Surplus Network: City of Elmina is forecast to have tiles spare when Bandar Bukit Raja needs them"
       />
-      <p className="border-t px-4 py-2.5 text-xs text-muted-foreground text-pretty">
+      <p className="border-t px-4 py-2.5 text-xs text-muted-foreground">
         City of Elmina Phase 3 should finish on {fmtDate(hero.availableFrom)} with about {fmtNum(hero.qty)} tiles spare. Bandar Bukit Raja needs {fmtNum(HERO_INPUT.qty)} by{" "}
         {fmtDate(HERO_INPUT.neededBy)}.
       </p>

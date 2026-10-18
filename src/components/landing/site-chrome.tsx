@@ -29,10 +29,10 @@ export function SiteHeader() {
         </nav>
         <div className="ml-auto flex items-center gap-2">
           <Button asChild variant="ghost" className="hidden sm:inline-flex">
-            <Link href="/app">Open the app</Link>
+            <Link prefetch={false} href="/app">Open the app</Link>
           </Button>
           <Button asChild>
-            <Link href="/app?demo=start">Try the guided demo</Link>
+            <Link prefetch={false} href="/app?demo=start">Try the guided demo</Link>
           </Button>
         </div>
       </div>
@@ -50,15 +50,15 @@ export function SiteFooter() {
         </div>
         <nav aria-label="Product" className="flex flex-col gap-2 text-sm">
           <span className="font-medium">Product</span>
-          <Link href="/app/radar" className="text-muted-foreground hover:text-foreground">Surplus Radar</Link>
-          <Link href="/app/surplus" className="text-muted-foreground hover:text-foreground">Surplus inventory</Link>
-          <Link href="/app/impact" className="text-muted-foreground hover:text-foreground">Impact dashboard</Link>
-          <Link href="/app/pilot" className="text-muted-foreground hover:text-foreground">Pilot plan</Link>
+          <Link prefetch={false} href="/app/radar" className="text-muted-foreground hover:text-foreground">Surplus Radar</Link>
+          <Link prefetch={false} href="/app/surplus" className="text-muted-foreground hover:text-foreground">Surplus inventory</Link>
+          <Link prefetch={false} href="/app/impact" className="text-muted-foreground hover:text-foreground">Impact dashboard</Link>
+          <Link prefetch={false} href="/app/pilot" className="text-muted-foreground hover:text-foreground">Pilot plan</Link>
         </nav>
         <nav aria-label="About" className="flex flex-col gap-2 text-sm">
           <span className="font-medium">About</span>
-          <Link href="/app/evidence" className="text-muted-foreground hover:text-foreground">Evidence and assumptions</Link>
-          <Link href="/app/settings" className="text-muted-foreground hover:text-foreground">Assumptions in use</Link>
+          <Link prefetch={false} href="/app/evidence" className="text-muted-foreground hover:text-foreground">Evidence and assumptions</Link>
+          <Link prefetch={false} href="/app/settings" className="text-muted-foreground hover:text-foreground">Assumptions in use</Link>
           <a href="#faq" className="text-muted-foreground hover:text-foreground">FAQ</a>
         </nav>
       </div>
