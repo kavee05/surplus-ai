@@ -43,7 +43,6 @@ next-env.d.ts
 # tooling
 .playwright-mcp/
 
-!.env.example
 
 # private working notes (kept locally, not published)
 PITCH_NOTES.md

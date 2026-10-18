@@ -73,7 +73,7 @@ Demo mode is the default and needs no key: sample photos have pre-written result
 
 ### Turning on live AI
 
-Set these (see [.env.example](.env.example)), in Vercel for both Production and Preview, then redeploy:
+Set these environment variables in your hosting provider (for Vercel: both Production and Preview), then redeploy:
 
 ```
 LIVE_AI=true
@@ -84,7 +84,7 @@ UPSTASH_REDIS_REST_URL=...     # optional, shares limits across instances
 UPSTASH_REDIS_REST_TOKEN=...
 ```
 
-Step-by-step instructions: [docs/LIVE_AI_SETUP.md](docs/LIVE_AI_SETUP.md). Check the result at `/api/ai-status?check=1`. It reports the mode, model and setup checks, never the key. The app uses the Google Gemini API only.
+Check the result at `/api/ai-status?check=1`. It reports the mode, model and setup checks, never the key. The app uses the Google Gemini API only.
 
 ## Explainable recommendations
 

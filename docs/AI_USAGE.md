@@ -16,7 +16,7 @@ Not AI, on purpose: forecasting, the Pre-Order Check, matching, ranking, savings
 
 Surplus AI uses the **Google Gemini API only**, through its REST endpoint (`src/lib/ai/provider.ts`, one function: `generateStructured`). The model comes from `GEMINI_MODEL` and defaults to `gemini-3.5-flash-lite`, Google's current fast, cost-effective multimodal model (stable, no shutdown date announced as of October 2026). `gemini-3.8-flash` is a stronger alternative.
 
-Live AI runs only when `LIVE_AI=true` and `GEMINI_API_KEY` is set. The key is read on the server only, at request time. Variables: `LIVE_AI`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `LIVE_AI_DAILY_CAP`, and optionally `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`. Setup steps: [LIVE_AI_SETUP.md](LIVE_AI_SETUP.md).
+Live AI runs only when `LIVE_AI=true` and `GEMINI_API_KEY` is set. The key is read on the server only, at request time. Variables: `LIVE_AI`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `LIVE_AI_DAILY_CAP`, and optionally `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`.
 
 Every call uses Gemini structured JSON output, has a timeout (10 to 20 seconds), one retry for transient failures, and strict zod validation. Failures are reported as a category (auth, bad model, quota, timeout, invalid output, refused, provider error, network) and never include a key or raw provider message.
 

@@ -38,5 +38,4 @@ Surplus AI is one Next.js 15 app (App Router, TypeScript). There is no database 
 
 - [AI_USAGE.md](AI_USAGE.md): where AI is and is not used
 - [EXPLAINABILITY.md](EXPLAINABILITY.md): the explanation model
-- [LIVE_AI_SETUP.md](LIVE_AI_SETUP.md): turning on live AI
 - [DESIGN_DIRECTION.md](DESIGN_DIRECTION.md) and [DESIGN_AUDIT.md](DESIGN_AUDIT.md): the visual system and the audit behind it
