@@ -104,7 +104,7 @@ export function PreOrderPanel({
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
       {/* Form */}
-      <form data-demo="preorder-form" className="flex flex-col gap-4 rounded-xl border bg-card p-4 sm:p-5 lg:sticky lg:top-20 lg:col-span-2 lg:self-start" onSubmit={(e) => e.preventDefault()} aria-label="Pre-Order Check inputs">
+      <form data-demo="preorder-form" className="flex flex-col gap-4 rounded-2xl bg-card shadow-card p-4 sm:p-5 lg:sticky lg:top-20 lg:col-span-2 lg:self-start" onSubmit={(e) => e.preventDefault()} aria-label="Pre-Order Check inputs">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
           <Field label="Buying site" id="po-site">
             <Select
@@ -189,7 +189,7 @@ export function PreOrderPanel({
       </form>
 
       {/* Result */}
-      <div data-demo="preorder-result" className="flex flex-col gap-4 rounded-xl border bg-card p-4 sm:p-5 lg:col-span-3" aria-live="polite">
+      <div data-demo="preorder-result" className="flex flex-col gap-4 rounded-2xl bg-card shadow-card p-4 sm:p-5 lg:col-span-3" aria-live="polite">
         <div className="flex flex-col gap-1.5">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="text-xs font-medium text-muted-foreground">Recommendation</h3>

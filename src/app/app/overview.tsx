@@ -100,6 +100,7 @@ export function Overview() {
   const { state, ready, person } = useStore();
   const forecasts = useForecasts();
   const [showOthers, setShowOthers] = useState(false);
+  const [showAll, setShowAll] = useState(false);
   const queue = useMemo(() => decisionQueue(state), [state]);
   const stages = useMemo(() => impactStages(state), [state]);
   const monthly = useMemo(() => savingsByMonth(state), [state]);
@@ -138,7 +139,7 @@ export function Overview() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border bg-border lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <KpiCard label="Waiting on a decision" value={fmtNum(queue.length)} hint={`${approvals} need engineer approval`} tone="warning" />
         <KpiCard label="Blocked transfers" value={fmtNum(blocked)} hint="Approval or surplus not logged" tone="warning" />
         <KpiCard label="Reusable surplus now" value={fmtRm(stages.available)} hint="Logged and unclaimed, at new price" />
@@ -153,7 +154,7 @@ export function Overview() {
 
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-5">
         <div className="flex min-w-0 flex-col gap-6 lg:col-span-3">
-          <section aria-labelledby="queue-h" className="rounded-xl border bg-card">
+          <section aria-labelledby="queue-h" className="rounded-2xl bg-card shadow-card">
             <div className="flex items-center justify-between gap-2 border-b px-4 py-3 sm:px-5">
               <div>
                 <h2 id="queue-h" className="font-semibold">
@@ -169,10 +170,19 @@ export function Overview() {
               <EmptyState className="m-4" icon={CircleCheck} title="Nothing is waiting on you" description="New needs, approvals and forecast holds will appear here." />
             ) : (
               <ul className="divide-y">
-                {mine.slice(0, 8).map((q, i) => (
+                {(showAll ? mine : mine.slice(0, 5)).map((q, i) => (
                   <InboxRow key={q.id} q={q} lead={i === 0} />
                 ))}
               </ul>
+            )}
+            {mine.length > 5 && (
+              <button
+                type="button"
+                onClick={() => setShowAll((v) => !v)}
+                className="w-full border-t px-4 py-2.5 text-left text-sm font-semibold text-brand hover:bg-muted/40 sm:px-5"
+              >
+                {showAll ? "Show fewer" : `Show all ${mine.length}`}
+              </button>
             )}
             {others.length > 0 && (
               <div className="border-t">
@@ -200,7 +210,7 @@ export function Overview() {
 
           <AskBar variant="overview" />
 
-          <section aria-labelledby="coming-h" className="rounded-xl border bg-card">
+          <section aria-labelledby="coming-h" className="rounded-2xl bg-card shadow-card">
             <div className="border-b px-4 py-3 sm:px-5">
               <h2 id="coming-h" className="font-semibold">
                 Surplus on the way
@@ -236,7 +246,7 @@ export function Overview() {
         </div>
 
         <div className="flex min-w-0 flex-col gap-6 lg:col-span-2">
-          <section aria-labelledby="net-h" className="overflow-hidden rounded-xl border bg-card">
+          <section aria-labelledby="net-h" className="overflow-hidden rounded-2xl bg-card shadow-card">
             <div className="border-b px-4 py-3 sm:px-5">
               <h2 id="net-h" className="font-semibold">
                 Surplus Network
@@ -247,7 +257,7 @@ export function Overview() {
             <NetworkLegend className="border-t px-4 py-2.5 sm:px-5" />
           </section>
 
-          <section aria-labelledby="stages-h" className="rounded-xl border bg-card">
+          <section aria-labelledby="stages-h" className="rounded-2xl bg-card shadow-card">
             <div className="border-b px-4 py-3 sm:px-5">
               <h2 id="stages-h" className="font-semibold">
                 Achieved versus estimated

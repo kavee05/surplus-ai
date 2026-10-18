@@ -55,7 +55,7 @@ export function Impact() {
         description={`Results across ${state.sites.length} townships up to ${fmtDate(state.today)}. Every figure here comes from simulated data; carbon figures are illustrative.`}
       />
 
-      <div data-demo="impact-kpis" className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border bg-border xl:grid-cols-3">
+      <div data-demo="impact-kpis" className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3">
         <KpiCard label="RM saved, estimated" value={fmtRm(s.savedRm)} trend={months.map((m) => m.cumulativeRm)} hint={`${s.completed.length} completed transfers. Quantities recorded, prices assumed`} tone="success" action={<Explain title="RM saved" iconOnly lines={["Sum over completed transfers of (quantity × unit cost) minus haul cost.", "Unit costs and haul rate come from the assumptions page.", ...s.completed.slice(-3).map((x) => `${materialById(state, x.t.materialId).name}: ${fmtRm(x.s.savedRm)}.`)]} />} />
         <KpiCard label="Material reused" value={`${fmtNum(s.tonnes, 1)} t`} trend={months.reduce<number[]>((a, m) => [...a, (a.at(-1) ?? 0) + m.tonnes], [])} hint="Recorded quantity × assumed weight" action={<Explain title="Tonnes diverted" iconOnly lines={["Sum over completed transfers of quantity × kg per unit, divided by 1,000."]} />} />
         <KpiCard label="CO2e avoided (illustrative)" value={`${fmtNum(s.co2eKg / 1000, 1)} t`} hint="Placeholder factors, not a verified reduction" action={<Explain title="CO2e avoided" iconOnly lines={["Sum of kg diverted × kg CO2e per kg for that material.", "Factors are illustrative placeholders to confirm against ICE or supplier EPDs.", "Transport emissions are not deducted."]} />} />
@@ -139,7 +139,7 @@ export function Impact() {
         </ChartCard>
       </div>
 
-      <section id="ledger" aria-labelledby="ledger-h" className="mt-6 scroll-mt-20 rounded-xl border bg-card">
+      <section id="ledger" aria-labelledby="ledger-h" className="mt-6 scroll-mt-20 rounded-2xl bg-card shadow-card">
         <div className="flex flex-col gap-2 border-b px-4 py-3 sm:flex-row sm:items-end sm:justify-between sm:px-5">
           <div>
             <h2 id="ledger-h" className="font-semibold">

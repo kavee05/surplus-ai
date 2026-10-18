@@ -108,7 +108,7 @@ export function DataTable<T>({
         {toolbar && <div className="flex gap-2 sm:ml-auto">{toolbar}</div>}
       </div>
 
-      <div className="overflow-hidden rounded-xl border bg-card">
+      <div className="overflow-hidden rounded-2xl bg-card shadow-card">
         <Table>
           <TableHeader className="bg-muted/70">
             {table.getHeaderGroups().map((hg) => (

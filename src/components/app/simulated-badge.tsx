@@ -5,7 +5,7 @@ export function SimulatedBadge({ className, label = "Simulated data" }: { classN
   return (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center gap-1 rounded-[4px] border border-dashed border-forecast-ink/50 px-1.5 py-px text-[11px] font-medium whitespace-nowrap text-forecast-ink",
+        "inline-flex shrink-0 items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-bold whitespace-nowrap text-amber-800",
         className,
       )}
     >

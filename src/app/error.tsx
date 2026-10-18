@@ -15,7 +15,7 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
     <main className="grid min-h-[60dvh] place-items-center px-4 py-16">
       <div className="flex max-w-md flex-col items-center gap-5 text-center">
         <div>
-          <h1 className="font-display text-4xl leading-tight">This screen could not load</h1>
+          <h1 className="text-3xl leading-tight font-extrabold tracking-tight">This screen could not load</h1>
           <p className="mt-2 text-muted-foreground">
             Something in the saved demo data may be out of date. Try again, or reset the demo data to the original simulated seed.
           </p>

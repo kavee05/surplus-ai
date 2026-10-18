@@ -87,7 +87,7 @@ export function AskBar({ onApply, variant = "radar", className }: { onApply?: (i
   };
 
   return (
-    <section aria-labelledby="ask-h" className={cn("rounded-xl border bg-card", className)}>
+    <section aria-labelledby="ask-h" className={cn("rounded-2xl bg-card shadow-card", className)}>
       <div className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3 sm:px-5">
         <div className="flex items-center gap-2">
           <MessageSquareText className="size-4 text-brand" aria-hidden />

@@ -200,7 +200,7 @@ export function LogSurplus() {
       />
       <div data-demo="log-form" className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Step 1: photo */}
-        <section className="flex flex-col gap-4 rounded-xl border bg-card p-4 shadow-card sm:p-5" aria-labelledby="photo-h">
+        <section className="flex flex-col gap-4 rounded-2xl bg-card shadow-card p-4 shadow-card sm:p-5" aria-labelledby="photo-h">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 id="photo-h" className="font-semibold">
               1. Photo
@@ -283,7 +283,7 @@ export function LogSurplus() {
         </section>
 
         {/* Step 2: confirm */}
-        <section className="flex flex-col gap-4 rounded-xl border bg-card p-4 shadow-card sm:p-5" aria-labelledby="confirm-h">
+        <section className="flex flex-col gap-4 rounded-2xl bg-card shadow-card p-4 shadow-card sm:p-5" aria-labelledby="confirm-h">
           <h2 id="confirm-h" className="font-semibold">
             2. Check and confirm
           </h2>

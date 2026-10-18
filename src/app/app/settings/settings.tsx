@@ -81,7 +81,7 @@ export function Settings() {
         }
       />
 
-      <div className="sticky top-16 z-20 mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border bg-card/95 p-3 text-sm shadow-card backdrop-blur" aria-live="polite">
+      <div className="sticky top-16 z-20 mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl bg-card shadow-card/95 p-3 text-sm shadow-card backdrop-blur" aria-live="polite">
         <span className="font-medium">Live check, hero scenario:</span>
         <span>
           Reserve <strong className="tabular">{fmtNum(preview.reservedForecast)}</strong>, order <strong className="tabular">{fmtNum(preview.orderNow)}</strong>

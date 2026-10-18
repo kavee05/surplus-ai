@@ -108,7 +108,7 @@ export function Transfers() {
   return (
     <>
       <PageHeader title="Transfers" description="Each transfer moves through Matched, Reserved, Collected and Completed. Structural items cannot be reserved until an engineer approves them." />
-      <div className="mb-6 grid grid-cols-3 gap-px overflow-hidden rounded-xl border bg-border lg:grid-cols-6">
+      <div className="mb-6 grid grid-cols-3 gap-3 sm:gap-4 lg:grid-cols-6">
         {["Held on forecast", "Matched", "Awaiting approval", "Reserved", "Collected", "Completed"].map((s) => (
           <div key={s} className="flex min-w-0 flex-col gap-1 bg-card px-3.5 py-3">
             <span className="line-clamp-2 text-xs leading-snug text-muted-foreground">{s}</span>

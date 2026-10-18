@@ -8,7 +8,7 @@ import { Sparkline } from "./sparkline";
  * material schedule, rather than as separate floating cards.
  */
 export function KpiStrip({ className, children }: { className?: string; children: React.ReactNode }) {
-  return <div className={cn("grid gap-px overflow-hidden rounded-xl border bg-border", className)}>{children}</div>;
+  return <div className={cn("grid gap-3 sm:gap-4", className)}>{children}</div>;
 }
 
 const toneDot = {
@@ -39,7 +39,7 @@ export function KpiCard({
   className?: string;
 }) {
   return (
-    <div className={cn("flex min-w-0 flex-col bg-card px-3.5 py-3.5 sm:px-5 sm:py-4", className)}>
+    <div className={cn("flex min-w-0 flex-col rounded-2xl bg-card px-4 py-4 shadow-card sm:px-5 sm:py-5", className)}>
       <div className="flex items-center justify-between gap-2">
         <span className="flex min-w-0 items-start gap-2 text-[13px] text-muted-foreground sm:items-center">
           <span className={cn("mt-1.5 size-1.5 shrink-0 rounded-[1px] sm:mt-0", toneDot[tone])} aria-hidden />

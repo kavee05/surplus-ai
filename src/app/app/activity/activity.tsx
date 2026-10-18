@@ -45,7 +45,7 @@ export function Activity() {
         title="Activity"
         description="Every decision people made on a recommendation, with the recommendation exactly as it was shown and how strong its evidence was at the time."
       />
-      <div className="mb-5 grid grid-cols-3 gap-px overflow-hidden rounded-xl border bg-border">
+      <div className="mb-5 grid grid-cols-3 gap-3 sm:gap-4">
         {(["accepted", "modified", "rejected"] as const).map((o) => (
           <div key={o} className="bg-card px-4 py-3">
             <p className="text-xs text-muted-foreground">{outcomeMeta[o].label}</p>
@@ -83,7 +83,7 @@ export function Activity() {
       {rows.length === 0 ? (
         <EmptyState icon={History} title="No decisions yet" description="Approve, modify or reject a recommendation in the Radar, Needs or Transfers and it will be recorded here." />
       ) : (
-        <ol className="divide-y overflow-hidden rounded-xl border bg-card">
+        <ol className="divide-y overflow-hidden rounded-2xl bg-card shadow-card">
           {rows.map((d) => {
             const o = outcomeMeta[d.outcome];
             return (

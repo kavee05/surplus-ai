@@ -17,7 +17,7 @@ export function CertaintyBadge({ level, className }: { level: CertaintyLevel; cl
   return (
     <span
       title={c.explain}
-      className={cn("inline-flex h-5 shrink-0 items-center gap-1.5 rounded-[4px] border border-current/25 px-1.5 text-[11px] font-medium whitespace-nowrap", c.className, className)}
+      className={cn("inline-flex h-5 shrink-0 items-center gap-1.5 rounded-full bg-current/[0.08] px-2 text-[11px] font-semibold whitespace-nowrap", c.className, className)}
     >
       <span className="flex items-end gap-px" aria-hidden>
         {[0, 1, 2].map((i) => (

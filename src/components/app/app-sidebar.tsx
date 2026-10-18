@@ -31,13 +31,13 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="h-14 justify-center border-b border-sidebar-border">
         <Link href="/" className="flex items-center rounded-md px-1" aria-label="Surplus AI home">
-          {state === "collapsed" ? <LogoMark className="size-7" onDark /> : <Logo onDark />}
+          {state === "collapsed" ? <LogoMark className="size-7" /> : <Logo />}
         </Link>
       </SidebarHeader>
       <SidebarContent>
         {navGroups.map((group) => (
           <SidebarGroup key={group.label}>
-            <SidebarGroupLabel className="text-[11px] font-medium text-sidebar-foreground/80">{group.label}</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-[11px] font-bold tracking-wide text-slate-500 uppercase">{group.label}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map((item) => (
@@ -46,7 +46,7 @@ export function AppSidebar() {
                       asChild
                       isActive={isActive(item.href)}
                       tooltip={item.label}
-                      className="relative text-sidebar-foreground before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:rounded-full before:bg-forecast before:opacity-0 data-[active=true]:text-white data-[active=true]:before:opacity-100"
+                      className="h-9 rounded-xl font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 data-[active=true]:bg-emerald-50 data-[active=true]:font-semibold data-[active=true]:text-emerald-800 [&>svg]:size-[18px]"
                     >
                       <Link href={item.href} onClick={() => setOpenMobile(false)}>
                         <item.icon aria-hidden />
@@ -65,7 +65,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip="Start guided demo"
-              className="border border-forecast/30 bg-forecast/10 text-forecast hover:bg-forecast/20 hover:text-forecast"
+              className="h-10 rounded-xl bg-gradient-to-r from-emerald-600 to-sky-700 font-bold text-white shadow-[0_8px_18px_-8px_rgba(5,150,105,0.6)] hover:from-emerald-700 hover:to-sky-800 hover:text-white active:text-white"
               onClick={() => {
                 setOpenMobile(false);
                 start();
