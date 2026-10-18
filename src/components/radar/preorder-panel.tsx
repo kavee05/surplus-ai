@@ -200,13 +200,13 @@ export function PreOrderPanel({
           <p className="text-sm text-muted-foreground">{e.outcome}</p>
         </div>
 
-        <div className="-mx-4 grid grid-cols-2 gap-px border-y bg-border sm:-mx-5 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
           {result.listingQty > 0 && (
             <Figure label={result.fromListings.some((a) => a.secured) ? "Reserved, logged surplus" : "From logged surplus"} value={`${fmtNum(result.listingQty)}`} unit={mat.unit} icon={PackageCheck} tone="brand" />
           )}
           <Figure label="Reserve from forecast" value={fmtNum(result.reservedForecast)} unit={mat.unit} icon={Scale} tone="forecast" big />
           <Figure label="Order now" value={fmtNum(result.orderNow)} unit={mat.unit} icon={ShoppingCart} tone="neutral" big />
-          <div className={cn("col-span-2 flex flex-col bg-card px-4 py-3 sm:col-span-1 sm:px-5", result.listingQty > 0 && "sm:col-span-3")}>
+          <div className={cn("col-span-2 flex flex-col rounded-2xl bg-slate-50 px-4 py-3 sm:col-span-1", result.listingQty > 0 && "sm:col-span-3")}>
             <span className="text-xs text-muted-foreground">Decision date</span>
             <span className="tabular mt-1 text-xl font-semibold tracking-tight">
               <Flash value={fmtDate(result.decisionDate)} />
@@ -251,10 +251,16 @@ export function PreOrderPanel({
           </div>
         )}
 
-        <div className="border-t pt-4">
-          <h4 className="mb-3 text-sm font-semibold">Why this recommendation</h4>
-          <ExplanationPanel e={e} showRecommendation={false} />
-        </div>
+        <details className="group rounded-2xl bg-slate-50 px-4 py-3 open:pb-4">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-bold [&::-webkit-details-marker]:hidden">
+            Why this recommendation
+            <span className="text-xs font-semibold text-brand group-open:hidden">Show evidence and working</span>
+            <span className="hidden text-xs font-semibold text-brand group-open:inline">Hide</span>
+          </summary>
+          <div className="mt-4">
+            <ExplanationPanel e={e} showRecommendation={false} />
+          </div>
+        </details>
 
         <div className="flex flex-col gap-3 border-t pt-4">
           {lastDecision && (
@@ -334,13 +340,13 @@ function Figure({
   return (
     <div
       className={cn(
-        "flex flex-col bg-card px-4 py-3 sm:px-5",
-        tone === "forecast" && "bg-forecast-soft",
-        tone === "brand" && "bg-brand-soft",
+        "flex flex-col rounded-2xl bg-slate-50 px-4 py-3",
+        tone === "forecast" && "bg-amber-50",
+        tone === "brand" && "bg-emerald-50",
       )}
     >
       <span className={cn("text-xs", tone === "forecast" ? "text-forecast-ink" : "text-muted-foreground")}>{label}</span>
-      <span className={cn("tabular mt-1 font-semibold tracking-tight", big ? "text-3xl" : "text-xl")}>
+      <span className={cn("tabular mt-1 font-semibold tracking-tight", big ? "text-3xl font-extrabold" : "text-xl")}>
         <Flash value={value} />
       </span>
       <span className="text-xs text-muted-foreground">{unit}</span>

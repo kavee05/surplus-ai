@@ -104,7 +104,7 @@ export function RadarView() {
       >
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h2 id="timeline-heading" className="font-semibold">
+            <h2 id="timeline-heading" className="text-lg font-bold">
               Phases and forecast surplus
             </h2>
             <p className="text-sm text-muted-foreground">
@@ -175,7 +175,7 @@ export function RadarView() {
       </section>
 
       <section aria-labelledby="preorder-heading" className="mt-10">
-        <h2 id="preorder-heading" className="font-semibold">
+        <h2 id="preorder-heading" className="text-lg font-bold">
           Pre-Order Check
         </h2>
         <p className="mb-4 text-sm text-muted-foreground">

@@ -35,7 +35,7 @@ export function RadarTimeline({ className, onSelect, ...props }: TimelineProps &
   }, [todayPos]);
 
   return (
-    <div ref={scroller} className={cn("blueprint relative overflow-x-auto rounded-xl border", draw && "tl-draw", className)}>
+    <div ref={scroller} className={cn("relative overflow-x-auto rounded-2xl bg-card shadow-card", draw && "tl-draw", className)}>
       <TimelineCore
         {...props}
         renderNeed={(n) => (
