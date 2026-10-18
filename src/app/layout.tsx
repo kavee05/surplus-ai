@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
-const plexSans = IBM_Plex_Sans({ variable: "--font-plex-sans", subsets: ["latin"], weight: ["400", "500", "600", "700"], display: "swap" });
-const plexMono = IBM_Plex_Mono({ variable: "--font-plex-mono", subsets: ["latin"], weight: ["400", "500"], display: "swap" });
+// Mono is used for figures; not preloaded so it does not compete with the headline and body fonts.
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"], display: "swap", preload: false });
+const jakarta = Plus_Jakarta_Sans({ variable: "--font-jakarta", subsets: ["latin"], display: "swap" });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://surplus-ai.vercel.app";
 
@@ -29,9 +29,9 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en-MY" className={`${plexSans.variable} ${plexMono.variable}`}>
+    <html lang="en-MY" className={`${geistMono.variable} ${jakarta.variable}`}>
       <body>
-        <TooltipProvider delayDuration={200}>{children}</TooltipProvider>
+        {children}
       </body>
     </html>
   );

@@ -16,7 +16,7 @@ export const STALE_PROGRESS_DAYS = 21;
 const ORDER: CertaintyLevel[] = ["insufficient", "tentative", "moderate", "strong"];
 export const weakest = (...levels: CertaintyLevel[]) => levels.reduce((a, b) => (ORDER.indexOf(a) <= ORDER.indexOf(b) ? a : b));
 
-const NO_BACKTEST = "No back-test yet of the forecast rule against actual close-out surplus. The progress-based score is a rule of thumb, not a measured probability.";
+const NO_BACKTEST = "We have not yet checked this forecast rule against real past projects. The score is a rule of thumb, not a measured probability.";
 
 const g = (data: EngineData, key: keyof typeof globalAssumptions): AssumptionUsed => ({
   key,
@@ -57,7 +57,7 @@ export function forecastCertainty(f: Forecast, phase: Phase, today: string): Cer
     };
   }
   const fresh = phaseFreshness(phase, today);
-  const missing = [NO_BACKTEST, "Ordered quantity comes from the purchase plan; deliveries and site returns are not reconciled."];
+  const missing = [NO_BACKTEST, "The ordered amount comes from the purchase plan. Actual deliveries and returns were not checked."];
   if (fresh.stale) missing.push(fresh.age === null ? "Phase progress has no reported date." : `Phase progress was last reported ${fresh.age} days ago.`);
   let level: CertaintyLevel = phase.progressPct >= 60 ? "moderate" : "tentative";
   if (fresh.stale) level = weakest(level, "tentative");
@@ -68,7 +68,7 @@ export function forecastCertainty(f: Forecast, phase: Phase, today: string): Cer
         ? `The phase is ${phase.progressPct}% complete, so most of the ordered material has been used and the remaining quantity is easier to judge.`
         : `The phase is only ${phase.progressPct}% complete${fresh.stale ? " and its progress report is out of date" : ""}, so much of the order is still to be used.`,
     calibrated: false,
-    score: { value: f.confidence, label: `Progress-based score ${f.confidence.toFixed(2)} (rule of thumb from the Assumptions page, not a calibrated probability)` },
+    score: { value: f.confidence, label: `Worked out from phase progress with a rule of thumb you can change on the Assumptions page (score ${f.confidence.toFixed(2)}). It is a guide, not a calibrated probability.` },
     missing,
     couldChange: ["Design changes or breakage that use more material than planned.", "Ordered quantities being returned to the supplier.", "A late or early phase finish."],
   };
@@ -235,7 +235,7 @@ export function explainPreOrder(r: PreOrderResult, data: EngineData): Explanatio
         ? "Relies only on surplus already logged on site."
         : "No surplus passes the filters today, so ordering in full is the safe default. New surplus could still be logged.",
     calibrated: false,
-    score: r.confidence !== null ? { value: r.confidence, label: `Progress-based score ${r.confidence.toFixed(2)} for the forecast part (not a calibrated probability)` } : undefined,
+    score: r.confidence !== null ? { value: r.confidence, label: `The forecast part has a progress-based score of ${r.confidence.toFixed(2)}. It is a rule of thumb, not a calibrated probability.` } : undefined,
     missing: [...new Set(missing)],
     couldChange: [
       ...(used.length ? [`The source site logging a different quantity before ${fmtDate(r.decisionDate)}.`] : []),

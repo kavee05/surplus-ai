@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarClock, Check, Leaf, PackageCheck, Scale, ShoppingCart, ThumbsDown, Wallet } from "lucide-react";
+import { Check, Leaf, PackageCheck, Scale, ShoppingCart, ThumbsDown, Wallet } from "lucide-react";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -8,6 +8,7 @@ import { StatusBadge } from "@/components/app/status-badge";
 import { CertaintyBadge } from "@/components/explain/certainty";
 import { DecisionDialog, type DecisionMode } from "@/components/explain/decision-dialog";
 import { ExplanationPanel } from "@/components/explain/explanation-panel";
+import { Flash } from "@/components/app/flash";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -84,8 +85,8 @@ export function PreOrderPanel({
         href: "/app/transfers",
       }),
     });
-    toast.success(`Held ${fmtNum(held)} ${mat.unit} of forecast surplus`, {
-      description: `This is a hold in Surplus AI only. Place your supplier order for the rest yourself, and confirm or top up by ${fmtDate(result.decisionDate)}.`,
+    toast.success(`Reserved ${fmtNum(held)} ${mat.unit} of expected leftovers`, {
+      description: `Reserved in Surplus AI only. Order the rest from your supplier yourself, and confirm by ${fmtDate(result.decisionDate)}.`,
     });
   };
 
@@ -103,7 +104,7 @@ export function PreOrderPanel({
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
       {/* Form */}
-      <form data-demo="preorder-form" className="flex flex-col gap-4 rounded-xl border bg-card p-4 sm:p-5 lg:sticky lg:top-20 lg:col-span-2 lg:self-start" onSubmit={(e) => e.preventDefault()} aria-label="Pre-Order Check inputs">
+      <form data-demo="preorder-form" className="flex flex-col gap-4 rounded-2xl bg-card shadow-card p-4 sm:p-5 lg:sticky lg:top-20 lg:col-span-2 lg:self-start" onSubmit={(e) => e.preventDefault()} aria-label="Pre-Order Check inputs">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
           <Field label="Buying site" id="po-site">
             <Select
@@ -175,7 +176,7 @@ export function PreOrderPanel({
             <Label htmlFor="po-conservative" className="font-medium">
               Conservative mode
             </Label>
-            <p className="mt-0.5 text-xs text-muted-foreground">Reserve only forecast × progress-based score, leaving room for a smaller surplus.</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">Reserve less, in case fewer leftovers turn up than expected.</p>
           </div>
           <Switch id="po-conservative" checked={!!input.conservative} onCheckedChange={(v) => setInput({ ...input, conservative: v })} />
         </div>
@@ -188,7 +189,7 @@ export function PreOrderPanel({
       </form>
 
       {/* Result */}
-      <div data-demo="preorder-result" className="flex flex-col gap-4 rounded-xl border bg-card p-4 sm:p-5 lg:col-span-3" aria-live="polite">
+      <div data-demo="preorder-result" className="flex flex-col gap-4 rounded-2xl bg-card shadow-card p-4 sm:p-5 lg:col-span-3" aria-live="polite">
         <div className="flex flex-col gap-1.5">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="text-xs font-medium text-muted-foreground">Recommendation</h3>
@@ -199,18 +200,18 @@ export function PreOrderPanel({
           <p className="text-sm text-muted-foreground">{e.outcome}</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
           {result.listingQty > 0 && (
             <Figure label={result.fromListings.some((a) => a.secured) ? "Reserved, logged surplus" : "From logged surplus"} value={`${fmtNum(result.listingQty)}`} unit={mat.unit} icon={PackageCheck} tone="brand" />
           )}
           <Figure label="Reserve from forecast" value={fmtNum(result.reservedForecast)} unit={mat.unit} icon={Scale} tone="forecast" big />
           <Figure label="Order now" value={fmtNum(result.orderNow)} unit={mat.unit} icon={ShoppingCart} tone="neutral" big />
-          <div className={cn("col-span-2 flex flex-col justify-between rounded-lg border p-3 sm:col-span-1", result.listingQty > 0 && "sm:col-span-3")}>
-            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <CalendarClock className="size-3.5" aria-hidden /> Decision date
+          <div className={cn("col-span-2 flex flex-col rounded-2xl bg-slate-50 px-4 py-3 sm:col-span-1", result.listingQty > 0 && "sm:col-span-3")}>
+            <span className="text-xs text-muted-foreground">Decision date</span>
+            <span className="tabular mt-1 text-xl font-semibold tracking-tight">
+              <Flash value={fmtDate(result.decisionDate)} />
             </span>
-            <span className="mt-1 font-semibold">{fmtDate(result.decisionDate)}</span>
-            <span className="text-xs text-muted-foreground">Confirm the forecast or top up</span>
+            <span className="text-xs text-muted-foreground">Confirm, or buy the rest then</span>
           </div>
         </div>
 
@@ -228,21 +229,21 @@ export function PreOrderPanel({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-3">
-          <Saving icon={Wallet} label="Estimated saving" value={fmtRm(result.expected.savedRm)} note="Assumed unit cost minus haulage" />
-          <Saving icon={Scale} label="Material reused" value={fmtTonnes(result.expected.tonnes)} note="Quantity × assumed weight" />
-          <Saving icon={Leaf} label="CO2e avoided" value={`${fmtNum(result.expected.co2eKg / 1000, 1)} t`} note="Illustrative carbon factor" />
+        <div className="grid grid-cols-3 gap-x-4 border-b pb-4">
+          <Saving icon={Wallet} label="Estimated saving" value={fmtRm(result.expected.savedRm)} note="Estimated price, minus transport" />
+          <Saving icon={Scale} label="Material reused" value={fmtTonnes(result.expected.tonnes)} note="Estimated weight" />
+          <Saving icon={Leaf} label="CO2e avoided" value={`${fmtNum(result.expected.co2eKg / 1000, 1)} t`} note="Rough estimate" />
         </div>
         {result.reservedForecast > 0 && (
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div>
-              <p className="text-xs text-muted-foreground">If the full forecast appears</p>
+              <p className="text-xs text-muted-foreground">If all expected leftovers turn up</p>
               <p className="tabular font-medium">
                 {fmtNum(result.bestCase.qty)} {mat.unit}, {fmtRm(result.bestCase.savedRm)}
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">If only forecast × score appears</p>
+              <p className="text-xs text-muted-foreground">If fewer turn up than expected</p>
               <p className="tabular font-medium">
                 {fmtNum(result.worstCase.qty)} {mat.unit}, {fmtRm(result.worstCase.savedRm)}
               </p>
@@ -250,10 +251,16 @@ export function PreOrderPanel({
           </div>
         )}
 
-        <div className="border-t pt-4">
-          <h4 className="mb-3 text-sm font-semibold">Why this recommendation</h4>
-          <ExplanationPanel e={e} showRecommendation={false} />
-        </div>
+        <details className="group rounded-2xl bg-slate-50 px-4 py-3 open:pb-4">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-bold [&::-webkit-details-marker]:hidden">
+            Why this recommendation
+            <span className="text-xs font-semibold text-brand group-open:hidden">Show evidence and working</span>
+            <span className="hidden text-xs font-semibold text-brand group-open:inline">Hide</span>
+          </summary>
+          <div className="mt-4">
+            <ExplanationPanel e={e} showRecommendation={false} />
+          </div>
+        </details>
 
         <div className="flex flex-col gap-3 border-t pt-4">
           {lastDecision && (
@@ -292,11 +299,11 @@ export function PreOrderPanel({
         onOpenChange={(o) => !o && setDialog(null)}
         mode={dialog ?? "approve"}
         e={e}
-        title={dialog === "reject" ? "Reject this recommendation" : "Hold forecast surplus"}
+        title={dialog === "reject" ? "Reject this recommendation" : "Reserve expected leftovers"}
         consequence={
           dialog === "reject"
             ? "Nothing is held. Your reason is saved so the team can see why."
-            : `This places a hold on another site's forecast surplus inside Surplus AI. It does not place or change any supplier order. Order the remaining ${fmtNum(result.orderNow)} ${mat.unit} through your normal process.`
+            : `This reserves another site's expected leftovers in Surplus AI only. It does not place or change any supplier order. Order the remaining ${fmtNum(result.orderNow)} ${mat.unit} through your normal process.`
         }
         confirmLabel={dialog === "reject" ? "Reject and log" : "Confirm hold"}
         quantity={dialog === "approve" && newHolds.length === 1 ? { value: newHolds[0].reservedQty, max: newHolds[0].availableQty, unit: mat.unit, label: "Quantity to hold" } : undefined}
@@ -320,42 +327,41 @@ function Figure({
   label,
   value,
   unit,
-  icon: Icon,
   tone,
   big,
 }: {
   label: string;
   value: string;
   unit: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon?: React.ComponentType<{ className?: string }>;
   tone: "forecast" | "neutral" | "brand";
   big?: boolean;
 }) {
   return (
     <div
       className={cn(
-        "flex flex-col rounded-lg border p-3",
-        tone === "forecast" && "border-forecast/50 bg-forecast-soft",
-        tone === "brand" && "border-brand/25 bg-brand-soft",
+        "flex flex-col rounded-2xl bg-slate-50 px-4 py-3",
+        tone === "forecast" && "bg-amber-50",
+        tone === "brand" && "bg-emerald-50",
       )}
     >
-      <span className={cn("flex items-center gap-1.5 text-xs", tone === "forecast" ? "text-forecast-ink" : "text-muted-foreground")}>
-        <Icon className="size-3.5" aria-hidden /> {label}
+      <span className={cn("text-xs", tone === "forecast" ? "text-forecast-ink" : "text-muted-foreground")}>{label}</span>
+      <span className={cn("tabular mt-1 font-semibold tracking-tight", big ? "text-3xl font-extrabold" : "text-xl")}>
+        <Flash value={value} />
       </span>
-      <span className={cn("tabular mt-1 font-semibold tracking-tight", big ? "text-3xl" : "text-xl")}>{value}</span>
       <span className="text-xs text-muted-foreground">{unit}</span>
     </div>
   );
 }
 
-function Saving({ icon: Icon, label, value, note }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string; note: string }) {
+function Saving({ label, value, note }: { icon?: React.ComponentType<{ className?: string }>; label: string; value: string; note: string }) {
   return (
-    <div className="flex flex-col bg-card p-3">
-      <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-        <Icon className="size-3.5" aria-hidden /> {label}
+    <div className="flex min-w-0 flex-col">
+      <span className="text-xs text-muted-foreground">{label}</span>
+      <span className="tabular mt-1 text-base font-semibold sm:text-lg">
+        <Flash value={value} />
       </span>
-      <span className="tabular mt-1 text-lg font-semibold">{value}</span>
-      <span className="text-[11px] text-muted-foreground">{note}</span>
+      <span className="hidden text-[11px] text-muted-foreground sm:block">{note}</span>
     </div>
   );
 }

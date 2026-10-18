@@ -24,10 +24,10 @@ import { useStore } from "@/lib/store";
 import type { MaterialValues, OwnershipPolicy } from "@/lib/types";
 
 const groups: { title: string; description: string; keys: GlobalAssumptionKey[] }[] = [
-  { title: "Forecast score", description: "A rule of thumb that rises with phase progress. It is not a calibrated probability; a pilot would back-test it.", keys: ["confidenceMin", "confidenceMax", "progressLow", "progressHigh", "riskHigh", "riskMedium", "confirmTolerancePct"] },
-  { title: "Logistics", description: "Distance, timing and haulage.", keys: ["maxHaulKm", "handlingBufferDays", "truckCapacityT", "haulCostRmPerKm"] },
-  { title: "Ranking weights", description: "How forecast sources and matches are scored. They should add up to 1.", keys: ["weightCoverage", "weightDistance", "weightTiming", "weightConfidence"] },
-  { title: "Alerts and community", description: "When unclaimed surplus is flagged and offered onward.", keys: ["unclaimedAlertDays", "communityOfferDays"] },
+  { title: "Forecast score", description: "How sure we are about a forecast. It goes up as a phase gets closer to finishing. It is a rule of thumb, to be tested in a pilot.", keys: ["confidenceMin", "confidenceMax", "progressLow", "progressHigh", "riskHigh", "riskMedium", "confirmTolerancePct"] },
+  { title: "Logistics", description: "Distance, timing and transport.", keys: ["maxHaulKm", "handlingBufferDays", "truckCapacityT", "haulCostRmPerKm"] },
+  { title: "Ranking weights", description: "What matters most when we pick the best match. They should add up to 1.", keys: ["weightCoverage", "weightDistance", "weightTiming", "weightConfidence"] },
+  { title: "Alerts and community", description: "When unclaimed leftovers get flagged and offered to the community.", keys: ["unclaimedAlertDays", "communityOfferDays"] },
 ];
 
 const ownership: { id: OwnershipPolicy; label: string; body: string }[] = [
@@ -56,7 +56,7 @@ export function Settings() {
     <>
       <PageHeader
         title="Assumptions"
-        description="Every number the engine uses is an assumption with a source still to confirm. Change one and the Radar, matches and dashboard update straight away."
+        description="These are the numbers behind every calculation. They are our best guesses until checked with real data. Change one and everything updates at once."
         actions={
           <>
             <Button
@@ -81,7 +81,7 @@ export function Settings() {
         }
       />
 
-      <div className="sticky top-16 z-20 mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border bg-card/95 p-3 text-sm shadow-card backdrop-blur" aria-live="polite">
+      <div className="sticky top-16 z-20 mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl bg-card shadow-card/95 p-3 text-sm shadow-card backdrop-blur" aria-live="polite">
         <span className="font-medium">Live check, hero scenario:</span>
         <span>
           Reserve <strong className="tabular">{fmtNum(preview.reservedForecast)}</strong>, order <strong className="tabular">{fmtNum(preview.orderNow)}</strong>
@@ -153,7 +153,7 @@ export function Settings() {
           <Card>
             <CardHeader>
               <CardTitle>Material values</CardTitle>
-              <CardDescription>All ASSUMPTION. Costs to confirm with supplier quotes; carbon with ICE v3 or supplier EPDs (illustrative); lead times with procurement records; wastage with the QS standard.</CardDescription>
+              <CardDescription>All of these are estimates. Prices still need supplier quotes, carbon figures need a proper source (ICE v3 or supplier EPDs), delivery times need procurement records, and wastage needs the QS standard.</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -201,7 +201,7 @@ export function Settings() {
           <Card>
             <CardHeader>
               <CardTitle>Who owns surplus?</CardTitle>
-              <CardDescription>An open question we cannot answer yet. It must be confirmed with the developer and contractors in a pilot before any material moves.</CardDescription>
+              <CardDescription>We do not know this yet. It must be agreed with the developer and contractors in a pilot before any material moves.</CardDescription>
             </CardHeader>
             <CardContent>
               <RadioGroup

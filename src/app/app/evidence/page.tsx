@@ -1,9 +1,7 @@
-import { ExternalLink, TriangleAlert } from "lucide-react";
+import { ArrowUpRight, TriangleAlert } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/app/page-header";
-import { StatusBadge } from "@/components/app/status-badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { differentiation, evidence, evidenceLimits } from "@/data/evidence";
 
 export const metadata: Metadata = {
@@ -14,92 +12,81 @@ export const metadata: Metadata = {
 export default function EvidencePage() {
   return (
     <>
-      <PageHeader
-        title="Evidence and assumptions"
-        description="What we know, where it comes from, and its limits. Sources are paraphrased. The app's operational data is simulated; the figures on this page are from the cited sources."
-      />
+      <PageHeader title="Evidence and assumptions" description="The facts behind this idea, where they come from, and what they cannot prove. The app's own data is simulated for the demo." />
 
-      <Card className="mb-6 border-warning/30 bg-warning-soft">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-warning">
-            <TriangleAlert className="size-4" aria-hidden /> Limits to keep in mind
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="grid gap-2 text-sm sm:grid-cols-2">
-            {evidenceLimits.map((l) => (
-              <li key={l} className="flex gap-2">
-                <span className="mt-2 size-1.5 shrink-0 rounded-full bg-warning" aria-hidden />
-                {l}
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
+      <section aria-labelledby="limits-h" className="mb-8 rounded-2xl bg-amber-50 p-5 sm:p-6">
+        <h2 id="limits-h" className="flex items-center gap-2 font-bold text-amber-900">
+          <TriangleAlert className="size-5" aria-hidden /> Limits to keep in mind
+        </h2>
+        <ul className="mt-3 grid gap-x-8 gap-y-2 text-[15px] text-amber-950 sm:grid-cols-2">
+          {evidenceLimits.map((l) => (
+            <li key={l} className="flex gap-2">
+              <span className="mt-2 size-1.5 shrink-0 rounded-full bg-amber-500" aria-hidden />
+              {l}
+            </li>
+          ))}
+        </ul>
+      </section>
 
-      <h2 className="mb-3 font-semibold">Sources</h2>
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <h2 className="mb-4 text-lg font-bold">Sources</h2>
+      <ul className="grid gap-5 lg:grid-cols-2 lg:[&>li:last-child:nth-child(odd)]:col-span-2">
         {evidence.map((e) => (
-          <Card key={e.id} className="min-w-0">
-            <CardHeader>
-              <div className="flex flex-wrap items-center gap-2">
-                <CardTitle>{e.who}</CardTitle>
-                <StatusBadge tone="neutral">{e.kind}</StatusBadge>
-              </div>
-              <CardDescription>
-                <span className="tabular font-semibold text-foreground">{e.figure}</span> {e.figureLabel}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3 text-sm">
-              <p className="text-pretty">{e.summary}</p>
-              <p className="rounded-lg bg-muted p-3 text-muted-foreground">
-                <span className="font-medium text-foreground">Limit:</span> {e.limits}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Source: {e.source}
-                {e.url && (
-                  <>
-                    {" "}
-                    <a href={e.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-0.5 font-medium text-brand underline-offset-2 hover:underline">
-                      Open <ExternalLink className="size-3" aria-hidden />
-                      <span className="sr-only">(opens in a new tab)</span>
-                    </a>
-                  </>
-                )}
-              </p>
-            </CardContent>
-          </Card>
+          <li key={e.id} className="flex flex-col rounded-2xl bg-card p-6 shadow-card">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="font-bold">{e.who}</span>
+              <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">{e.kind}</span>
+            </div>
+            <p className="mt-4 text-3xl font-extrabold tracking-tight">{e.figure}</p>
+            <p className="mt-1 text-[15px] text-slate-600">{e.figureLabel}</p>
+            <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-950">
+              <span className="font-bold">Limit: </span>
+              {e.limits}
+            </p>
+            <p className="mt-auto pt-4 text-xs text-muted-foreground">
+              {e.source}
+              {e.url && (
+                <>
+                  {" "}
+                  <a href={e.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-0.5 font-semibold text-brand hover:underline">
+                    Open source <ArrowUpRight className="size-3" aria-hidden />
+                    <span className="sr-only">(opens in a new tab)</span>
+                  </a>
+                </>
+              )}
+            </p>
+          </li>
         ))}
-      </div>
+      </ul>
 
-      <h2 className="mt-10 mb-3 font-semibold">Differentiation and its limits</h2>
-      <Card>
-        <CardContent className="flex flex-col gap-3 pt-6 text-sm">
-          <p>{differentiation.intro}</p>
-          <ul className="flex flex-col gap-2">
+      <div className="mt-8 grid gap-4 lg:grid-cols-2">
+        <section aria-labelledby="diff-h" className="rounded-2xl bg-card p-6 shadow-card">
+          <h2 id="diff-h" className="text-lg font-bold">
+            How Radar differs, and its limits
+          </h2>
+          <p className="mt-2 text-[15px] text-slate-600">{differentiation.intro}</p>
+          <ul className="mt-3 flex flex-col gap-2.5 text-[15px]">
             {differentiation.points.map((p) => (
-              <li key={p} className="flex gap-2">
-                <span className="mt-2 size-1.5 shrink-0 rounded-full bg-brand" aria-hidden />
-                <span className="text-pretty">{p}</span>
+              <li key={p} className="flex gap-2.5">
+                <span className="mt-2 size-1.5 shrink-0 rounded-full bg-emerald-500" aria-hidden />
+                {p}
               </li>
             ))}
           </ul>
-        </CardContent>
-      </Card>
+        </section>
 
-      <h2 className="mt-10 mb-3 font-semibold">Assumptions in the model</h2>
-      <Card>
-        <CardContent className="flex flex-col gap-2 pt-6 text-sm">
-          <p>
-            Every cost, weight, carbon factor, lead time, wastage allowance, haul distance and scoring weight is an assumption, tagged with the source we would use to confirm it. They are listed and editable on the{" "}
-            <Link href="/app/settings" className="font-medium text-brand underline-offset-2 hover:underline">
-              Assumptions page
-            </Link>
-            .
+        <section aria-labelledby="assume-h" className="rounded-2xl bg-card p-6 shadow-card">
+          <h2 id="assume-h" className="text-lg font-bold">
+            Assumptions in the model
+          </h2>
+          <p className="mt-2 text-[15px] text-slate-600">
+            Every cost, weight, carbon factor, lead time, wastage allowance, haul distance and scoring weight is an assumption with a source still to confirm. You can see and change them all.
           </p>
-          <p className="text-muted-foreground">Township coordinates are approximate centres, used only for straight-line distance (haversine). Carbon figures are illustrative.</p>
-        </CardContent>
-      </Card>
+          <p className="mt-2 text-[15px] text-slate-600">Township locations are approximate, used only for straight-line distance. Carbon figures are illustrative.</p>
+          <Link href="/app/settings" className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white hover:bg-slate-800">
+            Open the Assumptions page <ArrowUpRight className="size-4" aria-hidden />
+          </Link>
+        </section>
+      </div>
     </>
   );
 }

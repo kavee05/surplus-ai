@@ -34,7 +34,7 @@ export function Explain({
           <SheetTitle>{title}</SheetTitle>
           <SheetDescription>Deterministic arithmetic from the assumptions on the Settings page. No AI model is involved.</SheetDescription>
         </SheetHeader>
-        <ol className="flex flex-col gap-3 px-4 pb-6">
+        <ol className="flex flex-col gap-3 px-6 pb-8">
           {lines.map((l, i) => (
             <li key={i} className="flex gap-3 text-sm">
               <span className="tabular grid size-6 shrink-0 place-items-center rounded-full bg-muted text-xs font-medium text-muted-foreground">{i + 1}</span>

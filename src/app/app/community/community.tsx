@@ -34,7 +34,7 @@ export function Community() {
     <>
       <PageHeader
         title="Community route"
-        description={`Surplus nobody on a site has claimed for more than ${days} days can be offered to community projects in the same township, instead of going to disposal.`}
+        description={`If no site claims leftover material within ${days} days, offer it to a community project nearby instead of throwing it away.`}
       />
       <div className="mb-6 flex gap-3 rounded-xl border border-warning/30 bg-warning-soft p-4 text-sm text-warning">
         <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
@@ -45,9 +45,9 @@ export function Community() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="flex flex-col gap-3 lg:col-span-2">
-          <h2 className="font-semibold">Eligible surplus</h2>
+          <h2 className="font-bold">Leftovers ready to offer</h2>
           {eligible.length === 0 ? (
-            <EmptyState icon={HandHeart} title="Nothing eligible right now" description={`Items appear here after ${days} days unclaimed.`} />
+            <EmptyState icon={HandHeart} title="Nothing eligible right now" description={`Material shows up here once nobody has claimed it for ${days} days.`} />
           ) : (
             eligible.map((l) => {
               const m = materialById(state, l.materialId);

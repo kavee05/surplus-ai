@@ -114,7 +114,7 @@ export function Inventory() {
     <>
       <PageHeader
         title="Surplus inventory"
-        description="Material logged as leftover on any site. Available items can be matched to needs anywhere in the network."
+        description="Leftover material that sites have recorded. Anything available can go to any site that needs it."
         actions={
           <Button asChild>
             <Link href="/app/surplus/log">
@@ -123,7 +123,7 @@ export function Inventory() {
           </Button>
         }
       />
-      <div className="mb-6 grid grid-cols-2 gap-px overflow-hidden rounded-xl border bg-border lg:grid-cols-4">
+      <div className="mb-6 grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
         <KpiCard label="Available items" value={fmtNum(available.length)} />
         <KpiCard label="Available value" value={fmtRm(available.reduce((a, l) => a + listingValueRm(state, l), 0))} />
         <KpiCard label="Reserved" value={fmtNum(state.listings.filter((l) => l.status === "reserved").length)} />
@@ -179,7 +179,7 @@ function ListingDetail({ listing, onDone }: { listing: Listing; onDone: () => vo
           {siteName(state, listing.siteId)}, logged {fmtDate(listing.loggedAt)} by {listing.loggedBy}
         </SheetDescription>
       </SheetHeader>
-      <div className="flex flex-col gap-5 px-4 pb-6">
+      <div className="flex flex-col gap-5 px-6 pb-8">
         {sample && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={sample.src} alt={`Sample illustration: ${sample.label}`} className="aspect-[4/3] w-full rounded-lg border object-cover" />

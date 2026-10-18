@@ -40,7 +40,7 @@ There is no calibrated probability anywhere in this prototype. Certainty levels 
 - **Pre-Order Check**: the weakest level of anything it relies on.
 - **Photo suggestions**: always tentative until a person checks; "not enough evidence" if the item is not recognised.
 
-Numbers shown alongside these levels are labelled for what they are: a progress-based rule of thumb, a ranking score, the model's own estimate, or a canned demo value.
+On screen each level reads as a short tag, for example "Evidence: moderate", with a three-step meter and a one-line plain explanation (hover, or read it in the How sure section). Numbers shown alongside these levels are labelled for what they are: a progress-based rule of thumb, a ranking score, the model's own estimate, or a canned demo value.
 
 ## Human control
 

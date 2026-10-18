@@ -10,6 +10,8 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   devIndicators: false,
   poweredByHeader: false,
+  // radix-ui is a barrel package; without this, one Slot import ships every primitive to the static landing page.
+  experimental: { optimizePackageImports: ["radix-ui"] },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

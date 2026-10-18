@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeftRight, Boxes, Gauge, HandHeart, Leaf, Scale, TriangleAlert, Wallet } from "lucide-react";
+import { HandHeart, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -52,20 +52,19 @@ export function Impact() {
     <>
       <PageHeader
         title="Impact"
-        description={`Results across ${state.sites.length} townships up to ${fmtDate(state.today)}. Every figure here comes from simulated data; carbon figures are illustrative.`}
+        description={`What reuse has saved across ${state.sites.length} townships up to ${fmtDate(state.today)}. All figures use simulated data, and carbon figures are rough estimates.`}
       />
 
-      <div data-demo="impact-kpis" className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border bg-border xl:grid-cols-3">
-        <KpiCard label="RM saved, estimated" value={fmtRm(s.savedRm)} hint={`${s.completed.length} completed transfers. Quantities recorded, prices assumed`} icon={Wallet} tone="success" action={<Explain title="RM saved" iconOnly lines={["Sum over completed transfers of (quantity × unit cost) minus haul cost.", "Unit costs and haul rate come from the assumptions page.", ...s.completed.slice(-3).map((x) => `${materialById(state, x.t.materialId).name}: ${fmtRm(x.s.savedRm)}.`)]} />} />
-        <KpiCard label="Material reused" value={`${fmtNum(s.tonnes, 1)} t`} hint="Recorded quantity × assumed weight" icon={Scale} action={<Explain title="Tonnes diverted" iconOnly lines={["Sum over completed transfers of quantity × kg per unit, divided by 1,000."]} />} />
-        <KpiCard label="CO2e avoided (illustrative)" value={`${fmtNum(s.co2eKg / 1000, 1)} t`} hint="Placeholder factors, not a verified reduction" icon={Leaf} action={<Explain title="CO2e avoided" iconOnly lines={["Sum of kg diverted × kg CO2e per kg for that material.", "Factors are illustrative placeholders to confirm against ICE or supplier EPDs.", "Transport emissions are not deducted."]} />} />
-        <KpiCard label="Active transfers" value={fmtNum(s.activeMatches)} hint="Not counted until completed" icon={ArrowLeftRight} />
-        <KpiCard label="Unclaimed surplus value" value={fmtRm(s.unclaimedValueRm)} hint={`${s.alerts.length} items over ${state.assumptions.global.unclaimedAlertDays} days`} icon={Boxes} tone="warning" />
+      <div data-demo="impact-kpis" className="grid grid-cols-2 gap-4 sm:gap-5 xl:grid-cols-3">
+        <KpiCard label="RM saved, estimated" value={fmtRm(s.savedRm)} trend={months.map((m) => m.cumulativeRm)} hint={`From ${s.completed.length} finished transfers, using estimated prices`} tone="success" action={<Explain title="RM saved" iconOnly lines={["Sum over completed transfers of (quantity × unit cost) minus haul cost.", "Unit costs and haul rate come from the assumptions page.", ...s.completed.slice(-3).map((x) => `${materialById(state, x.t.materialId).name}: ${fmtRm(x.s.savedRm)}.`)]} />} />
+        <KpiCard label="Material reused" value={`${fmtNum(s.tonnes, 1)} t`} trend={months.reduce<number[]>((a, m) => [...a, (a.at(-1) ?? 0) + m.tonnes], [])} hint="Estimated weight of material reused" action={<Explain title="Tonnes diverted" iconOnly lines={["Sum over completed transfers of quantity × kg per unit, divided by 1,000."]} />} />
+        <KpiCard label="CO2e avoided (illustrative)" value={`${fmtNum(s.co2eKg / 1000, 1)} t`} hint="A rough estimate, not verified" action={<Explain title="CO2e avoided" iconOnly lines={["Sum of kg diverted × kg CO2e per kg for that material.", "Factors are illustrative placeholders to confirm against ICE or supplier EPDs.", "Transport emissions are not deducted."]} />} />
+        <KpiCard label="Active transfers" value={fmtNum(s.activeMatches)} hint="Not counted until completed" />
+        <KpiCard label="Unclaimed surplus value" value={fmtRm(s.unclaimedValueRm)} hint={`${s.alerts.length} items over ${state.assumptions.global.unclaimedAlertDays} days`} tone="warning" />
         <KpiCard
           label="Forecast accuracy"
           value={s.accuracy === null ? "No data" : fmtPct(s.accuracy)}
           hint={`${s.outcomes} outcomes, ${simulatedCount} simulated. Too few real ones to rely on`}
-          icon={Gauge}
           tone="forecast"
           action={<Explain title="Forecast accuracy" iconOnly lines={["Accuracy = 1 minus the mean absolute percentage error between forecast and actual surplus.", "Each error is capped at 100%.", `${simulatedCount} of ${s.outcomes} records are simulated history, seeded so the panel is not empty.`]} />}
         />
@@ -74,7 +73,7 @@ export function Impact() {
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <ChartCard
           title="RM saved by month"
-          description="Completed transfers, net of haulage."
+          description="Money saved each month, after transport costs."
           table={{ headers: ["Month", "RM saved", "Cumulative"], rows: months.map((m) => [m.month, fmtRm(m.savedRm), fmtRm(m.cumulativeRm)]) }}
         >
           <ResponsiveContainer width="100%" height="100%">
@@ -83,7 +82,7 @@ export function Impact() {
               <XAxis dataKey="month" tick={axis} tickLine={false} axisLine={false} />
               <YAxis tick={axis} tickLine={false} axisLine={false} tickFormatter={rmShort} width={68} />
               <Tooltip cursor={{ fill: "var(--muted)" }} content={<ChartTooltip format={fmtRm} />} />
-              <Bar dataKey="savedRm" name="RM saved" fill="var(--chart-1)" radius={[4, 4, 0, 0]} maxBarSize={36} />
+              <Bar isAnimationActive={false} dataKey="savedRm" name="RM saved" fill="var(--chart-1)" radius={[2, 2, 0, 0]} maxBarSize={36} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -97,32 +96,32 @@ export function Impact() {
             <BarChart data={towns} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
               <CartesianGrid horizontal={false} stroke="var(--border)" />
               <XAxis type="number" tick={axis} tickLine={false} axisLine={false} tickFormatter={rmShort} />
-              <YAxis type="category" dataKey="township" tick={axis} tickLine={false} axisLine={false} width={150} />
+              <YAxis type="category" dataKey="township" interval={0} tick={axis} tickLine={false} axisLine={false} width={150} />
               <Tooltip cursor={{ fill: "var(--muted)" }} content={<ChartTooltip format={fmtRm} />} />
-              <Bar dataKey="savedRm" name="RM saved" fill="var(--chart-1)" radius={[0, 4, 4, 0]} maxBarSize={18} />
+              <Bar isAnimationActive={false} dataKey="savedRm" name="RM saved" fill="var(--chart-1)" radius={[0, 2, 2, 0]} maxBarSize={18} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
 
         <ChartCard
           title="RM saved by material"
-          description="Category of the reused material."
+          description="What kind of material was reused."
           table={{ headers: ["Category", "RM saved", "Tonnes"], rows: cats.map((c) => [c.category, fmtRm(c.savedRm), fmtNum(c.tonnes, 1)]) }}
         >
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={cats} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
               <CartesianGrid horizontal={false} stroke="var(--border)" />
               <XAxis type="number" tick={axis} tickLine={false} axisLine={false} tickFormatter={rmShort} />
-              <YAxis type="category" dataKey="category" tick={axis} tickLine={false} axisLine={false} width={150} />
+              <YAxis type="category" dataKey="category" interval={0} tick={axis} tickLine={false} axisLine={false} width={150} />
               <Tooltip cursor={{ fill: "var(--muted)" }} content={<ChartTooltip format={fmtRm} />} />
-              <Bar dataKey="savedRm" name="RM saved" fill="var(--chart-1)" radius={[0, 4, 4, 0]} maxBarSize={18} />
+              <Bar isAnimationActive={false} dataKey="savedRm" name="RM saved" fill="var(--chart-1)" radius={[0, 2, 2, 0]} maxBarSize={18} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
 
         <ChartCard
           title="Forecast versus actual surplus"
-          description="Each pair is one forecast and the surplus later logged."
+          description="Each pair compares what we expected with what was actually left."
           badge={<SimulatedBadge label={`${simulatedCount} simulated`} />}
           table={{ headers: ["Item", "Forecast", "Actual", "Status"], rows: acc.map((a) => [a.label, a.Forecast, a.Actual, a.o.status + (a.o.simulated ? " (simulated)" : "")]) }}
         >
@@ -133,14 +132,14 @@ export function Impact() {
               <YAxis tick={axis} tickLine={false} axisLine={false} width={44} />
               <Tooltip cursor={{ fill: "var(--muted)" }} content={<ChartTooltip format={(v) => fmtNum(v)} />} />
               <Legend iconType="square" iconSize={10} wrapperStyle={{ fontSize: 12 }} />
-              <Bar dataKey="Forecast" fill="var(--chart-2)" radius={[4, 4, 0, 0]} maxBarSize={14} />
-              <Bar dataKey="Actual" fill="var(--chart-1)" radius={[4, 4, 0, 0]} maxBarSize={14} />
+              <Bar isAnimationActive={false} dataKey="Forecast" fill="var(--chart-2)" radius={[2, 2, 0, 0]} maxBarSize={14} />
+              <Bar isAnimationActive={false} dataKey="Actual" fill="var(--chart-1)" radius={[2, 2, 0, 0]} maxBarSize={14} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
       </div>
 
-      <section id="ledger" aria-labelledby="ledger-h" className="mt-6 scroll-mt-20 rounded-xl border bg-card">
+      <section id="ledger" aria-labelledby="ledger-h" className="mt-6 scroll-mt-20 rounded-2xl bg-card shadow-card">
         <div className="flex flex-col gap-2 border-b px-4 py-3 sm:flex-row sm:items-end sm:justify-between sm:px-5">
           <div>
             <h2 id="ledger-h" className="font-semibold">
@@ -182,14 +181,14 @@ export function Impact() {
                         {siteName(state, t.fromSiteId)} to {siteName(state, t.toSiteId)}
                       </span>
                     </td>
-                    <td className="tabular px-3 py-2 text-right whitespace-nowrap">
+                    <td className="tabular whitespace-nowrap px-3 py-2 text-right whitespace-nowrap">
                       {fmtNum(t.qty)} {m.unit}
                     </td>
-                    <td className="tabular px-3 py-2 text-right">{fmtRm(sv.valueRm)}</td>
-                    <td className="tabular px-3 py-2 text-right text-muted-foreground">−{fmtRm(sv.haulRm)}</td>
-                    <td className="tabular px-3 py-2 text-right font-medium">{fmtRm(sv.savedRm)}</td>
-                    <td className="tabular px-3 py-2 text-right">{fmtNum(sv.tonnes, 2)} t</td>
-                    <td className="tabular px-4 py-2 text-right sm:px-5">{fmtNum(sv.co2eKg)} kg</td>
+                    <td className="tabular whitespace-nowrap px-3 py-2 text-right">{fmtRm(sv.valueRm)}</td>
+                    <td className="tabular whitespace-nowrap px-3 py-2 text-right text-muted-foreground">−{fmtRm(sv.haulRm)}</td>
+                    <td className="tabular whitespace-nowrap px-3 py-2 text-right font-medium">{fmtRm(sv.savedRm)}</td>
+                    <td className="tabular whitespace-nowrap px-3 py-2 text-right">{fmtNum(sv.tonnes, 2)} t</td>
+                    <td className="tabular whitespace-nowrap px-4 py-2 text-right sm:px-5">{fmtNum(sv.co2eKg)} kg</td>
                   </tr>
                 );
               })}
@@ -199,11 +198,11 @@ export function Impact() {
                 <td className="px-4 py-2 sm:px-5" colSpan={3}>
                   Total, {ledger.length} transfers
                 </td>
-                <td className="tabular px-3 py-2 text-right">{fmtRm(ledger.reduce((a, x) => a + x.s.valueRm, 0))}</td>
-                <td className="tabular px-3 py-2 text-right text-muted-foreground">−{fmtRm(ledger.reduce((a, x) => a + x.s.haulRm, 0))}</td>
-                <td className="tabular px-3 py-2 text-right">{fmtRm(s.savedRm)}</td>
-                <td className="tabular px-3 py-2 text-right">{fmtNum(s.tonnes, 1)} t</td>
-                <td className="tabular px-4 py-2 text-right sm:px-5">{fmtNum(s.co2eKg)} kg</td>
+                <td className="tabular whitespace-nowrap px-3 py-2 text-right">{fmtRm(ledger.reduce((a, x) => a + x.s.valueRm, 0))}</td>
+                <td className="tabular whitespace-nowrap px-3 py-2 text-right text-muted-foreground">−{fmtRm(ledger.reduce((a, x) => a + x.s.haulRm, 0))}</td>
+                <td className="tabular whitespace-nowrap px-3 py-2 text-right">{fmtRm(s.savedRm)}</td>
+                <td className="tabular whitespace-nowrap px-3 py-2 text-right">{fmtNum(s.tonnes, 1)} t</td>
+                <td className="tabular whitespace-nowrap px-4 py-2 text-right sm:px-5">{fmtNum(s.co2eKg)} kg</td>
               </tr>
             </tfoot>
           </table>
@@ -259,7 +258,7 @@ export function Impact() {
           className="lg:col-span-3"
           title="Value as more townships join"
           badge={<SimulatedBadge label="Simulated projection" />}
-          description={`Average so far: ${fmtRm(scale.perTownshipPerYear)} a year per township, plus an assumed 3% more matches for each extra township. SDP reports 27 active townships.`}
+          description={`So far each township saves about ${fmtRm(scale.perTownshipPerYear)} a year. We assume 3% more matches for every extra township. SDP has 27 active townships.`}
           table={{ headers: ["Townships", "Annual RM saved"], rows: scale.points.map((p) => [p.townships, fmtRm(p.annualRm)]) }}
         >
           <ResponsiveContainer width="100%" height="100%">
@@ -268,7 +267,7 @@ export function Impact() {
               <XAxis dataKey="townships" tick={axis} tickLine={false} axisLine={false} tickFormatter={(v) => (v === 1 ? "1 town" : `${v} towns`)} />
               <YAxis tick={axis} tickLine={false} axisLine={false} tickFormatter={rmShort} width={68} />
               <Tooltip cursor={{ fill: "var(--muted)" }} content={<ChartTooltip format={fmtRm} />} labelFormatter={(v) => `${v} townships`} />
-              <Bar dataKey="annualRm" name="Annual RM saved" fill="var(--chart-1)" radius={[4, 4, 0, 0]} maxBarSize={40} />
+              <Bar isAnimationActive={false} dataKey="annualRm" name="Annual RM saved" fill="var(--chart-1)" radius={[2, 2, 0, 0]} maxBarSize={40} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>

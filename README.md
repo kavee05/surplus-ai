@@ -1,5 +1,20 @@
 # Surplus AI
 
+[![CI](https://github.com/kavee05/surplus-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/kavee05/surplus-ai/actions/workflows/ci.yml)
+
+## Judges quick start
+
+- **Live site:** https://surplus-ai.vercel.app (no sign-in, simulated data)
+- **Guided demo (about two minutes):** on the home page click **Try the guided demo**. It runs a Pre-Order Check for 1,000 floor tiles at Bandar Bukit Raja (reserve 800, order 200, confirm by 24 Nov, an estimated RM 11,098 saved and 6.4 t of material reused), holds the forecast surplus, logs the real surplus by photo three weeks later, completes the transfer, and ends on Impact at RM 41,719.
+- **Evidence and limits:** https://surplus-ai.vercel.app/app/evidence
+- **Five files to read:**
+  1. [src/lib/engine/forecast.ts](src/lib/engine/forecast.ts): surplus forecast from ordered versus planned quantities
+  2. [src/lib/engine/preorder.ts](src/lib/engine/preorder.ts): the Pre-Order Check (reserve, order now, decision date)
+  3. [src/lib/explain/builders.ts](src/lib/explain/builders.ts): the explanation behind every recommendation
+  4. [src/lib/ai/ask.ts](src/lib/ai/ask.ts): Ask Surplus AI, with every AI-written number checked against the engine
+  5. [src/components/network/surplus-network.tsx](src/components/network/surplus-network.tsx): the Surplus Network map of townships, transfers and forecasts
+- **Keyboard:** Ctrl K (Cmd K on Mac) opens the command palette anywhere in the app.
+
 **Check before you buy.** Surplus AI is a working prototype of a closed-network surplus platform for township developers, built for the Sime Darby Property (SDP) University Hackathon 2026, theme "Township of Tomorrow", Planet track (circular economy and waste management).
 
 Construction teams order with a buffer, so usable material is left at the end of each phase while other phases buy the same items new. Surplus AI shows surplus across sites. Its main feature, **Surplus Radar**, forecasts surplus *before* it exists, from ordered versus planned quantities, and tells a buyer on another site to order less.
@@ -8,7 +23,7 @@ Construction teams order with a buffer, so usable material is left at the end of
 
 ## Run it
 
-Requirements: Node.js 20 or newer, npm.
+Requirements: Node.js 22 or newer, npm.
 
 ```bash
 npm install
@@ -24,23 +39,52 @@ Other scripts:
 | `npm test` | Vitest unit tests for forecast, Pre-Order Check, matching, savings and transfer workflow |
 | `npm run lint` | ESLint |
 | `npm run build` then `npm start` | Production build and server |
+| `npm run test:e2e` | Playwright end-to-end tests against a production build (run `npx playwright install chromium` once) |
 
-## Demo mode and live AI
+## Architecture
 
-Photo analysis runs on the server only (`src/app/api/analyze-photo/route.ts`). The model never decides anything else: forecasts, matching and every explanation come from deterministic code in `src/lib/engine`.
+```mermaid
+flowchart LR
+  subgraph Browser
+    UI[Next.js app screens] --> Store[(localStorage demo state)]
+    UI --> Engine[Deterministic engine<br/>forecast, Pre-Order Check,<br/>matching, savings, impact]
+    Engine --> Explain[Explanation builders]
+    Explain --> UI
+  end
+  UI -- photo or sentence --> API[Next.js API routes<br/>/api/analyze-photo, /api/ask]
+  API --> Limits[Rate limits and daily cap]
+  Limits -- live mode only --> Gemini[(Google Gemini API)]
+  API -- demo mode --> Rules[Sample results and rule-based reader]
+  API -- suggestion only --> UI
+  People((People)) -- confirm every hold,<br/>match and transfer --> UI
+```
 
-- **Demo mode (default, also on a public deployment).** No API key needed. Eight sample photos (simple SVG illustrations made for this project, in `public/samples`) return canned, zod-validated results. Uploaded photos are not analysed; the user fills in the details.
-- **Live AI (opt-in).** Uses the Google Gemini API. Copy `.env.example` to `.env.local` and set:
+The AI suggests and summarises; the engine calculates every quantity; a person confirms every action. More detail: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-  ```
-  LIVE_AI=true
-  GEMINI_API_KEY=your-key
-  GEMINI_MODEL=gemini-3.5-flash-lite
-  ```
+## Where AI is used
 
-  Safeguards: images are resized in the browser, requests over about 4 MB are refused, there is an in-memory rate limit of 8 analyses per IP per 10 minutes, image text is treated as data, and output is validated with zod. The AI result is only a suggestion: it shows confidence, labels quantities as estimates, and the user must tick a confirmation box before saving.
+AI reads messy input and writes plain-language summaries. Deterministic code calculates. People approve.
 
-Never commit `.env.local`. It is already ignored by git.
+- **Photo intake:** suggests item, condition and an estimated quantity from an uploaded photo; the engineer confirms before saving.
+- **Ask Surplus AI:** reads a sentence such as "I need 1,000 floor tiles at Bandar Bukit Raja by 7 December", the engine runs the Pre-Order Check, and the model writes a short briefing that is shown only if every number matches the engine.
+- **Not AI:** forecasting, matching, savings, carbon and certainty levels are plain, tested arithmetic.
+
+Demo mode is the default and needs no key: sample photos have pre-written results, a rule-based reader handles requests, and summaries use a template. Every AI surface shows a Live AI or Demo mode badge. Details, providers, guardrails and limits: [docs/AI_USAGE.md](docs/AI_USAGE.md).
+
+### Turning on live AI
+
+Set these environment variables in your hosting provider (for Vercel: both Production and Preview), then redeploy:
+
+```
+LIVE_AI=true
+GEMINI_API_KEY=...             # from Google AI Studio
+GEMINI_MODEL=gemini-3.5-flash-lite
+LIVE_AI_DAILY_CAP=200
+UPSTASH_REDIS_REST_URL=...     # optional, shares limits across instances
+UPSTASH_REDIS_REST_TOKEN=...
+```
+
+Check the result at `/api/ai-status?check=1`. It reports the mode, model and setup checks, never the key. The app uses the Google Gemini API only.
 
 ## Explainable recommendations
 
@@ -60,7 +104,7 @@ Carbon figures are illustrative. Forecasts are estimates.
 
 ## The hero scenario
 
-A procurement officer at Bandar Bukit Raja plans 1,000 floor tiles for Phase 2B, starting 7 Dec 2026 (five weeks after the demo date of 2 Nov 2026). City of Elmina Phase 3 ordered 5,000 tiles against 4,000 planned plus 5% wastage, so about 800 will be left when it finishes on 23 Nov, with a progress-based score of 0.70 at 62% progress (moderate evidence, not a calibrated probability).
+A procurement officer at Bandar Bukit Raja plans 1,000 floor tiles for Phase 2B, starting 7 Dec 2026 (five weeks after the demo date of 2 Nov 2026). City of Elmina Phase 3 ordered 5,000 tiles against 4,000 planned plus 5% wastage, so about 800 will be left when it finishes on 23 Nov, with a progress-based score of 0.70 at 62% progress (Evidence: moderate. The score is a rule of thumb, not a calibrated probability).
 
 - Recommendation: reserve 800, order 200 now, confirm by 24 Nov.
 - Conservative mode: reserve 560, order 440.
@@ -71,7 +115,7 @@ The landing page visual, Radar, Guided Demo and unit tests all compute these fro
 
 ## How it is built
 
-- Next.js 15 (App Router), TypeScript, Tailwind CSS v4, shadcn/ui on Radix, lucide-react, Recharts, TanStack Table, sonner, zod, Geist via next/font.
+- Next.js 15 (App Router), TypeScript, Tailwind CSS v4, shadcn/ui on Radix, lucide-react, Recharts, TanStack Table, sonner, cmdk, zod. Type: Plus Jakarta Sans via next/font.
 - No database. Seed data in `src/data/seed.ts`; state in the browser's localStorage, with **Reset demo data** in the user menu and on the Assumptions page.
 - Distances use the haversine formula on approximate coordinates. No map API.
 - Key folders: `src/lib/engine` (pure logic and tests), `src/lib/assumptions.ts` (every number, tagged ASSUMPTION with a source to confirm), `src/app/app/*` (app screens), `src/components/radar` (timeline and Pre-Order Check).
@@ -84,6 +128,10 @@ The landing page visual, Radar, Guided Demo and unit tests all compute these fro
 - Pre-Order Check: use the buyer's own existing reservations first, then unclaimed logged surplus that passes hard filters (same item, available in time, within the haul limit), then forecasts from other sites that arrive before the need date minus a handling buffer, ranked by coverage, distance, timing slack and confidence.
 - Risk: High at 0.75 or more, Medium 0.5 to 0.75, Low below 0.5. Decision date = need date minus supplier lead time minus handling buffer.
 
+## Design
+
+The interface uses style A, "Fresh": a white and slate palette with an emerald to sky accent, Plus Jakarta Sans, soft cards and light animation. It was chosen by the project owner from three mockups and approved page by page. See [docs/DESIGN_DIRECTION.md](docs/DESIGN_DIRECTION.md) and [docs/DESIGN_AUDIT.md](docs/DESIGN_AUDIT.md). Screenshots are in `screenshots/before` and `screenshots/after`.
+
 ## Limits
 
 - Nothing here has been validated with SDP. Site-level surplus, ordering data and workflows are assumptions.
@@ -92,6 +140,17 @@ The landing page visual, Radar, Guided Demo and unit tests all compute these fro
 - There is no sign-in. The role switcher in the user menu changes the view between site engineer, procurement officer and management.
 - localStorage is per browser, so each visitor sees their own copy of the demo.
 
+## Author and credit
+
+Surplus AI was created by Team ALICE, students of Universiti Teknologi Malaysia, Kuala Lumpur (UTM KL), for the Sime Darby Property University Hackathon 2026.
+
+Code and engineering: Kaveetiran A/L Sitambaram, with Claude Code as the coding assistant.
+Pitch deck, video and submission: Team ALICE.
+
+Team members: Kaveetiran A/L Sitambaram, Kirthiggan A/L Saravanan, Risikesan A/L Yogeswaran, Dakshina Narrayana A/L Selvavinayagam, Kavinnesh A/L R Chandraguptha.
+
+Reuse is welcome under the MIT licence as long as the copyright notice is kept.
+
 ## Licence
 
-MIT. See `LICENSE`.
+MIT. Copyright (c) 2026 Kaveetiran A/L Sitambaram. See [LICENSE](LICENSE). To cite this project, use [CITATION.cff](CITATION.cff).
