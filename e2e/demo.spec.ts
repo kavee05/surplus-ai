@@ -61,3 +61,11 @@ for (const path of ["/app", "/app/radar", "/app/surplus", "/app/needs", "/app/tr
     await expect(page.getByText("Demo date")).toBeVisible();
   });
 }
+
+test("Review and hold opens with the recommended quantity filled in", async ({ page }) => {
+  await page.goto("/app/radar");
+  await page.getByRole("button", { name: /Review and hold 800/ }).click();
+  const dialog = page.getByRole("dialog", { name: "Reserve expected leftovers" });
+  await expect(dialog.getByLabel("Quantity to hold")).toHaveValue("800");
+  await expect(dialog.getByRole("button", { name: "Confirm hold" })).toBeEnabled();
+});
