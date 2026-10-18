@@ -4,7 +4,7 @@ import { Logo } from "@/components/brand/logo";
 export const DISCLAIMER =
   "Surplus AI is a student prototype built for the Sime Darby Property University Hackathon 2026. It is not affiliated with or endorsed by Sime Darby Property. All operational data is simulated.";
 
-export const CREDIT = "Built by Team ALICE, UTM KL. Code by Kaveetiran A/L Sitambaram.";
+export const CREDIT = "Built by Team ELIZA, UTM KL. Code by Kaveetiran A/L Sitambaram.";
 
 export function SiteHeader() {
   return (

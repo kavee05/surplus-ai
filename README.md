@@ -142,10 +142,10 @@ The interface uses style A, "Fresh": a white and slate palette with an emerald t
 
 ## Author and credit
 
-Surplus AI was created by Team ALICE, students of Universiti Teknologi Malaysia, Kuala Lumpur (UTM KL), for the Sime Darby Property University Hackathon 2026.
+Surplus AI was created by Team ELIZA, students of Universiti Teknologi Malaysia, Kuala Lumpur (UTM KL), for the Sime Darby Property University Hackathon 2026.
 
 Code and engineering: Kaveetiran A/L Sitambaram, with Claude Code as the coding assistant.
-Pitch deck, video and submission: Team ALICE.
+Pitch deck, video and submission: Team ELIZA.
 
 Team members: Kaveetiran A/L Sitambaram, Kirthiggan A/L Saravanan, Risikesan A/L Yogeswaran, Dakshina Narrayana A/L Selvavinayagam, Kavinnesh A/L R Chandraguptha.
 
