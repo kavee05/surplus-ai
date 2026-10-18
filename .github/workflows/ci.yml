@@ -29,7 +29,12 @@ jobs:
       - name: Install
         # The lockfile is written on Windows; npm can omit nested optional WebAssembly
         # packages that Linux expects. Fall back to npm install (what Vercel runs) if so.
-        run: npm ci || { echo "::warning::npm ci failed on Linux, falling back to npm install"; npm install --no-audit --no-fund; }
+        run: |
+          if ! npm ci 2> npm-ci.log; then
+            grep -E "npm error" npm-ci.log | head -8 | while read -r line; do echo "::warning::$line"; done
+            echo "::warning::npm ci failed on Linux, falling back to npm install"
+            npm install --no-audit --no-fund
+          fi
       - name: Lint
         run: npm run lint
       - name: Unit tests
