@@ -16,7 +16,7 @@ const ROUTE = "M70 140 C 150 20, 290 20, 370 120";
 
 export function HeroVisual() {
   return (
-    <figure className="l-float relative rounded-3xl bg-white p-5 shadow-[0_30px_60px_-25px_rgba(15,23,42,0.25),0_0_0_1px_rgba(15,23,42,0.05)] sm:p-6">
+    <figure className="l-float relative rounded-3xl bg-white p-5 shadow-card sm:p-6">
       <figcaption className="flex items-center justify-between gap-2 text-[15px] font-bold text-slate-900">
         Porcelain floor tiles
         <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-bold text-amber-800">Forecast · simulated</span>

@@ -107,8 +107,8 @@ export function Transfers() {
 
   return (
     <>
-      <PageHeader title="Transfers" description="Each transfer moves through Matched, Reserved, Collected and Completed. Structural items cannot be reserved until an engineer approves them." />
-      <div className="mb-6 grid grid-cols-3 gap-3 sm:gap-4 lg:grid-cols-6">
+      <PageHeader title="Transfers" description="Material moving between sites. Each one goes from Matched to Reserved, Collected and Completed. Structural items like steel need an engineer's OK first." />
+      <div className="mb-6 grid grid-cols-3 gap-4 sm:gap-5 lg:grid-cols-6">
         {["Held on forecast", "Matched", "Awaiting approval", "Reserved", "Collected", "Completed"].map((s) => (
           <div key={s} className="flex min-w-0 flex-col gap-1.5 rounded-2xl bg-card px-4 py-3.5 shadow-card">
             <span className="line-clamp-2 text-xs leading-snug text-muted-foreground">{s}</span>
@@ -126,7 +126,7 @@ export function Transfers() {
         rowLabel={(r) => `${r.item}, ${r.route}. Open workflow`}
         rowAttrs={(r) => (r.t.id === HERO_TRANSFER_ID ? { "data-demo": "hero-transfer" } : {})}
         rowClassName={(r) => (r.t.id === HERO_TRANSFER_ID ? "bg-forecast-soft/50" : undefined)}
-        empty={<EmptyState className="m-4 border-0" icon={ArrowLeftRight} title="No transfers here" description="Match a need to surplus, or reserve forecast surplus in the Radar." />}
+        empty={<EmptyState className="m-4 border-0" icon={ArrowLeftRight} title="No transfers here" description="Match a request to leftover material, or reserve expected leftovers in the Radar." />}
       />
       <Sheet open={!!open} onOpenChange={(o) => !o && setOpenId(null)}>
         <SheetContent className="w-full overflow-y-auto sm:max-w-xl">{open && <TransferDetail t={open} />}</SheetContent>
@@ -168,7 +168,7 @@ function TransferDetail({ t }: { t: Transfer }) {
       </SheetHeader>
       <div className="flex flex-col gap-5 px-6 pb-8">
         <ol className="flex flex-col gap-0" aria-label="Workflow">
-          {held && <Step label="Held on forecast" state="current" note="Waiting for the source site to log the actual surplus." />}
+          {held && <Step label="Held on forecast" state="current" note="Waiting for the other site to record what is actually left." />}
           {t.status === "Cancelled" ? (
             <Step label="Cancelled" state="current" note={cancelled ? `${fmtDate(cancelled.at)}, ${cancelled.by}${cancelled.note ? `: ${cancelled.note}` : ""}` : undefined} />
           ) : (
@@ -257,8 +257,8 @@ function TransferDetail({ t }: { t: Transfer }) {
         title={dialog === "reject" ? (needsEngineer ? "Reject this structural transfer" : "Cancel this transfer") : "Approve structural reuse"}
         consequence={
           dialog === "reject"
-            ? "The transfer is cancelled and the listing becomes available again. Your reason is saved."
-            : "You confirm, as site engineer, that this structural item is fit for reuse at the receiving site. The transfer moves to Reserved."
+            ? "The transfer is cancelled and the material is free for others again. Your reason is saved."
+            : "As the site engineer, you confirm this item is safe to reuse at the other site. It will be marked Reserved."
         }
         confirmLabel={dialog === "reject" ? (needsEngineer ? "Reject and log" : "Cancel transfer") : "Approve and reserve"}
         quickReasons={needsEngineer ? ["Visible corrosion or damage", "Specification does not match the design", "Needs testing first"] : ["No longer needed", "Sourced elsewhere", "Collection not possible in time"]}

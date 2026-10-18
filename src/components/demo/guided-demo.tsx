@@ -36,22 +36,22 @@ const STEPS: Step[] = [
     target: "preorder-form",
   },
   {
-    title: "Radar sees surplus before it exists",
-    body: "City of Elmina Phase 3 ordered 5,000 tiles against 4,200 needed, and it finishes on 23 Nov. That is about 800 spare tiles. At 62% progress the evidence is moderate: a rule of thumb from phase progress, not a calibrated probability. Nobody has logged them yet.",
+    title: "Radar spots leftovers before they exist",
+    body: "City of Elmina ordered 5,000 tiles but only needs about 4,200. When it finishes on 23 Nov, about 800 tiles will be left. The phase is 62% done, so this is a fair guess, not a certainty. Nobody has recorded them yet.",
     route: "/app/radar",
     role: "procurement",
     target: "radar-timeline",
   },
   {
     title: "Reserve 800, order only 200",
-    body: "The check recommends reserving 800 from the Elmina forecast and ordering 200 now. Confirm by 24 Nov or top up. Open “Why this recommendation” to see the evidence, the arithmetic and the alternatives. Turn on Conservative mode for the cautious version: reserve 560, order 440.",
+    body: "The advice: reserve 800 of Elmina's expected tiles and buy only 200 new. Confirm by 24 Nov, or buy the rest then. Open “Why this recommendation” to see how it was worked out. Conservative mode plays it safer: reserve 560, buy 440.",
     route: "/app/radar",
     role: "procurement",
     target: "preorder-result",
   },
   {
-    title: "Hold the forecast surplus",
-    body: "Daniel reserves 800 tiles against the forecast. Elmina now knows a buyer is waiting, so the tiles are not skipped or sent to disposal.",
+    title: "Reserve the expected tiles",
+    body: "Daniel reserves the 800 tiles. Elmina now knows someone wants them, so they will not be thrown away.",
     route: "/app/radar",
     role: "procurement",
     target: "reserve-button",
@@ -70,7 +70,7 @@ const STEPS: Step[] = [
   },
   {
     title: "Three weeks later at City of Elmina",
-    body: "It is now 23 Nov. Phase 3 is handed over, and Aina Rahman, the site engineer, has boxes of tiles left. She logs them from a photo; the AI suggests the item and an estimated quantity, and she confirms.",
+    body: "It is now 23 Nov. Elmina's phase is finished and Aina, the site engineer, has boxes of tiles left. She takes a photo; the AI suggests what it is and roughly how many, and she checks and confirms.",
     route: "/app/surplus/log",
     role: "engineer",
     target: "log-form",
@@ -82,7 +82,7 @@ const STEPS: Step[] = [
   },
   {
     title: "The forecast turns Confirmed",
-    body: `Aina saves ${HERO_ACTUAL_QTY.toLocaleString("en-MY")} tiles. That is within 15% of the 800 forecast, so the forecast is marked Confirmed and Daniel's hold becomes a firm reservation.`,
+    body: `Aina records ${HERO_ACTUAL_QTY.toLocaleString("en-MY")} tiles. That is close to the 800 expected, so the forecast is marked Confirmed and Daniel's reservation is now firm.`,
     route: "/app/surplus/log",
     role: "engineer",
     target: "log-form",
@@ -97,7 +97,7 @@ const STEPS: Step[] = [
   },
   {
     title: "Collect and complete the transfer",
-    body: "The tiles move about 13 km from Elmina to Bandar Bukit Raja. Each step is recorded: Matched, Reserved, Collected, Completed.",
+    body: "The tiles travel about 13 km from Elmina to Bandar Bukit Raja. Every step is recorded: Matched, Reserved, Collected, Completed.",
     route: "/app/transfers",
     role: "procurement",
     target: "hero-transfer",
@@ -121,7 +121,7 @@ const STEPS: Step[] = [
   },
   {
     title: "Management sees the result",
-    body: "The dashboard now counts the tiles: money saved, tonnes kept out of disposal, illustrative carbon avoided, and one more confirmed forecast. All figures are simulated.",
+    body: "The dashboard now counts the tiles: money saved, tonnes kept out of landfill, a rough carbon estimate, and one more correct forecast. All figures are simulated.",
     route: "/app/impact",
     role: "management",
     target: "impact-kpis",

@@ -9,7 +9,7 @@ export const CREDIT = "Built by Team ALICE, UTM KL. Code by Kaveetiran A/L Sitam
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-white/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4 sm:px-6">
+      <div className="mx-auto flex h-16 max-w-6xl 2xl:max-w-[88rem] items-center gap-6 px-4 sm:px-6">
         <Link href="/" className="rounded-md">
           <Logo />
         </Link>
@@ -42,7 +42,7 @@ export function SiteHeader() {
 export function SiteFooter() {
   return (
     <footer className="border-t border-slate-200 bg-slate-50">
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
+      <div className="mx-auto grid max-w-6xl 2xl:max-w-[88rem] gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
         <div className="flex flex-col gap-3">
           <Logo />
           <p className="max-w-sm text-sm text-slate-600">{DISCLAIMER}</p>
@@ -62,7 +62,7 @@ export function SiteFooter() {
         </nav>
       </div>
       <div className="border-t border-slate-200">
-        <div className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-4 text-xs text-slate-600 sm:flex-row sm:justify-between sm:px-6">
+        <div className="mx-auto flex max-w-6xl 2xl:max-w-[88rem] flex-col gap-1 px-4 py-4 text-xs text-slate-600 sm:flex-row sm:justify-between sm:px-6">
           <p>{CREDIT}</p>
           <p>MIT licence. No SDP logos or trademarks are used. Township names appear for realism only; quantities, people and companies are fictional.</p>
         </div>

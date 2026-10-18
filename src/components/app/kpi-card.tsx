@@ -8,7 +8,7 @@ import { Sparkline } from "./sparkline";
  * material schedule, rather than as separate floating cards.
  */
 export function KpiStrip({ className, children }: { className?: string; children: React.ReactNode }) {
-  return <div className={cn("grid gap-3 sm:gap-4", className)}>{children}</div>;
+  return <div className={cn("grid gap-4 sm:gap-5", className)}>{children}</div>;
 }
 
 const toneDot = {

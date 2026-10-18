@@ -139,10 +139,10 @@ export function Overview() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
         <KpiCard label="Waiting on a decision" value={fmtNum(queue.length)} hint={`${approvals} need engineer approval`} tone="warning" />
         <KpiCard label="Blocked transfers" value={fmtNum(blocked)} hint="Approval or surplus not logged" tone="warning" />
-        <KpiCard label="Reusable surplus now" value={fmtRm(stages.available)} hint="Logged and unclaimed, at new price" />
+        <KpiCard label="Leftovers ready to reuse" value={fmtRm(stages.available)} hint="What they would cost to buy new" />
         <KpiCard
           label="Saving achieved"
           value={fmtRm(stages.achieved.savedRm)}
@@ -160,7 +160,7 @@ export function Overview() {
                 <h2 id="queue-h" className="font-semibold">
                   For you <span className="tabular ml-1 text-muted-foreground">{mine.length}</span>
                 </h2>
-                <p className="text-xs text-muted-foreground">Most urgent first. Act here, or open the record to see its evidence.</p>
+                <p className="text-xs text-muted-foreground">Most urgent first. Act here, or open one to see why.</p>
               </div>
               <Link href="/app/activity" className="shrink-0 text-xs font-medium text-brand hover:underline">
                 Decision history
@@ -215,10 +215,10 @@ export function Overview() {
               <h2 id="coming-h" className="font-semibold">
                 Surplus on the way
               </h2>
-              <p className="text-xs text-muted-foreground">Forecast from purchase plans, next 90 days.</p>
+              <p className="text-xs text-muted-foreground">Material other sites should have spare in the next 90 days.</p>
             </div>
             {upcoming.length === 0 ? (
-              <EmptyState className="m-4" icon={CircleCheck} title="No surplus forecast in the next 90 days" description="Forecasts appear as phases order more than their plans need." />
+              <EmptyState className="m-4" icon={CircleCheck} title="No surplus forecast in the next 90 days" description="These appear when a site orders more than it needs." />
             ) : (
               <ul className="divide-y">
                 {upcoming.slice(0, 5).map(({ f, value, c }) => {
@@ -245,13 +245,13 @@ export function Overview() {
           </section>
         </div>
 
-        <div className="flex min-w-0 flex-col gap-6 lg:col-span-2">
+        <div className="flex min-w-0 flex-col gap-6 lg:sticky lg:top-20 lg:col-span-2 lg:self-start">
           <section aria-labelledby="net-h" className="overflow-hidden rounded-2xl bg-card shadow-card">
             <div className="border-b px-4 py-3 sm:px-5">
               <h2 id="net-h" className="font-semibold">
                 Surplus Network
               </h2>
-              <p className="text-xs text-muted-foreground">Live from the demo records. Rings turn green when surplus is logged.</p>
+              <p className="text-xs text-muted-foreground">Where material is moving. Circles turn green once leftovers are recorded.</p>
             </div>
             <SurplusNetwork data={state} forecasts={forecasts} highlightSiteIds={holdSites} />
             <NetworkLegend className="border-t px-4 py-2.5 sm:px-5" />
@@ -267,8 +267,8 @@ export function Overview() {
             <dl className="divide-y text-sm">
               {[
                 { k: "Achieved", d: "Completed transfers", v: stages.achieved, tone: "bg-success" },
-                { k: "In progress", d: "Matched to collected, real surplus", v: stages.inProgress, tone: "bg-brand" },
-                { k: "Held on forecast", d: "Surplus not yet logged", v: stages.onForecast, tone: "bg-forecast" },
+                { k: "In progress", d: "Moving now, from recorded leftovers", v: stages.inProgress, tone: "bg-brand" },
+                { k: "Held on forecast", d: "Reserved before the leftovers are recorded", v: stages.onForecast, tone: "bg-forecast" },
               ].map((r) => (
                 <div key={r.k} className="flex items-center justify-between gap-3 px-4 py-3 sm:px-5">
                   <dt className="flex items-start gap-2.5">
@@ -288,7 +288,7 @@ export function Overview() {
               ))}
             </dl>
             <p className="border-t px-4 py-2.5 text-xs text-muted-foreground sm:px-5">
-              Savings use assumed unit costs. Quantities are from simulated records.{" "}
+              Savings use estimated prices and simulated records.{" "}
               <Link href="/app/impact#ledger" className="font-medium text-brand hover:underline">
                 See the ledger
               </Link>

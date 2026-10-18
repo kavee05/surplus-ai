@@ -53,7 +53,7 @@ const faqs = [
   { q: "How accurate is the forecast?", a: "Unknown until it runs on real ordering data. The prototype shows how accuracy would be tracked, using simulated history that is labelled as such." },
 ];
 
-const SECTION = "mx-auto max-w-6xl scroll-mt-20 px-4 py-20 sm:px-6 lg:py-24";
+const SECTION = "mx-auto max-w-6xl 2xl:max-w-[88rem] scroll-mt-20 px-4 py-20 sm:px-6 lg:py-24";
 const EYEBROW = "text-sm font-bold text-emerald-700";
 const H2 = "mt-2 text-3xl font-extrabold tracking-tight text-balance text-slate-900 sm:text-4xl";
 const PRIMARY =
@@ -69,7 +69,7 @@ export default function Landing() {
       <main id="main">
         {/* Hero */}
         <section className="relative overflow-hidden bg-[radial-gradient(1200px_500px_at_85%_-10%,#d7f5ea_0%,transparent_60%),radial-gradient(800px_400px_at_-10%_110%,#e4f0ff_0%,transparent_60%)]">
-          <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 pt-12 pb-20 sm:px-6 lg:grid-cols-[1fr_1.05fr] lg:pt-20 lg:pb-28">
+          <div className="mx-auto grid max-w-6xl 2xl:max-w-[88rem] items-center gap-12 px-4 pt-12 pb-20 sm:px-6 lg:grid-cols-[1fr_1.05fr] lg:pt-20 lg:pb-28">
             <div>
               <span className="l-rise l-d1 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-[13px] font-semibold text-emerald-800">
                 <span className="size-1.5 rounded-full bg-emerald-500" aria-hidden /> Simulated data · student prototype
@@ -103,14 +103,14 @@ export default function Landing() {
           <div className="max-w-2xl">
             <p className={EYEBROW}>The problem</p>
             <h2 id="problem-h" className={H2}>
-              Safety buffers become waste because nobody sees across sites.
+              Extra material gets thrown away because no site can see what others have.
             </h2>
           </div>
           <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {evidence
               .filter((e) => e.id !== "haehre")
               .map((e) => (
-                <li key={e.id} className="flex flex-col rounded-3xl bg-slate-50 p-6">
+                <li key={e.id} className="flex flex-col rounded-3xl bg-white p-6 shadow-card">
                   <span className="text-3xl font-extrabold tracking-tight text-slate-900">{e.figure}</span>
                   <span className="mt-2 text-[15px] leading-snug text-slate-700">{e.figureLabel}</span>
                   <span className="mt-auto pt-4 text-xs leading-relaxed text-slate-500">
@@ -135,7 +135,7 @@ export default function Landing() {
             </div>
             <ol className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {steps.map((s, i) => (
-                <li key={s.title} className="rounded-3xl bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06),0_0_0_1px_rgba(15,23,42,0.04)]">
+                <li key={s.title} className="rounded-3xl bg-white p-6 shadow-card">
                   <span className="grid size-12 place-items-center rounded-2xl bg-gradient-to-br from-emerald-500 to-sky-600 text-white shadow-[0_8px_18px_-8px_rgba(5,150,105,0.7)]">
                     <s.icon className="size-6" aria-hidden />
                   </span>
@@ -173,7 +173,7 @@ export default function Landing() {
                 Open Surplus Radar <ArrowRight className="size-4" aria-hidden />
               </Link>
             </div>
-            <div className="rounded-3xl bg-white p-6 shadow-[0_30px_60px_-30px_rgba(15,23,42,0.3),0_0_0_1px_rgba(15,23,42,0.06)] sm:p-8">
+            <div className="rounded-3xl bg-white p-6 shadow-card sm:p-8">
               <div className="flex items-center justify-between gap-2">
                 <h3 className="text-lg font-bold">The worked example</h3>
                 <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-bold text-amber-800">Simulated data</span>
@@ -217,7 +217,7 @@ export default function Landing() {
             </div>
             <div className="mt-10 grid gap-4 md:grid-cols-3">
               {split.map((c) => (
-                <div key={c.title} className="rounded-3xl bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06),0_0_0_1px_rgba(15,23,42,0.04)]">
+                <div key={c.title} className="rounded-3xl bg-white p-6 shadow-card">
                   <span className={`grid size-12 place-items-center rounded-2xl bg-gradient-to-br ${c.tone} text-white`}>
                     <c.icon className="size-6" aria-hidden />
                   </span>
@@ -241,7 +241,7 @@ export default function Landing() {
           </div>
           <div className="mt-10 grid gap-4 md:grid-cols-3">
             {roles.map((x) => (
-              <div key={x.title} className="flex gap-4 rounded-3xl border border-slate-200 p-6">
+              <div key={x.title} className="flex gap-4 rounded-3xl bg-white p-6 shadow-card">
                 <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-emerald-50 text-emerald-700">
                   <x.icon className="size-5" aria-hidden />
                 </span>
@@ -256,7 +256,7 @@ export default function Landing() {
 
         {/* Impact */}
         <section aria-labelledby="impact-h" className="px-4 sm:px-6">
-          <div className="mx-auto max-w-6xl rounded-[2rem] bg-slate-900 px-6 py-14 text-white sm:px-12">
+          <div className="mx-auto max-w-6xl 2xl:max-w-[88rem] rounded-[2rem] bg-slate-900 px-6 py-14 text-white sm:px-12">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
                 <p className="text-sm font-bold text-emerald-400">Impact in the demo</p>
@@ -300,7 +300,7 @@ export default function Landing() {
 
         {/* CTA */}
         <section aria-labelledby="cta-h" className="px-4 pb-20 sm:px-6">
-          <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 rounded-[2rem] bg-gradient-to-br from-emerald-600 to-sky-700 p-10 text-white sm:p-14 md:flex-row md:items-center md:justify-between">
+          <div className="mx-auto flex max-w-6xl 2xl:max-w-[88rem] flex-col items-start gap-6 rounded-[2rem] bg-gradient-to-br from-emerald-600 to-sky-700 p-10 text-white sm:p-14 md:flex-row md:items-center md:justify-between">
             <div>
               <h2 id="cta-h" className="text-3xl font-extrabold tracking-tight">
                 See it in two minutes.
@@ -315,7 +315,7 @@ export default function Landing() {
               Try the guided demo <ArrowRight className="size-4" aria-hidden />
             </Link>
           </div>
-          <p className="mx-auto mt-8 max-w-6xl text-xs text-slate-500">{DISCLAIMER}</p>
+          <p className="mx-auto mt-8 max-w-6xl 2xl:max-w-[88rem] text-xs text-slate-500">{DISCLAIMER}</p>
         </section>
       </main>
       <SiteFooter />

@@ -10,24 +10,24 @@ export const metadata: Metadata = {
 };
 
 const weeks = [
-  { w: "Weeks 1 and 2", title: "Set up", body: "Agree surplus ownership. Load purchase plans and BoQ quantities for active phases. Confirm costs, lead times and wastage allowances with procurement and the QS." },
-  { w: "Weeks 3 and 4", title: "Forecast and log", body: "Run Radar on live phases. Site engineers log actual surplus by photo at each handover. Buyers run a Pre-Order Check before orders of the chosen materials." },
-  { w: "Weeks 5 and 6", title: "Transfer", body: "Complete the first transfers between phases, with engineer approval where needed. Record haul costs and handling time." },
-  { w: "Weeks 7 and 8", title: "Review", body: "Compare forecasts with actual surplus. Measure savings and match rate. Decide whether to extend to a second township." },
+  { w: "Weeks 1 and 2", title: "Set up", body: "Agree who owns leftover material. Load the purchase plans and planned quantities for active phases. Check prices, delivery times and wastage with procurement and the QS." },
+  { w: "Weeks 3 and 4", title: "Forecast and log", body: "Run Radar on live phases. Site engineers photograph what is left at each handover. Buyers check Surplus AI before ordering the chosen materials." },
+  { w: "Weeks 5 and 6", title: "Transfer", body: "Move the first materials between phases, with an engineer's OK where needed. Record transport costs and time spent." },
+  { w: "Weeks 7 and 8", title: "Review", body: "Compare what we expected with what was really left. Measure savings and matches. Decide whether to try a second township." },
 ];
 
 const metrics = [
-  ["RM saved", "Net of haulage, on completed transfers"],
-  ["Tonnes diverted", "Weight of material reused instead of disposed"],
-  ["Match rate", "Share of posted needs filled at least partly from surplus"],
+  ["RM saved", "After transport costs, on finished transfers"],
+  ["Tonnes diverted", "Weight of material reused instead of thrown away"],
+  ["Match rate", "Share of requests met at least partly from leftovers"],
   ["Forecast accuracy", "1 minus the mean absolute percentage error, forecast versus actual"],
 ];
 
 const confirm = [
   "Who owns surplus: the developer, the contractor, or shared credit",
-  "Whether ordered and BoQ quantities are available per phase, and how often",
+  "Whether we can get ordered and planned quantities for each phase, and how often",
   "Real wastage allowances, unit costs and supplier lead times",
-  "Typical haul cost and the furthest distance teams will accept",
+  "Typical transport cost and the furthest distance teams will accept",
   "Which items engineers will approve for reuse, and how quickly",
   "Whether site engineers will log surplus from a phone at handover",
 ];
@@ -37,7 +37,7 @@ export default function PilotPage() {
     <>
       <PageHeader
         title="Pilot plan"
-        description="A proposal, not an agreement. One township, about eight weeks, a few material types, measured against clear success metrics."
+        description="Our suggested trial, not an agreement: one township, about eight weeks, a few materials, with clear goals to measure."
       />
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Card>

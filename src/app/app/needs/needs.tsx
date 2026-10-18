@@ -109,7 +109,7 @@ export function Needs() {
     <>
       <PageHeader
         title="Needs"
-        description="What sites are about to buy. Each open need is matched against logged surplus, nearest and best fit first."
+        description="What each site plans to buy. We check every request against leftover material, closest and best fit first."
         actions={
           <Button onClick={() => setPosting(true)}>
             <Plus aria-hidden /> Post a need

@@ -192,19 +192,19 @@ export function RadarLegend({ today, className }: { today: string; className?: s
   return (
     <div className={cn("flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground", className)}>
       <span className="inline-flex items-center gap-1.5">
-        <span className="h-2.5 w-6 rounded-full bg-brand/80" /> Active phase
+        <span className="h-2.5 w-6 rounded-full bg-brand/80" /> Building now
       </span>
       <span className="inline-flex items-center gap-1.5">
-        <span className="h-2.5 w-6 rounded-full border border-dashed border-brand/50 bg-brand-soft" /> Planned phase
+        <span className="h-2.5 w-6 rounded-full border border-dashed border-brand/50 bg-brand-soft" /> Not started
       </span>
       <span className="inline-flex items-center gap-1.5">
-        <span className="size-3 rounded-full border border-forecast-ink/40 bg-forecast" /> Forecast surplus (size: quantity, shade: progress-based score)
+        <span className="size-3 rounded-full border border-forecast-ink/40 bg-forecast" /> Expected leftovers (bigger dot = more)
       </span>
       <span className="inline-flex items-center gap-1.5">
         <span className="grid size-3 place-items-center rounded-full bg-success" /> Confirmed
       </span>
       <span className="inline-flex items-center gap-1.5">
-        <span className="size-2.5 rotate-45 rounded-[2px] bg-foreground" /> Buyer need date
+        <span className="size-2.5 rotate-45 rounded-[2px] bg-foreground" /> When the buyer needs it
       </span>
       <span className="inline-flex items-center gap-1.5">
         <span className="h-3 w-px bg-danger" /> Today, {fmtDate(today)}

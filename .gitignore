@@ -56,3 +56,4 @@ scripts/.*.mjs
 /test-results/
 /playwright-report/
 mockups/
+scripts/.*.cjs

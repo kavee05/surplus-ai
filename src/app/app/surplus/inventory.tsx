@@ -114,7 +114,7 @@ export function Inventory() {
     <>
       <PageHeader
         title="Surplus inventory"
-        description="Material logged as leftover on any site. Available items can be matched to needs anywhere in the network."
+        description="Leftover material that sites have recorded. Anything available can go to any site that needs it."
         actions={
           <Button asChild>
             <Link href="/app/surplus/log">
@@ -123,7 +123,7 @@ export function Inventory() {
           </Button>
         }
       />
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+      <div className="mb-6 grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
         <KpiCard label="Available items" value={fmtNum(available.length)} />
         <KpiCard label="Available value" value={fmtRm(available.reduce((a, l) => a + listingValueRm(state, l), 0))} />
         <KpiCard label="Reserved" value={fmtNum(state.listings.filter((l) => l.status === "reserved").length)} />

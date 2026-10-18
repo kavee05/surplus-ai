@@ -16,12 +16,12 @@ test.describe("guided demo", () => {
       await expect(panel.getByRole("heading")).toHaveText(title);
     };
     await expect(panel).toContainText("A buyer is about to order 1,000 tiles");
-    await next("Radar sees surplus before it exists");
+    await next("Radar spots leftovers before they exist");
     await next("Reserve 800, order only 200");
     const result = page.locator('[data-demo="preorder-result"]');
     await expect(result).toContainText("reserve 800 from forecast surplus, order 200 new");
     await expect(result).toContainText("24 Nov 2026");
-    await next("Hold the forecast surplus");
+    await next("Reserve the expected tiles");
     await next("Three weeks later at City of Elmina");
     await next("The forecast turns Confirmed");
     await next("Collect and complete the transfer");

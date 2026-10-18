@@ -16,7 +16,7 @@ export const STALE_PROGRESS_DAYS = 21;
 const ORDER: CertaintyLevel[] = ["insufficient", "tentative", "moderate", "strong"];
 export const weakest = (...levels: CertaintyLevel[]) => levels.reduce((a, b) => (ORDER.indexOf(a) <= ORDER.indexOf(b) ? a : b));
 
-const NO_BACKTEST = "No back-test yet of the forecast rule against actual close-out surplus. The progress-based score is a rule of thumb, not a measured probability.";
+const NO_BACKTEST = "We have not yet checked this forecast rule against real past projects. The score is a rule of thumb, not a measured probability.";
 
 const g = (data: EngineData, key: keyof typeof globalAssumptions): AssumptionUsed => ({
   key,
@@ -57,7 +57,7 @@ export function forecastCertainty(f: Forecast, phase: Phase, today: string): Cer
     };
   }
   const fresh = phaseFreshness(phase, today);
-  const missing = [NO_BACKTEST, "Ordered quantity comes from the purchase plan; deliveries and site returns are not reconciled."];
+  const missing = [NO_BACKTEST, "The ordered amount comes from the purchase plan. Actual deliveries and returns were not checked."];
   if (fresh.stale) missing.push(fresh.age === null ? "Phase progress has no reported date." : `Phase progress was last reported ${fresh.age} days ago.`);
   let level: CertaintyLevel = phase.progressPct >= 60 ? "moderate" : "tentative";
   if (fresh.stale) level = weakest(level, "tentative");

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function EvidencePage() {
   return (
     <>
-      <PageHeader title="Evidence and assumptions" description="What we know, where it comes from, and its limits. The figures here are from cited public sources; the app's own data is simulated." />
+      <PageHeader title="Evidence and assumptions" description="The facts behind this idea, where they come from, and what they cannot prove. The app's own data is simulated for the demo." />
 
       <section aria-labelledby="limits-h" className="mb-8 rounded-2xl bg-amber-50 p-5 sm:p-6">
         <h2 id="limits-h" className="flex items-center gap-2 font-bold text-amber-900">
@@ -29,7 +29,7 @@ export default function EvidencePage() {
       </section>
 
       <h2 className="mb-4 text-lg font-bold">Sources</h2>
-      <ul className="grid gap-4 lg:grid-cols-2">
+      <ul className="grid gap-5 lg:grid-cols-2 lg:[&>li:last-child:nth-child(odd)]:col-span-2">
         {evidence.map((e) => (
           <li key={e.id} className="flex flex-col rounded-2xl bg-card p-6 shadow-card">
             <div className="flex flex-wrap items-center justify-between gap-2">

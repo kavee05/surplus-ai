@@ -93,7 +93,7 @@ export function RadarView() {
     <>
       <PageHeader
         title="Surplus Radar"
-        description="Surplus forecast from ordered versus planned quantities on every phase. Check here before you buy, and reserve what is coming."
+        description="See which sites will have material left over, before it happens. Check here before you buy, and reserve what is coming."
       />
 
       <AskBar onApply={setInput} className="mb-8" />
@@ -108,7 +108,7 @@ export function RadarView() {
               Phases and forecast surplus
             </h2>
             <p className="text-sm text-muted-foreground">
-              Select a marker to see how the forecast was calculated.
+              Tap a dot to see how we worked it out.
             </p>
           </div>
           <div className="flex flex-wrap items-end gap-3">
@@ -179,8 +179,7 @@ export function RadarView() {
           Pre-Order Check
         </h2>
         <p className="mb-4 text-sm text-muted-foreground">
-          Enter what you are about to buy. Logged surplus is used first, then
-          forecast surplus from other sites.
+          Tell us what you are about to buy. We use recorded leftovers first, then leftovers other sites expect to have.
         </p>
         <PreOrderPanel input={input} setInput={setInput} result={result} />
       </section>

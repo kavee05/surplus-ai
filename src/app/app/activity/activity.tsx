@@ -43,9 +43,9 @@ export function Activity() {
     <>
       <PageHeader
         title="Activity"
-        description="Every decision people made on a recommendation, with the recommendation exactly as it was shown and how strong its evidence was at the time."
+        description="Every yes or no that people gave to a suggestion, saved exactly as it looked at the time."
       />
-      <div className="mb-5 grid grid-cols-3 gap-3 sm:gap-4">
+      <div className="mb-5 grid grid-cols-3 gap-4 sm:gap-5">
         {(["accepted", "modified", "rejected"] as const).map((o) => (
           <div key={o} className="bg-card px-4 py-3">
             <p className="text-xs text-muted-foreground">{outcomeMeta[o].label}</p>

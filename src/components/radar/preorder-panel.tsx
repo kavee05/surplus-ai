@@ -85,8 +85,8 @@ export function PreOrderPanel({
         href: "/app/transfers",
       }),
     });
-    toast.success(`Held ${fmtNum(held)} ${mat.unit} of forecast surplus`, {
-      description: `This is a hold in Surplus AI only. Place your supplier order for the rest yourself, and confirm or top up by ${fmtDate(result.decisionDate)}.`,
+    toast.success(`Reserved ${fmtNum(held)} ${mat.unit} of expected leftovers`, {
+      description: `Reserved in Surplus AI only. Order the rest from your supplier yourself, and confirm by ${fmtDate(result.decisionDate)}.`,
     });
   };
 
@@ -176,7 +176,7 @@ export function PreOrderPanel({
             <Label htmlFor="po-conservative" className="font-medium">
               Conservative mode
             </Label>
-            <p className="mt-0.5 text-xs text-muted-foreground">Reserve only forecast × progress-based score, leaving room for a smaller surplus.</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">Reserve less, in case fewer leftovers turn up than expected.</p>
           </div>
           <Switch id="po-conservative" checked={!!input.conservative} onCheckedChange={(v) => setInput({ ...input, conservative: v })} />
         </div>
@@ -211,7 +211,7 @@ export function PreOrderPanel({
             <span className="tabular mt-1 text-xl font-semibold tracking-tight">
               <Flash value={fmtDate(result.decisionDate)} />
             </span>
-            <span className="text-xs text-muted-foreground">Confirm the forecast or top up</span>
+            <span className="text-xs text-muted-foreground">Confirm, or buy the rest then</span>
           </div>
         </div>
 
@@ -230,20 +230,20 @@ export function PreOrderPanel({
         </div>
 
         <div className="grid grid-cols-3 gap-x-4 border-b pb-4">
-          <Saving icon={Wallet} label="Estimated saving" value={fmtRm(result.expected.savedRm)} note="Assumed unit cost minus haulage" />
-          <Saving icon={Scale} label="Material reused" value={fmtTonnes(result.expected.tonnes)} note="Quantity × assumed weight" />
-          <Saving icon={Leaf} label="CO2e avoided" value={`${fmtNum(result.expected.co2eKg / 1000, 1)} t`} note="Illustrative carbon factor" />
+          <Saving icon={Wallet} label="Estimated saving" value={fmtRm(result.expected.savedRm)} note="Estimated price, minus transport" />
+          <Saving icon={Scale} label="Material reused" value={fmtTonnes(result.expected.tonnes)} note="Estimated weight" />
+          <Saving icon={Leaf} label="CO2e avoided" value={`${fmtNum(result.expected.co2eKg / 1000, 1)} t`} note="Rough estimate" />
         </div>
         {result.reservedForecast > 0 && (
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div>
-              <p className="text-xs text-muted-foreground">If the full forecast appears</p>
+              <p className="text-xs text-muted-foreground">If all expected leftovers turn up</p>
               <p className="tabular font-medium">
                 {fmtNum(result.bestCase.qty)} {mat.unit}, {fmtRm(result.bestCase.savedRm)}
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">If only forecast × score appears</p>
+              <p className="text-xs text-muted-foreground">If fewer turn up than expected</p>
               <p className="tabular font-medium">
                 {fmtNum(result.worstCase.qty)} {mat.unit}, {fmtRm(result.worstCase.savedRm)}
               </p>
@@ -299,11 +299,11 @@ export function PreOrderPanel({
         onOpenChange={(o) => !o && setDialog(null)}
         mode={dialog ?? "approve"}
         e={e}
-        title={dialog === "reject" ? "Reject this recommendation" : "Hold forecast surplus"}
+        title={dialog === "reject" ? "Reject this recommendation" : "Reserve expected leftovers"}
         consequence={
           dialog === "reject"
             ? "Nothing is held. Your reason is saved so the team can see why."
-            : `This places a hold on another site's forecast surplus inside Surplus AI. It does not place or change any supplier order. Order the remaining ${fmtNum(result.orderNow)} ${mat.unit} through your normal process.`
+            : `This reserves another site's expected leftovers in Surplus AI only. It does not place or change any supplier order. Order the remaining ${fmtNum(result.orderNow)} ${mat.unit} through your normal process.`
         }
         confirmLabel={dialog === "reject" ? "Reject and log" : "Confirm hold"}
         quantity={dialog === "approve" && newHolds.length === 1 ? { value: newHolds[0].reservedQty, max: newHolds[0].availableQty, unit: mat.unit, label: "Quantity to hold" } : undefined}

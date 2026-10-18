@@ -30,11 +30,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   <StorageNotice />
                   <div
                     id="main"
-                    className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 pb-12 sm:px-6 lg:px-8"
+                    className="mx-auto w-full max-w-7xl 2xl:max-w-[100rem] flex-1 px-4 py-6 pb-12 sm:px-6 lg:px-8"
                   >
                     {children}
                   </div>
-                  <footer className="mx-auto w-full max-w-7xl border-t px-4 py-4 pb-24 text-xs text-muted-foreground sm:px-6 md:pb-4 lg:px-8">
+                  <footer className="mx-auto w-full max-w-7xl 2xl:max-w-[100rem] border-t px-4 py-4 pb-24 text-xs text-muted-foreground sm:px-6 md:pb-4 lg:px-8">
                     {CREDIT} Student prototype with simulated data. Not
                     affiliated with Sime Darby Property.
                   </footer>
