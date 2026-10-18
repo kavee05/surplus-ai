@@ -35,6 +35,6 @@ Surplus AI itself is MIT licensed (see LICENSE). It depends on the open-source p
 | tw-animate-css | MIT |
 | zod | MIT |
 
-Fonts (Instrument Serif, Geist and Geist Mono) are loaded through next/font from Google Fonts and are licensed under the SIL Open Font License. Development only: @playwright/test (Apache-2.0) runs the end-to-end tests. Icons come from lucide-react (ISC). Sample photos in public/samples are original illustrations made for this project.
+Fonts (Plus Jakarta Sans and Geist Mono) are loaded through next/font from Google Fonts and are licensed under the SIL Open Font License. Development only: @playwright/test (Apache-2.0) runs the end-to-end tests. Icons come from lucide-react (ISC). Sample photos in public/samples are original illustrations made for this project.
 
 Note on LGPL: the libvips binary bundled with sharp (used by Next.js image optimisation) is LGPL-3.0-or-later. It is used unmodified as a separately linked library, which the LGPL permits.
