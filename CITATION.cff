@@ -12,6 +12,14 @@ abstract: >-
 authors:
   - given-names: Kaveetiran
     family-names: A/L Sitambaram
+  - given-names: Kirthiggan
+    family-names: A/L Saravanan
+  - given-names: Risikesan
+    family-names: A/L Yogeswaran
+  - given-names: Dakshina Narrayana
+    family-names: A/L Selvavinayagam
+  - given-names: Kavinnesh
+    family-names: A/L R Chandraguptha
 repository-code: "https://github.com/kavee05/surplus-ai"
 url: "https://surplus-ai.vercel.app"
 version: 1.0.0

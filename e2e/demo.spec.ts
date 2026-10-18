@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const CREDIT = "Built by Team ALICE, UTM KL. Code by Kaveetiran A/L Sitambaram.";
+const CREDIT = "Built by Team ELIZA, UTM KL. Code by Kaveetiran A/L Sitambaram.";
 
 test.describe("guided demo", () => {
   test.skip(({ isMobile }) => isMobile, "Runs once, on desktop");
