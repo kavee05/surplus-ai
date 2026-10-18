@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -43,6 +43,14 @@ export function DecisionDialog({
   const reject = mode === "reject";
   const reasonOk = !reject || reason.trim().length >= 4;
   const qtyOk = !quantity || (qty !== undefined && qty > 0 && qty <= quantity.max);
+  const recommended = quantity?.value;
+
+  // The parent opens the dialog by setting `open`, so reset the fields whenever it opens.
+  useEffect(() => {
+    if (!open) return;
+    setReason("");
+    setQty(recommended);
+  }, [open, recommended]);
 
   return (
     <Dialog

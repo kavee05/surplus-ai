@@ -56,3 +56,6 @@ scripts/.*.mjs
 /playwright-report/
 mockups/
 scripts/.*.cjs
+
+# team materials (shared directly, not published)
+team-handoff/
