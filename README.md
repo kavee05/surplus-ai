@@ -115,7 +115,7 @@ The landing page visual, Radar, Guided Demo and unit tests all compute these fro
 
 ## How it is built
 
-- Next.js 15 (App Router), TypeScript, Tailwind CSS v4, shadcn/ui on Radix, lucide-react, Recharts, TanStack Table, sonner, cmdk, zod. Type: Instrument Serif for headlines, Geist for the interface and Geist Mono for numbers, all via next/font.
+- Next.js 15 (App Router), TypeScript, Tailwind CSS v4, shadcn/ui on Radix, lucide-react, Recharts, TanStack Table, sonner, cmdk, zod. Type: Plus Jakarta Sans via next/font.
 - No database. Seed data in `src/data/seed.ts`; state in the browser's localStorage, with **Reset demo data** in the user menu and on the Assumptions page.
 - Distances use the haversine formula on approximate coordinates. No map API.
 - Key folders: `src/lib/engine` (pure logic and tests), `src/lib/assumptions.ts` (every number, tagged ASSUMPTION with a source to confirm), `src/app/app/*` (app screens), `src/components/radar` (timeline and Pre-Order Check).
@@ -130,7 +130,7 @@ The landing page visual, Radar, Guided Demo and unit tests all compute these fro
 
 ## Design
 
-The interface follows one direction, "site plan meets control room": warm paper, ink lines and one accent per meaning (teal for action, amber for forecasts, green for confirmed, red for risk). See [docs/DESIGN_DIRECTION.md](docs/DESIGN_DIRECTION.md) and the audit with before and after notes in [docs/DESIGN_AUDIT.md](docs/DESIGN_AUDIT.md). Screenshots are in `screenshots/before` and `screenshots/after`.
+The interface uses style A, "Fresh": a white and slate palette with an emerald to sky accent, Plus Jakarta Sans, soft cards and light animation. It was chosen by the project owner from three mockups and approved page by page. See [docs/DESIGN_DIRECTION.md](docs/DESIGN_DIRECTION.md) and [docs/DESIGN_AUDIT.md](docs/DESIGN_AUDIT.md). Screenshots are in `screenshots/before` and `screenshots/after`.
 
 ## Limits
 

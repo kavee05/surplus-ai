@@ -25,7 +25,7 @@ for (const w of WIDTHS) {
   for (const [name, path] of Object.entries(ROUTES)) {
     if (only.length && !only.includes(name)) continue;
     await page.goto(BASE + path, { waitUntil: "networkidle" });
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(1200);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     await page.screenshot({ path: `${out}/${name}-${w}.png`, fullPage: true });
     console.log(`${name}-${w}${overflow > 0 ? `  OVERFLOW ${overflow}px` : ""}`);
