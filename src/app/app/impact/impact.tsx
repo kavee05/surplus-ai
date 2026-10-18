@@ -258,7 +258,7 @@ export function Impact() {
           className="lg:col-span-3"
           title="Value as more townships join"
           badge={<SimulatedBadge label="Simulated projection" />}
-          description={`So far each township saves about ${fmtRm(scale.perTownshipPerYear)} a year. We assume 3% more matches for every extra township. SDP has 27 active townships.`}
+          description={`So far each township saves about ${fmtRm(scale.perTownshipPerYear)} a year. We assume 3% more matches for every extra township. SDP alone has 27 active townships, and the same approach works for any developer in Malaysia.`}
           table={{ headers: ["Townships", "Annual RM saved"], rows: scale.points.map((p) => [p.townships, fmtRm(p.annualRm)]) }}
         >
           <ResponsiveContainer width="100%" height="100%">

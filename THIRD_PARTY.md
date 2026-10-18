@@ -1,6 +1,6 @@
 # Third-party licences
 
-Surplus AI itself is MIT licensed (see LICENSE). It depends on the open-source packages below. This summary was generated with license-checker-rseidelsohn over the production dependency tree on 18 Oct 2026 (151 packages). Each package keeps its own licence; check the package for the full text.
+Surplus AI is a hackathon submission; its intellectual property follows the Programme Terms and Conditions (see LICENSE). It depends on the open-source packages below. This summary was generated with license-checker-rseidelsohn over the production dependency tree on 18 Oct 2026 (151 packages). Each package keeps its own licence; check the package for the full text.
 
 ## Summary by licence
 

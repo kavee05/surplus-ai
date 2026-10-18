@@ -37,7 +37,7 @@ export default function PilotPage() {
     <>
       <PageHeader
         title="Pilot plan"
-        description="Our suggested trial, not an agreement: one township, about eight weeks, a few materials, with clear goals to measure."
+        description="Our suggested trial, not an agreement: one township, about eight weeks, a few materials, with clear goals to measure. Sime Darby Property would be the first pilot; any developer could follow."
       />
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Card>
