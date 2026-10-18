@@ -55,5 +55,5 @@ Filled in during the motion pass (step D5).
 | --- | --- |
 | Axe (WCAG 2.2 AA tags), 13 routes at 1280 and 375 px | One serious issue found (sidebar group labels, 4.15:1) and fixed; now no serious or critical issues. Runs in the e2e suite. |
 | Contrast of every text token on every surface (`node scripts/contrast.mjs`) | All pairs 4.5:1 or higher after darkening the success green to `#1A7046` |
-| Lighthouse, landing page, local production build | Accessibility 100, Best practices 100, SEO 100. Performance 73 to 85 on the mobile preset (varies run to run on this machine; the old production site scored 75 on the same machine), 99 on the desktop preset |
-| Landing first-load JavaScript | 196 kB before, 107 kB after (`optimizePackageImports` for the radix-ui barrel; tooltip provider moved to the app) |
+| Lighthouse, landing page, local production build | Accessibility 100, Best practices 100, SEO 100. Performance 91 to 94 on the mobile preset over four runs (the old production site scored 75 on the same machine), 99 on the desktop preset |
+| Landing first-load JavaScript | 196 kB before, 107 kB after (`optimizePackageImports` for the radix-ui barrel; tooltip provider moved to the app). Links to the app no longer prefetch and run the app bundle on the landing page |
