@@ -1,4 +1,4 @@
-import { ExternalLink } from "lucide-react";
+import { ArrowUpRight, TriangleAlert } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/app/page-header";
@@ -12,93 +12,79 @@ export const metadata: Metadata = {
 export default function EvidencePage() {
   return (
     <>
-      <PageHeader
-        title="Evidence and assumptions"
-        description="What we know, where it comes from, and its limits. Sources are paraphrased. The app's operational data is simulated; the figures on this page are from the cited sources."
-      />
+      <PageHeader title="Evidence and assumptions" description="What we know, where it comes from, and its limits. The figures here are from cited public sources; the app's own data is simulated." />
 
-      <section aria-labelledby="limits-h" className="mb-8 border-l-2 border-warning pl-4">
-        <h2 id="limits-h" className="text-sm font-semibold text-warning">
-          Limits to keep in mind
+      <section aria-labelledby="limits-h" className="mb-8 rounded-2xl bg-amber-50 p-5 sm:p-6">
+        <h2 id="limits-h" className="flex items-center gap-2 font-bold text-amber-900">
+          <TriangleAlert className="size-5" aria-hidden /> Limits to keep in mind
         </h2>
-        <ul className="mt-2 grid gap-x-8 gap-y-1.5 text-sm sm:grid-cols-2">
+        <ul className="mt-3 grid gap-x-8 gap-y-2 text-[15px] text-amber-950 sm:grid-cols-2">
           {evidenceLimits.map((l) => (
-            <li key={l} className="text-pretty">
+            <li key={l} className="flex gap-2">
+              <span className="mt-2 size-1.5 shrink-0 rounded-full bg-amber-500" aria-hidden />
               {l}
             </li>
           ))}
         </ul>
       </section>
 
-      <section aria-labelledby="sources-h">
-        <div className="flex items-baseline justify-between gap-4 border-b pb-2">
-          <h2 id="sources-h" className="font-semibold">
-            Sources
-          </h2>
-          <span className="tabular text-xs text-muted-foreground">{evidence.length} sources</span>
-        </div>
-        <ol className="divide-y border-b">
-          {evidence.map((e) => (
-            <li key={e.id} className="grid gap-x-8 gap-y-3 py-5 lg:grid-cols-[13rem_1fr_minmax(0,18rem)]">
-              <div className="flex flex-col gap-1">
-                <span className="tabular text-2xl leading-tight font-semibold tracking-tight">{e.figure}</span>
-                <span className="text-xs text-muted-foreground">{e.figureLabel}</span>
-              </div>
-              <div className="flex min-w-0 flex-col gap-1.5 text-sm">
-                <p className="flex flex-wrap items-baseline gap-x-2">
-                  <span className="font-semibold">{e.who}</span>
-                  <span className="text-xs text-muted-foreground">{e.kind}</span>
-                </p>
-                <p className="text-pretty">{e.summary}</p>
-                <p className="text-xs text-muted-foreground">
-                  {e.source}
-                  {e.url && (
-                    <>
-                      {" "}
-                      <a href={e.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-0.5 font-medium text-brand underline underline-offset-2 hover:no-underline">
-                        Open <ExternalLink className="size-3" aria-hidden />
-                        <span className="sr-only">(opens in a new tab)</span>
-                      </a>
-                    </>
-                  )}
-                </p>
-              </div>
-              <p className="border-l-2 border-forecast pl-3 text-sm text-muted-foreground text-pretty">
-                <span className="block text-xs font-semibold text-forecast-ink">Limit</span>
-                {e.limits}
-              </p>
-            </li>
-          ))}
-        </ol>
-      </section>
+      <h2 className="mb-4 text-lg font-bold">Sources</h2>
+      <ul className="grid gap-4 lg:grid-cols-2">
+        {evidence.map((e) => (
+          <li key={e.id} className="flex flex-col rounded-2xl bg-card p-6 shadow-card">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="font-bold">{e.who}</span>
+              <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">{e.kind}</span>
+            </div>
+            <p className="mt-4 text-3xl font-extrabold tracking-tight">{e.figure}</p>
+            <p className="mt-1 text-[15px] text-slate-600">{e.figureLabel}</p>
+            <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-950">
+              <span className="font-bold">Limit: </span>
+              {e.limits}
+            </p>
+            <p className="mt-auto pt-4 text-xs text-muted-foreground">
+              {e.source}
+              {e.url && (
+                <>
+                  {" "}
+                  <a href={e.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-0.5 font-semibold text-brand hover:underline">
+                    Open source <ArrowUpRight className="size-3" aria-hidden />
+                    <span className="sr-only">(opens in a new tab)</span>
+                  </a>
+                </>
+              )}
+            </p>
+          </li>
+        ))}
+      </ul>
 
-      <div className="mt-10 grid gap-10 lg:grid-cols-2">
-        <section aria-labelledby="diff-h">
-          <h2 id="diff-h" className="border-b pb-2 font-semibold">
-            Differentiation and its limits
+      <div className="mt-8 grid gap-4 lg:grid-cols-2">
+        <section aria-labelledby="diff-h" className="rounded-2xl bg-card p-6 shadow-card">
+          <h2 id="diff-h" className="text-lg font-bold">
+            How Radar differs, and its limits
           </h2>
-          <p className="mt-3 text-sm">{differentiation.intro}</p>
-          <ul className="mt-2 flex flex-col divide-y text-sm">
+          <p className="mt-2 text-[15px] text-slate-600">{differentiation.intro}</p>
+          <ul className="mt-3 flex flex-col gap-2.5 text-[15px]">
             {differentiation.points.map((p) => (
-              <li key={p} className="py-2 text-pretty">
+              <li key={p} className="flex gap-2.5">
+                <span className="mt-2 size-1.5 shrink-0 rounded-full bg-emerald-500" aria-hidden />
                 {p}
               </li>
             ))}
           </ul>
         </section>
 
-        <section aria-labelledby="assume-h">
-          <h2 id="assume-h" className="border-b pb-2 font-semibold">
+        <section aria-labelledby="assume-h" className="rounded-2xl bg-card p-6 shadow-card">
+          <h2 id="assume-h" className="text-lg font-bold">
             Assumptions in the model
           </h2>
-          <p className="mt-3 text-sm">
-            Every cost, weight, carbon factor, lead time, wastage allowance, haul distance and scoring weight is an assumption, tagged with the source we would use to confirm it. They are listed and editable on the{" "}
-            <Link href="/app/settings" className="font-medium text-brand underline underline-offset-2 hover:no-underline">
-              Assumptions page
-            </Link>
-            .
+          <p className="mt-2 text-[15px] text-slate-600">
+            Every cost, weight, carbon factor, lead time, wastage allowance, haul distance and scoring weight is an assumption with a source still to confirm. You can see and change them all.
           </p>
-          <p className="mt-2 text-sm text-muted-foreground">Township coordinates are approximate centres, used only for straight-line distance (haversine). Carbon figures are illustrative.</p>
+          <p className="mt-2 text-[15px] text-slate-600">Township locations are approximate, used only for straight-line distance. Carbon figures are illustrative.</p>
+          <Link href="/app/settings" className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white hover:bg-slate-800">
+            Open the Assumptions page <ArrowUpRight className="size-4" aria-hidden />
+          </Link>
         </section>
       </div>
     </>
