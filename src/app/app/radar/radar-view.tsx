@@ -208,7 +208,7 @@ function ForecastDetail({ f }: { f: Forecast }) {
           {siteName(state, f.siteId)}, {phase.name}
         </SheetDescription>
       </SheetHeader>
-      <div className="flex flex-col gap-5 px-4 pb-6">
+      <div className="flex flex-col gap-5 px-6 pb-8">
         <div className="flex flex-wrap gap-2">
           {f.status === "Forecast" ? (
             <StatusBadge tone="forecast">Forecast, not yet logged</StatusBadge>

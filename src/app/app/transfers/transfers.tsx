@@ -110,9 +110,9 @@ export function Transfers() {
       <PageHeader title="Transfers" description="Each transfer moves through Matched, Reserved, Collected and Completed. Structural items cannot be reserved until an engineer approves them." />
       <div className="mb-6 grid grid-cols-3 gap-3 sm:gap-4 lg:grid-cols-6">
         {["Held on forecast", "Matched", "Awaiting approval", "Reserved", "Collected", "Completed"].map((s) => (
-          <div key={s} className="flex min-w-0 flex-col gap-1 bg-card px-3.5 py-3">
+          <div key={s} className="flex min-w-0 flex-col gap-1.5 rounded-2xl bg-card px-4 py-3.5 shadow-card">
             <span className="line-clamp-2 text-xs leading-snug text-muted-foreground">{s}</span>
-            <span className="tabular text-xl leading-none font-semibold">{counts(s)}</span>
+            <span className="tabular text-2xl leading-none font-extrabold">{counts(s)}</span>
           </div>
         ))}
       </div>
@@ -166,7 +166,7 @@ function TransferDetail({ t }: { t: Transfer }) {
           {siteName(state, t.fromSiteId)} to {siteName(state, t.toSiteId)}, {fmtNum(siteDistanceKm(state.sites, t.fromSiteId, t.toSiteId), 1)} km straight-line (approximate)
         </SheetDescription>
       </SheetHeader>
-      <div className="flex flex-col gap-5 px-4 pb-6">
+      <div className="flex flex-col gap-5 px-6 pb-8">
         <ol className="flex flex-col gap-0" aria-label="Workflow">
           {held && <Step label="Held on forecast" state="current" note="Waiting for the source site to log the actual surplus." />}
           {t.status === "Cancelled" ? (

@@ -84,7 +84,7 @@ export function ExplanationPanel({
         </div>
         <p className="mt-1.5">{e.certainty.basis}</p>
         <p className="mt-1 text-xs text-muted-foreground">
-          {certaintyLabel(e.certainty.level)} means: {certaintyExplainer(e.certainty.level).toLowerCase()}
+          {certaintyLabel(e.certainty.level)} means: {certaintyExplainer(e.certainty.level).replace(/^./, (c) => c.toLowerCase())}
         </p>
         {e.certainty.score && <p className="mt-1 text-xs text-muted-foreground">{e.certainty.score.label}</p>}
         {(e.certainty.missing.length > 0 || e.certainty.couldChange.length > 0) && (

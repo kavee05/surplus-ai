@@ -91,7 +91,7 @@ export function Needs() {
             <span className="text-muted-foreground">Handled</span>
           ) : row.original.matches ? (
             <span className="tabular whitespace-nowrap">
-              {row.original.matches} found, best {row.original.best?.toFixed(2)}
+              {row.original.matches} {row.original.matches === 1 ? "match" : "matches"}
             </span>
           ) : (
             <span className="text-muted-foreground">None yet</span>
@@ -211,7 +211,7 @@ function NeedDetail({ need, onDone }: { need: Need; onDone: () => void }) {
           {siteName(state, need.siteId)}, needed by {fmtDate(need.neededBy)}. Posted by {need.postedBy}.
         </SheetDescription>
       </SheetHeader>
-      <div className="flex flex-col gap-5 px-4 pb-6">
+      <div className="flex flex-col gap-5 px-6 pb-8">
         <div className="flex flex-wrap items-center gap-2">
           <StatusBadge tone={needTone[need.status]}>{needLabel[need.status]}</StatusBadge>
           {m.structural && <StatusBadge tone="warning">Structural: engineer approval required</StatusBadge>}

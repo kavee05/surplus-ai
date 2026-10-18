@@ -179,7 +179,7 @@ function ListingDetail({ listing, onDone }: { listing: Listing; onDone: () => vo
           {siteName(state, listing.siteId)}, logged {fmtDate(listing.loggedAt)} by {listing.loggedBy}
         </SheetDescription>
       </SheetHeader>
-      <div className="flex flex-col gap-5 px-4 pb-6">
+      <div className="flex flex-col gap-5 px-6 pb-8">
         {sample && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={sample.src} alt={`Sample illustration: ${sample.label}`} className="aspect-[4/3] w-full rounded-lg border object-cover" />
