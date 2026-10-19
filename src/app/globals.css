@@ -270,3 +270,12 @@ body:has([aria-label="Guided demo"]) #main {
   .l-flow, .l-pulse { animation: none; }
   .l-draw { stroke-dashoffset: 0; animation: none; }
 }
+
+/* Surplus World 2D map: focus and hover rings on the SVG buttons */
+.world-hit:hover .world-focus {
+  opacity: 0.5;
+}
+.world-hit:focus-visible .world-focus,
+.world-hit[aria-pressed="true"] .world-focus {
+  opacity: 1;
+}
