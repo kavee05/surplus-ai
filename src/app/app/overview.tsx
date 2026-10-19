@@ -10,8 +10,8 @@ import { KpiCard } from "@/components/app/kpi-card";
 import { PageHeader } from "@/components/app/page-header";
 import { PageSkeleton } from "@/components/app/page-skeleton";
 import { CertaintyBadge } from "@/components/explain/certainty";
-import { NetworkLegend, SurplusNetwork } from "@/components/network/surplus-network";
 import { Button } from "@/components/ui/button";
+import { SurplusWorld } from "@/components/world/surplus-world";
 import { materialById, siteName } from "@/lib/engine/context";
 import { savingsByMonth } from "@/lib/engine/impact";
 import { decisionQueue, impactStages, type QueueItem, type QueueKind } from "@/lib/engine/queue";
@@ -123,7 +123,6 @@ export function Overview() {
       : { href: "/app/radar", label: "Run a Pre-Order Check", icon: Radar };
   const approvals = queue.filter((q) => q.kind === "approval").length;
   const blocked = queue.filter((q) => q.blocker).length;
-  const holdSites = state.transfers.filter((t) => t.forecastId && !t.listingId && t.status === "Matched").flatMap((t) => [t.fromSiteId, t.toSiteId]);
 
   return (
     <>
@@ -151,6 +150,8 @@ export function Overview() {
           trend={monthly.map((m) => m.cumulativeRm)}
         />
       </div>
+
+      <SurplusWorld className="mt-6" />
 
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-5">
         <div className="flex min-w-0 flex-col gap-6 lg:col-span-3">
@@ -246,17 +247,6 @@ export function Overview() {
         </div>
 
         <div className="flex min-w-0 flex-col gap-6 lg:sticky lg:top-20 lg:col-span-2 lg:self-start">
-          <section aria-labelledby="net-h" className="overflow-hidden rounded-2xl bg-card shadow-card">
-            <div className="border-b px-4 py-3 sm:px-5">
-              <h2 id="net-h" className="font-semibold">
-                Surplus Network
-              </h2>
-              <p className="text-xs text-muted-foreground">Where material is moving. Circles turn green once leftovers are recorded.</p>
-            </div>
-            <SurplusNetwork data={state} forecasts={forecasts} highlightSiteIds={holdSites} />
-            <NetworkLegend className="border-t px-4 py-2.5 sm:px-5" />
-          </section>
-
           <section aria-labelledby="stages-h" className="rounded-2xl bg-card shadow-card">
             <div className="border-b px-4 py-3 sm:px-5">
               <h2 id="stages-h" className="font-semibold">
