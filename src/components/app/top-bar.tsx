@@ -32,7 +32,7 @@ import { fmtDate } from "@/lib/format";
 import { useStore } from "@/lib/store";
 import type { Role } from "@/lib/types";
 import { usePalette } from "./command-palette";
-import { allNav } from "./nav";
+import { allNav, hiddenPages } from "./nav";
 import { SimulatedBadge } from "./simulated-badge";
 
 const roles: { id: Role; label: string }[] = [
@@ -48,7 +48,7 @@ function Crumbs() {
   const parts = pathname.split("/").filter(Boolean).slice(1);
   const trail = parts.map((p, i) => {
     const href = "/app/" + parts.slice(0, i + 1).join("/");
-    const label = allNav.find((n) => n.href === href)?.label ?? extraCrumbs[p] ?? p;
+    const label = allNav.find((n) => n.href === href)?.label ?? hiddenPages[href] ?? extraCrumbs[p] ?? p;
     return { href, label };
   });
   return (

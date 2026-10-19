@@ -14,7 +14,7 @@ test.describe("phone", () => {
     await nav.getByRole("link", { name: "Transfers" }).click();
     await expect(page).toHaveURL(/\/app\/transfers/);
     await nav.getByRole("button", { name: "More" }).click();
-    await expect(page.getByRole("link", { name: "Evidence" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Activity" })).toBeVisible();
   });
 });
 
@@ -26,8 +26,8 @@ test("command palette opens with the keyboard and navigates", async ({ page, isM
   await page.keyboard.press("Control+k");
   const input = page.getByPlaceholder("Go to a page or run an action");
   await expect(input).toBeVisible();
-  await input.fill("Impact");
-  await expect(page.getByRole("option", { name: "Impact" })).toBeVisible();
+  await input.fill("Needs");
+  await expect(page.getByRole("option", { name: "Needs" })).toBeVisible();
   await page.keyboard.press("Enter");
-  await expect(page).toHaveURL(/\/app\/impact/);
+  await expect(page).toHaveURL(/\/app\/needs/);
 });

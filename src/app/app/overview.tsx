@@ -288,10 +288,7 @@ export function Overview() {
               ))}
             </dl>
             <p className="border-t px-4 py-2.5 text-xs text-muted-foreground sm:px-5">
-              Savings use estimated prices and simulated records.{" "}
-              <Link href="/app/impact#ledger" className="font-medium text-brand hover:underline">
-                See the ledger
-              </Link>
+              Savings use estimated prices and simulated records.
             </p>
           </section>
         </div>

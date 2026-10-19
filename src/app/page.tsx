@@ -84,13 +84,6 @@ export default function Landing() {
                 <Link prefetch={false} href="/app?demo=start" className={PRIMARY}>
                   Try the guided demo <ArrowRight className="size-4" aria-hidden />
                 </Link>
-                <Link
-                  prefetch={false}
-                  href="/app/evidence"
-                  className="inline-flex items-center rounded-2xl bg-white px-6 py-3.5 font-bold text-slate-900 shadow-[inset_0_0_0_1.5px_#e2e8f0] transition-transform duration-150 ease-[var(--ease-out)] hover:bg-slate-50 active:scale-[0.97]"
-                >
-                  See the evidence
-                </Link>
               </div>
               <p className="l-rise l-d5 mt-6 text-[13px] text-slate-600">Not affiliated with Sime Darby Property.</p>
             </div>
@@ -119,9 +112,6 @@ export default function Landing() {
                 </li>
               ))}
           </ul>
-          <Link prefetch={false} href="/app/evidence" className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-emerald-700 hover:text-emerald-800">
-            Sources and their limits <ArrowRight className="size-4" aria-hidden />
-          </Link>
         </section>
 
         {/* How it works */}

@@ -83,8 +83,8 @@ export function decisionQueue(data: EngineData & { dismissedMatches?: { needId: 
       kind: "unclaimed",
       title: `Unclaimed ${a.age} days: ${m.name}`,
       detail: `${fmtNum(a.listing.qty)} ${m.unit} at ${siteName(data, a.listing.siteId)}, ${fmtRm(a.valueRm)}`,
-      action: a.age > g.communityOfferDays ? "Offer to community" : "Open listing",
-      href: a.age > g.communityOfferDays ? "/app/community" : `/app/surplus?listing=${a.listing.id}`,
+      action: "Open listing",
+      href: `/app/surplus?listing=${a.listing.id}`,
     });
   }
 

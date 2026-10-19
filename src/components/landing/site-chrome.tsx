@@ -51,13 +51,12 @@ export function SiteFooter() {
           <span className="font-medium">Product</span>
           <Link prefetch={false} href="/app/radar" className="text-slate-600 hover:text-slate-900">Surplus Radar</Link>
           <Link prefetch={false} href="/app/surplus" className="text-slate-600 hover:text-slate-900">Surplus inventory</Link>
-          <Link prefetch={false} href="/app/impact" className="text-slate-600 hover:text-slate-900">Impact dashboard</Link>
-          <Link prefetch={false} href="/app/pilot" className="text-slate-600 hover:text-slate-900">Pilot plan</Link>
+          <Link prefetch={false} href="/app/needs" className="text-slate-600 hover:text-slate-900">Needs</Link>
+          <Link prefetch={false} href="/app/transfers" className="text-slate-600 hover:text-slate-900">Transfers</Link>
         </nav>
         <nav aria-label="About" className="flex flex-col gap-2 text-sm">
           <span className="font-medium">About</span>
-          <Link prefetch={false} href="/app/evidence" className="text-slate-600 hover:text-slate-900">Evidence and assumptions</Link>
-          <Link prefetch={false} href="/app/settings" className="text-slate-600 hover:text-slate-900">Assumptions in use</Link>
+          <Link prefetch={false} href="/app?demo=start" className="text-slate-600 hover:text-slate-900">Guided demo</Link>
           <a href="#faq" className="text-slate-600 hover:text-slate-900">FAQ</a>
         </nav>
       </div>
