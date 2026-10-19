@@ -8,6 +8,8 @@ import { useEffect, useMemo, useState } from "react";
 import { DataTable } from "@/components/app/data-table";
 import { EmptyState } from "@/components/app/empty-state";
 import { KpiCard } from "@/components/app/kpi-card";
+import { PageGuide } from "@/components/app/page-guide";
+import { useDemo } from "@/components/demo/guided-demo";
 import { PageHeader } from "@/components/app/page-header";
 import { PageSkeleton } from "@/components/app/page-skeleton";
 import { StatusBadge, type Tone } from "@/components/app/status-badge";
@@ -36,6 +38,7 @@ interface Row {
 
 export function Inventory() {
   const { state, ready } = useStore();
+  const demo = useDemo();
   const params = useSearchParams();
   const [open, setOpen] = useState<Listing | null>(null);
   const linked = params.get("listing");
@@ -123,6 +126,15 @@ export function Inventory() {
           </Button>
         }
       />
+      <PageGuide
+        id="inventory"
+        points={[
+          "Every leftover logged across all sites, valued at what it would cost to buy new.",
+          "Search or filter by material, site or status. Reserved items are already promised to another site.",
+          "Click a row to see its photo, condition and the open needs it could fill.",
+          "Log surplus (top right) adds new leftovers from a photo.",
+        ]}
+      />
       <div className="mb-6 grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
         <KpiCard label="Available items" value={fmtNum(available.length)} />
         <KpiCard label="Available value" value={fmtRm(available.reduce((a, l) => a + listingValueRm(state, l), 0))} />
@@ -149,8 +161,8 @@ export function Inventory() {
         rowLabel={(r) => `${r.item}, ${r.township}. Open details`}
         empty={<EmptyState className="m-4 border-0" icon={Boxes} title="No surplus matches" description="Clear the filters, or log new surplus from a photo." />}
       />
-      <Sheet open={!!open} onOpenChange={(o) => !o && setOpen(null)}>
-        <SheetContent className="w-full overflow-y-auto sm:max-w-md">{open && <ListingDetail listing={state.listings.find((l) => l.id === open.id) ?? open} onDone={() => setOpen(null)} />}</SheetContent>
+      <Sheet modal={!demo.active} open={!!open} onOpenChange={(o) => !o && setOpen(null)}>
+        <SheetContent data-demo="listing-detail" className="w-full overflow-y-auto sm:max-w-md">{open && <ListingDetail listing={state.listings.find((l) => l.id === open.id) ?? open} onDone={() => setOpen(null)} />}</SheetContent>
       </Sheet>
     </>
   );
