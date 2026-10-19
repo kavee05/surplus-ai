@@ -120,9 +120,12 @@ export function WorldMap2D({
             const s = site(p.sel.id);
             const h = 26;
             const fill = (s.progressPct / 100) * h;
+            const labelW = Math.max(40, s.name.length * 7.2);
             return hit(
               p,
               <>
+                {/* One hit area for the building and its name, so the gap between them is clickable too. */}
+                <rect x={x - labelW / 2} y={y - 15} width={labelW} height={64} fill="transparent" />
                 <rect x={x - 13} y={y - 13} width="26" height="26" rx="6" fill={C.pad} stroke={C.ink} strokeWidth="1.5" />
                 <rect x={x - 11} y={y + 13 - 2 - Math.max(0, fill - 4)} width="22" height={Math.max(0, fill - 4)} rx="3" fill={C.brand} opacity="0.85" />
                 <text x={x} y={y + 30} textAnchor="middle" fontSize="12.5" fontWeight="600" fill={C.ink} paintOrder="stroke" stroke={C.ground} strokeWidth="4" strokeLinejoin="round">
@@ -182,9 +185,16 @@ export function WorldMap2D({
             const left = layout.landfill.x < 0;
             const top = layout.landfill.z < 0;
             const ty = top ? y + rad + 18 : y - rad - 22;
+            // One hit area spanning the mound and its label.
+            const lx0 = left ? x - rad : x + rad - 130;
+            const hx0 = Math.min(x - rad, lx0);
+            const hx1 = Math.max(x + rad, lx0 + 130);
+            const hy0 = Math.min(y - rad, ty - 13);
+            const hy1 = Math.max(y + rad, ty + 20);
             return hit(
               p,
               <>
+                <rect x={hx0} y={hy0} width={hx1 - hx0} height={hy1 - hy0} fill="transparent" />
                 <ellipse cx={x} cy={y} rx={rad} ry={rad * 0.72} fill={C.landfill} opacity="0.85" />
                 <ellipse cx={x - rad * 0.15} cy={y - rad * 0.12} rx={rad * 0.55} ry={rad * 0.38} fill={C.landfillTop} />
                 <text x={x + (left ? -rad : rad)} y={ty} textAnchor={left ? "start" : "end"} fontSize="11" fill="#475569" paintOrder="stroke" stroke={C.ground} strokeWidth="4" strokeLinejoin="round">
