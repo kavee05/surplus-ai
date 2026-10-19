@@ -1,15 +1,10 @@
 import {
   ArrowLeftRight,
-  BarChart3,
-  BookOpenCheck,
   Boxes,
   ClipboardList,
-  Flag,
   History,
-  HandHeart,
   LayoutDashboard,
   Radar,
-  SlidersHorizontal,
   type LucideIcon,
 } from "lucide-react";
 
@@ -31,21 +26,15 @@ export const navGroups: { label: string; items: NavItem[] }[] = [
       { href: "/app/activity", label: "Activity", icon: History },
     ],
   },
-  {
-    label: "Insight",
-    items: [
-      { href: "/app/impact", label: "Impact", icon: BarChart3 },
-      { href: "/app/community", label: "Community route", icon: HandHeart },
-      { href: "/app/pilot", label: "Pilot plan", icon: Flag },
-    ],
-  },
-  {
-    label: "Reference",
-    items: [
-      { href: "/app/evidence", label: "Evidence", icon: BookOpenCheck },
-      { href: "/app/settings", label: "Assumptions", icon: SlidersHorizontal },
-    ],
-  },
 ];
 
 export const allNav = navGroups.flatMap((g) => g.items);
+
+/** Pages kept for slides and direct links, but left out of the menu. */
+export const hiddenPages: Record<string, string> = {
+  "/app/impact": "Impact",
+  "/app/community": "Community route",
+  "/app/pilot": "Pilot plan",
+  "/app/evidence": "Evidence",
+  "/app/settings": "Assumptions",
+};

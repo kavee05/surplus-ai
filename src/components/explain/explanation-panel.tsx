@@ -184,9 +184,6 @@ export function ExplanationPanel({
                   </div>
                 ))}
               </dl>
-              <Link href="/app/settings" className="mt-2 inline-flex items-center gap-0.5 text-xs font-medium text-brand hover:underline">
-                Edit assumptions <ArrowUpRight className="size-3" aria-hidden />
-              </Link>
             </AccordionContent>
           </AccordionItem>
         )}

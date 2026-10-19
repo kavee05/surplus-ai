@@ -181,10 +181,7 @@ export function PreOrderPanel({
           <Switch id="po-conservative" checked={!!input.conservative} onCheckedChange={(v) => setInput({ ...input, conservative: v })} />
         </div>
         <p className="text-xs text-muted-foreground">
-          Max haul {state.assumptions.global.maxHaulKm} km, handling buffer {state.assumptions.global.handlingBufferDays} days, supplier lead time {result.leadTimeDays} days.{" "}
-          <Link href="/app/settings" className="font-medium text-brand underline-offset-2 hover:underline">
-            Edit assumptions
-          </Link>
+          Max haul {state.assumptions.global.maxHaulKm} km, handling buffer {state.assumptions.global.handlingBufferDays} days, supplier lead time {result.leadTimeDays} days.
         </p>
       </form>
 
