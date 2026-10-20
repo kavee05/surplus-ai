@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import { PageGuide } from "@/components/app/page-guide";
 import { PageHeader } from "@/components/app/page-header";
 import { PageSkeleton } from "@/components/app/page-skeleton";
 import { CertaintyBadge } from "@/components/explain/certainty";
@@ -197,6 +198,15 @@ export function LogSurplus() {
       <PageHeader
         title="Log surplus"
         description={`Logging for ${siteName(state, siteId)} as ${person.name}. Take a photo, check what the AI suggests, then confirm.`}
+      />
+      <PageGuide
+        id="log"
+        points={[
+          "Take a photo of leftover material, or pick a sample photo.",
+          "The AI suggests what it is, roughly how many and the condition. You check and correct everything before saving.",
+          "Nothing is saved until you confirm. If live AI is off or slow, use a sample photo or type the details yourself.",
+          "Logged leftovers appear in Surplus inventory, and can confirm a forecast another site has reserved.",
+        ]}
       />
       <div data-demo="log-form" className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Step 1: photo */}

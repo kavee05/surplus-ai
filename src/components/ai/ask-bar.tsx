@@ -44,7 +44,18 @@ export function toRadarHref(i: PreOrderInput) {
  * The deterministic engine computes the answer. A briefing written by the model is shown only
  * if every number and date in it matches the engine; otherwise the template summary is shown.
  */
-export function AskBar({ onApply, variant = "radar", className }: { onApply?: (i: PreOrderInput) => void; variant?: "radar" | "overview"; className?: string }) {
+export function AskBar({
+  onApply,
+  variant = "radar",
+  className,
+  embedded = false,
+}: {
+  onApply?: (i: PreOrderInput) => void;
+  variant?: "radar" | "overview";
+  className?: string;
+  /** Inside a PageSection, which already shows the title: drop the card and header. */
+  embedded?: boolean;
+}) {
   const { state } = useStore();
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
@@ -87,7 +98,8 @@ export function AskBar({ onApply, variant = "radar", className }: { onApply?: (i
   };
 
   return (
-    <section aria-labelledby="ask-h" className={cn("rounded-2xl bg-card shadow-card", className)}>
+    <AskFrame embedded={embedded} className={className}>
+      {!embedded && (
       <div className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3 sm:px-5">
         <div className="flex items-center gap-2">
           <MessageSquareText className="size-4 text-brand" aria-hidden />
@@ -98,6 +110,7 @@ export function AskBar({ onApply, variant = "radar", className }: { onApply?: (i
         </div>
         <p className="text-xs text-muted-foreground">AI reads your sentence. The engine calculates. You decide.</p>
       </div>
+      )}
       <form
         className="flex flex-col gap-2 p-4 sm:flex-row sm:px-5"
         onSubmit={(e) => {
@@ -194,12 +207,21 @@ export function AskBar({ onApply, variant = "radar", className }: { onApply?: (i
               </Button>
             ) : (
               <Button asChild size="sm" variant="outline">
-                <a href="#preorder-heading">See the full check below</a>
+                <a href="#preorder">See the full check below</a>
               </Button>
             )}
           </div>
         </div>
       )}
+    </AskFrame>
+  );
+}
+
+function AskFrame({ embedded, className, children }: { embedded: boolean; className?: string; children: React.ReactNode }) {
+  if (embedded) return <div className={className}>{children}</div>;
+  return (
+    <section aria-labelledby="ask-h" className={cn("rounded-2xl bg-card shadow-card", className)}>
+      {children}
     </section>
   );
 }

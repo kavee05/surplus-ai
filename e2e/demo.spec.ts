@@ -5,7 +5,7 @@ const CREDIT = "Built by Team ELIZA, UTM KL. Code by Kaveetiran A/L Sitambaram."
 test.describe("guided demo", () => {
   test.skip(({ isMobile }) => isMobile, "Runs once, on desktop");
 
-  test("runs from the landing page to RM 41,719 on Impact", async ({ page }) => {
+  test("runs from the landing page through every page and ends on the world with RM 41,719 saved", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("link", { name: "Try the guided demo" }).first().click();
     const panel = page.getByRole("dialog", { name: "Guided demo" });
@@ -15,8 +15,22 @@ test.describe("guided demo", () => {
       await panel.getByRole("button", { name: /^Next/ }).click();
       await expect(panel.getByRole("heading")).toHaveText(title);
     };
-    await expect(panel).toContainText("A buyer is about to order 1,000 tiles");
+    const shown = (demo: string) => expect(page.locator(`[data-demo="${demo}"]`).first()).toBeVisible();
+
+    await expect(panel).toContainText("Your whole network in one picture");
+    await shown("surplus-world");
+    await next("What each object means");
+    await expect(page.locator('[data-demo="surplus-world"]')).toContainText("Forecast leftovers, not logged yet");
+    await next("Today's decisions");
+    await shown("overview-queue");
+    await next("Ask in plain words");
+    await expect(page.locator("#ask-input")).toBeVisible();
+    await next("A buyer needs 1,000 tiles");
+    await shown("need-detail");
+    await next("Check before buying");
+    await shown("preorder-form");
     await next("Radar spots leftovers before they exist");
+    await shown("radar-timeline");
     await next("Reserve 800, order only 200");
     const result = page.locator('[data-demo="preorder-result"]');
     await expect(result).toContainText("reserve 800 from forecast surplus, order 200 new");
@@ -24,10 +38,16 @@ test.describe("guided demo", () => {
     await next("Reserve the expected tiles");
     await next("Three weeks later at City of Elmina");
     await next("The forecast turns Confirmed");
+    await next("The tiles join the inventory");
+    await shown("listing-detail");
     await next("Collect and complete the transfer");
-    await next("Management sees the result");
-    await expect(page).toHaveURL(/\/app\/impact/);
-    await expect(page.locator('[data-demo="impact-kpis"]')).toContainText("RM 41,719");
+    await next("Every decision is on record");
+    await shown("activity-list");
+    await next("Back to the world: the result");
+    await expect(page).toHaveURL(/\/app$/);
+    const world = page.locator('[data-demo="surplus-world"]');
+    await expect(world).toContainText("What stayed out of the landfill");
+    await expect(world).toContainText("RM 41,719");
     await panel.getByRole("button", { name: "Finish" }).click();
     await expect(panel).toBeHidden();
   });

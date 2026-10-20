@@ -8,6 +8,8 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { DataTable } from "@/components/app/data-table";
 import { EmptyState } from "@/components/app/empty-state";
+import { PageGuide } from "@/components/app/page-guide";
+import { useDemo } from "@/components/demo/guided-demo";
 import { PageHeader } from "@/components/app/page-header";
 import { PageSkeleton } from "@/components/app/page-skeleton";
 import { StatusBadge, type Tone } from "@/components/app/status-badge";
@@ -43,6 +45,7 @@ interface Row {
 
 export function Needs() {
   const { state, ready } = useStore();
+  const demo = useDemo();
   const [openId, setOpenId] = useState<string | null>(null);
   const [posting, setPosting] = useState(false);
   const params = useSearchParams();
@@ -116,6 +119,15 @@ export function Needs() {
           </Button>
         }
       />
+      <PageGuide
+        id="needs"
+        points={[
+          "What each site is going to need, how much and by when.",
+          "Click a need to see leftovers that fit, ranked by distance and saving, with the reasons shown.",
+          "Approve a match to start a transfer, or reject it with a reason. A rejected match is not suggested again.",
+          "Post a need (top right) adds a new request.",
+        ]}
+      />
       <DataTable
         columns={columns}
         data={rows}
@@ -130,8 +142,8 @@ export function Needs() {
         empty={<EmptyState className="m-4 border-0" icon={ClipboardList} title="No needs match" description="Clear the filters or post a new need." />}
       />
       <PostNeedDialog open={posting} onOpenChange={setPosting} onPosted={(id) => setOpenId(id)} />
-      <Sheet open={!!openNeed} onOpenChange={(o) => !o && setOpenId(null)}>
-        <SheetContent className="w-full overflow-y-auto sm:max-w-xl">{openNeed && <NeedDetail need={openNeed} onDone={() => setOpenId(null)} />}</SheetContent>
+      <Sheet modal={!demo.active} open={!!openNeed} onOpenChange={(o) => !o && setOpenId(null)}>
+        <SheetContent data-demo="need-detail" className="w-full overflow-y-auto sm:max-w-xl">{openNeed && <NeedDetail need={openNeed} onDone={() => setOpenId(null)} />}</SheetContent>
       </Sheet>
     </>
   );

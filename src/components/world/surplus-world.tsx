@@ -6,9 +6,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { buildWorld, worldObjects, type WorldSelection } from "@/lib/engine/world";
 import { fmtRm } from "@/lib/format";
 import { useForecasts, useStore } from "@/lib/store";
+import { PageSection } from "@/components/app/page-section";
 import { cn } from "@/lib/utils";
 import { landfillRadius, layoutWorld, siteLabelY } from "./layout";
 import { WorldCard } from "./world-card";
+import { WORLD_SELECT } from "./world-events";
 import { WorldMap2D } from "./world-map-2d";
 
 // three.js only downloads when the 3D view is actually used.
@@ -69,6 +71,7 @@ export function SurplusWorld({ className }: { className?: string }) {
   const [slow, setSlow] = useState(false);
   const [ready3d, setReady3d] = useState(false);
   const [full, setFull] = useState(false);
+  const [sectionOpen, setSectionOpen] = useState(true);
   const [hover, setHover] = useState<WorldSelection | null>(null);
   const onHover = useCallback((s: WorldSelection | null) => setHover(s), []);
   const frame = useRef<HTMLDivElement>(null);
@@ -87,12 +90,19 @@ export function SurplusWorld({ className }: { className?: string }) {
     return () => document.removeEventListener("fullscreenchange", onFs);
   }, []);
 
+  // The guided tour can point at objects.
+  useEffect(() => {
+    const onSelect = (e: Event) => setSelection((e as CustomEvent<WorldSelection | null>).detail);
+    window.addEventListener(WORLD_SELECT, onSelect);
+    return () => window.removeEventListener(WORLD_SELECT, onSelect);
+  }, []);
+
   // A selection can vanish when the data changes (a lorry arrives, a pile is moved).
   useEffect(() => {
     if (selection && !labels.has(`${selection.kind}:${selection.id}`)) setSelection(null);
   }, [labels, selection]);
 
-  const want3d = !!device?.webgl && (pref === "3d" || (pref === "auto" && !device.lowReason && !slow));
+  const want3d = sectionOpen && !!device?.webgl && (pref === "3d" || (pref === "auto" && !device.lowReason && !slow));
   const view: View = want3d ? "3d" : "2d";
   const animate = !device?.reducedMotion;
   const showing3d = want3d && ready3d;
@@ -117,16 +127,15 @@ export function SurplusWorld({ className }: { className?: string }) {
         : null;
 
   return (
-    <section aria-labelledby="world-h" className={cn("overflow-hidden rounded-2xl bg-card shadow-card", className)} data-demo="surplus-world">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3 sm:px-5">
-        <div className="min-w-0">
-          <h2 id="world-h" className="font-semibold">
-            Surplus World
-          </h2>
-          <p className="text-xs text-muted-foreground">
-            Every site, pile, lorry and need, live from your data. {view === "3d" ? "Drag to turn, scroll to zoom, click to open." : "Click anything to open it."}
-          </p>
-        </div>
+    <PageSection
+      id="overview-world"
+      demo="surplus-world"
+      title="Surplus World"
+      description={`Every site, pile, lorry and need, live from your data. ${view === "3d" ? "Drag to turn, scroll to zoom, click to open." : "Click anything to open it."}`}
+      defaultOpen
+      onOpenChange={setSectionOpen}
+      className={className}
+      actions={
         <div className="flex items-center gap-2">
           <div role="group" aria-label="World view" className="flex rounded-xl bg-muted p-0.5">
             {(
@@ -159,8 +168,8 @@ export function SurplusWorld({ className }: { className?: string }) {
             {full ? <Minimize2 className="size-4" aria-hidden /> : <Maximize2 className="size-4" aria-hidden />}
           </button>
         </div>
-      </div>
-
+      }
+    >
       <div ref={frame} className={cn("grid grid-cols-1 bg-card lg:grid-cols-[minmax(0,1fr)_300px]", full && "h-full lg:grid-cols-[minmax(0,1fr)_340px]")}>
         <div className={cn("relative min-w-0 bg-[#f4f8f6]", full ? "h-full" : view === "3d" ? "h-[320px] sm:h-[440px]" : "")}>
           {/* The 2D map is always there first; the 3D scene fades in over it once ready. */}
@@ -226,6 +235,6 @@ export function SurplusWorld({ className }: { className?: string }) {
           <WorldCard world={world} selection={selection} onSelect={setSelection} />
         </div>
       </div>
-    </section>
+    </PageSection>
   );
 }

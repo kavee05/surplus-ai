@@ -8,7 +8,9 @@ import { AskBar } from "@/components/ai/ask-bar";
 import { EmptyState } from "@/components/app/empty-state";
 import { KpiCard } from "@/components/app/kpi-card";
 import { PageHeader } from "@/components/app/page-header";
+import { PageSection } from "@/components/app/page-section";
 import { PageSkeleton } from "@/components/app/page-skeleton";
+import { AiModeBadge } from "@/components/ai/ai-status";
 import { CertaintyBadge } from "@/components/explain/certainty";
 import { Button } from "@/components/ui/button";
 import { SurplusWorld } from "@/components/world/surplus-world";
@@ -155,18 +157,19 @@ export function Overview() {
 
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-5">
         <div className="flex min-w-0 flex-col gap-6 lg:col-span-3">
-          <section aria-labelledby="queue-h" className="rounded-2xl bg-card shadow-card">
-            <div className="flex items-center justify-between gap-2 border-b px-4 py-3 sm:px-5">
-              <div>
-                <h2 id="queue-h" className="font-semibold">
-                  For you <span className="tabular ml-1 text-muted-foreground">{mine.length}</span>
-                </h2>
-                <p className="text-xs text-muted-foreground">Most urgent first. Act here, or open one to see why.</p>
-              </div>
-              <Link href="/app/activity" className="shrink-0 text-xs font-medium text-brand hover:underline">
+          <PageSection
+            id="overview-queue"
+            demo="overview-queue"
+            title="For you"
+            badge={mine.length}
+            description="Decisions waiting on you, most urgent first. Act here, or open one to see why."
+            defaultOpen
+            actions={
+              <Link href="/app/activity" className="hidden text-xs font-medium text-brand hover:underline sm:inline">
                 Decision history
               </Link>
-            </div>
+            }
+          >
             {mine.length === 0 ? (
               <EmptyState className="m-4" icon={CircleCheck} title="Nothing is waiting on you" description="New needs, approvals and forecast holds will appear here." />
             ) : (
@@ -207,17 +210,27 @@ export function Overview() {
                 )}
               </div>
             )}
-          </section>
+          </PageSection>
 
-          <AskBar variant="overview" />
+        </div>
 
-          <section aria-labelledby="coming-h" className="rounded-2xl bg-card shadow-card">
-            <div className="border-b px-4 py-3 sm:px-5">
-              <h2 id="coming-h" className="font-semibold">
-                Surplus on the way
-              </h2>
-              <p className="text-xs text-muted-foreground">Material other sites should have spare in the next 90 days.</p>
-            </div>
+        <div className="flex min-w-0 flex-col gap-4 lg:sticky lg:top-20 lg:col-span-2 lg:self-start">
+          <PageSection
+            id="overview-ask"
+            demo="overview-ask"
+            title="Ask Surplus AI"
+            actions={<AiModeBadge />}
+            description="Type what you are about to buy in plain words. AI reads it, the engine calculates, you decide."
+          >
+            <AskBar variant="overview" embedded />
+          </PageSection>
+
+          <PageSection
+            id="overview-coming"
+            title="Surplus on the way"
+            badge={upcoming.length}
+            description="Material other sites should have spare in the next 90 days, biggest value first."
+          >
             {upcoming.length === 0 ? (
               <EmptyState className="m-4" icon={CircleCheck} title="No surplus forecast in the next 90 days" description="These appear when a site orders more than it needs." />
             ) : (
@@ -243,17 +256,12 @@ export function Overview() {
                 })}
               </ul>
             )}
-          </section>
-        </div>
-
-        <div className="flex min-w-0 flex-col gap-6 lg:sticky lg:top-20 lg:col-span-2 lg:self-start">
-          <section aria-labelledby="stages-h" className="rounded-2xl bg-card shadow-card">
-            <div className="border-b px-4 py-3 sm:px-5">
-              <h2 id="stages-h" className="font-semibold">
-                Achieved versus estimated
-              </h2>
-              <p className="text-xs text-muted-foreground">Each transfer is counted in one stage only.</p>
-            </div>
+          </PageSection>
+          <PageSection
+            id="overview-stages"
+            title="Achieved versus estimated"
+            description="Savings split into done, moving now and held on forecast. Each transfer is counted once."
+          >
             <dl className="divide-y text-sm">
               {[
                 { k: "Achieved", d: "Completed transfers", v: stages.achieved, tone: "bg-success" },
@@ -280,7 +288,7 @@ export function Overview() {
             <p className="border-t px-4 py-2.5 text-xs text-muted-foreground sm:px-5">
               Savings use estimated prices and simulated records.
             </p>
-          </section>
+          </PageSection>
         </div>
       </div>
     </>

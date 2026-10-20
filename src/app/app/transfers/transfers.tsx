@@ -8,6 +8,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { DataTable } from "@/components/app/data-table";
 import { EmptyState } from "@/components/app/empty-state";
+import { PageGuide } from "@/components/app/page-guide";
 import { PageHeader } from "@/components/app/page-header";
 import { PageSkeleton } from "@/components/app/page-skeleton";
 import { StatusBadge, type Tone } from "@/components/app/status-badge";
@@ -108,6 +109,15 @@ export function Transfers() {
   return (
     <>
       <PageHeader title="Transfers" description="Material moving between sites. Each one goes from Matched to Reserved, Collected and Completed. Structural items like steel need an engineer's OK first." />
+      <PageGuide
+        id="transfers"
+        points={[
+          "Every move of leftovers between sites: Matched, Reserved, Collected, then Completed.",
+          "Held on forecast means it was reserved before the leftovers were logged. It firms up once they are.",
+          "Structural items such as steel and concrete need a site engineer's approval before they move.",
+          "Click a transfer to move it to the next step and see who did what, and when.",
+        ]}
+      />
       <div className="mb-6 grid grid-cols-3 gap-4 sm:gap-5 lg:grid-cols-6">
         {["Held on forecast", "Matched", "Awaiting approval", "Reserved", "Collected", "Completed"].map((s) => (
           <div key={s} className="flex min-w-0 flex-col gap-1.5 rounded-2xl bg-card px-4 py-3.5 shadow-card">

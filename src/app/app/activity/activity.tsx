@@ -4,6 +4,7 @@ import { ArrowUpRight, Check, History, Pencil, X } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { EmptyState } from "@/components/app/empty-state";
+import { PageGuide } from "@/components/app/page-guide";
 import { PageHeader } from "@/components/app/page-header";
 import { PageSkeleton } from "@/components/app/page-skeleton";
 import { SimulatedBadge } from "@/components/app/simulated-badge";
@@ -45,6 +46,14 @@ export function Activity() {
         title="Activity"
         description="Every yes or no that people gave to a suggestion, saved exactly as it looked at the time."
       />
+      <PageGuide
+        id="activity"
+        points={[
+          "Every time someone accepted, changed or rejected a suggestion, with who and when.",
+          "Each entry keeps the suggestion exactly as it was shown at the time, so nothing is rewritten later.",
+          "Filter by the kind of decision or by its outcome.",
+        ]}
+      />
       <div className="mb-5 grid grid-cols-3 gap-4 sm:gap-5">
         {(["accepted", "modified", "rejected"] as const).map((o) => (
           <div key={o} className="bg-card px-4 py-3">
@@ -83,7 +92,7 @@ export function Activity() {
       {rows.length === 0 ? (
         <EmptyState icon={History} title="No decisions yet" description="Approve, modify or reject a recommendation in the Radar, Needs or Transfers and it will be recorded here." />
       ) : (
-        <ol className="divide-y overflow-hidden rounded-2xl bg-card shadow-card">
+        <ol data-demo="activity-list" className="divide-y overflow-hidden rounded-2xl bg-card shadow-card">
           {rows.map((d) => {
             const o = outcomeMeta[d.outcome];
             return (

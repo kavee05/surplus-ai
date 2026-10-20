@@ -6,14 +6,17 @@ import { createContext, Suspense, useCallback, useContext, useEffect, useMemo, u
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { HERO_INPUT } from "@/data/initial";
-import { HERO_ACTUAL_QTY } from "@/data/seed";
+import { HERO_ACTUAL_QTY, HERO_FORECAST_ID, HERO_NEED_ID } from "@/data/seed";
 import { heroListing, heroReservation, HERO_LISTING_ID, HERO_TRANSFER_ID } from "@/lib/actions";
 import { makeDecision } from "@/lib/decisions";
 import { preOrderCheck } from "@/lib/engine/preorder";
 import { explainPreOrder } from "@/lib/explain/builders";
 import { useStore } from "@/lib/store";
 import type { Role } from "@/lib/types";
+import type { WorldSelection } from "@/lib/engine/world";
 import { cn } from "@/lib/utils";
+import { revealDemoTarget } from "@/components/app/page-section";
+import { selectInWorld } from "@/components/world/world-events";
 
 interface Step {
   title: string;
@@ -21,6 +24,8 @@ interface Step {
   route: string;
   role: Role;
   target?: string;
+  /** Something to select in Surplus World when the step opens (null clears it). */
+  world?: WorldSelection | null;
   /** Optional shortcut for the step's action, so the demo never gets stuck. */
   action?: { label: string; run: (ctx: DemoCtx) => void; done: (ctx: DemoCtx) => boolean };
 }
@@ -29,8 +34,46 @@ type DemoCtx = ReturnType<typeof useStore>;
 
 const STEPS: Step[] = [
   {
-    title: "A buyer is about to order 1,000 tiles",
-    body: "Daniel Wong buys for Bandar Bukit Raja. Phase 2B starts on 7 Dec, five weeks away, and needs 1,000 porcelain floor tiles. Before ordering, he runs a Pre-Order Check.",
+    title: "Your whole network in one picture",
+    body: "Surplus World shows every construction site, live from the data. Drag to turn it, scroll to zoom, and click anything to open its numbers. On a device too slow for 3D, the same world appears flat in 2D.",
+    route: "/app",
+    role: "procurement",
+    target: "surplus-world",
+    world: null,
+  },
+  {
+    title: "What each object means",
+    body: "Buildings are sites: taller means further built. Solid piles are leftovers already logged; see-through piles are leftovers forecast but not logged yet. Flags are needs, lorries are transfers, and the landfill shrinks as more is reused. Selected now: City of Elmina's forecast tiles.",
+    route: "/app",
+    role: "procurement",
+    target: "surplus-world",
+    world: { kind: "ghost", id: HERO_FORECAST_ID },
+  },
+  {
+    title: "Today's decisions",
+    body: "For you lists what is waiting on Daniel, most urgent first: approvals, reservations and matches. Every item opens the reasoning behind it.",
+    route: "/app",
+    role: "procurement",
+    target: "overview-queue",
+    world: null,
+  },
+  {
+    title: "Ask in plain words",
+    body: "Type what you are about to buy, like a message to a colleague. The AI reads the sentence, the engine does the maths, and nothing is reserved until a person presses the button. Try a question of your own here.",
+    route: "/app",
+    role: "procurement",
+    target: "overview-ask",
+  },
+  {
+    title: "A buyer needs 1,000 tiles",
+    body: "Daniel buys for Bandar Bukit Raja. Phase 2B starts on 7 Dec, five weeks away, and needs 1,000 porcelain floor tiles. Every site's needs live here, with the leftovers that could fill them.",
+    route: `/app/needs?need=${HERO_NEED_ID}`,
+    role: "procurement",
+    target: "need-detail",
+  },
+  {
+    title: "Check before buying",
+    body: "Before ordering, Daniel runs a Pre-Order Check on the Surplus Radar: what he needs, where, and by when.",
     route: "/app/radar",
     role: "procurement",
     target: "preorder-form",
@@ -70,7 +113,7 @@ const STEPS: Step[] = [
   },
   {
     title: "Three weeks later at City of Elmina",
-    body: "It is now 23 Nov. Elmina's phase is finished and Aina, the site engineer, has boxes of tiles left. She takes a photo; the AI suggests what it is and roughly how many, and she checks and confirms.",
+    body: "It is now 23 Nov. Elmina's phase is finished and Aina, the site engineer, has boxes of tiles left. She takes a photo; the AI suggests what it is and roughly how many, and she checks and confirms. Try it with a real photo now, or press Next to use the sample.",
     route: "/app/surplus/log",
     role: "engineer",
     target: "log-form",
@@ -94,6 +137,13 @@ const STEPS: Step[] = [
       },
       done: ({ state }) => state.listings.some((l) => l.id === HERO_LISTING_ID),
     },
+  },
+  {
+    title: "The tiles join the inventory",
+    body: `The ${HERO_ACTUAL_QTY.toLocaleString("en-MY")} logged tiles are now a real listing in Surplus inventory, already reserved for Bandar Bukit Raja. Every site can see every leftover here.`,
+    route: `/app/surplus?listing=${HERO_LISTING_ID}`,
+    role: "procurement",
+    target: "listing-detail",
   },
   {
     title: "Collect and complete the transfer",
@@ -120,11 +170,19 @@ const STEPS: Step[] = [
     },
   },
   {
-    title: "Management sees the result",
-    body: "The dashboard now counts the tiles: money saved, tonnes kept out of landfill, a rough carbon estimate, and one more correct forecast. All figures are simulated.",
-    route: "/app/impact",
+    title: "Every decision is on record",
+    body: "Activity keeps each yes or no with who made it, when, and the suggestion exactly as it was shown. Daniel's reservation is here.",
+    route: "/app/activity",
     role: "management",
-    target: "impact-kpis",
+    target: "activity-list",
+  },
+  {
+    title: "Back to the world: the result",
+    body: "The tiles have arrived, so their lorry is gone, and the landfill counter and Saving achieved have both gone up. All figures are simulated, from estimated prices.",
+    route: "/app",
+    role: "management",
+    target: "surplus-world",
+    world: { kind: "landfill", id: "landfill" },
   },
 ];
 
@@ -198,19 +256,39 @@ export function GuidedDemoProvider({ children }: { children: React.ReactNode }) 
   const target = step >= 0 ? STEPS[step].target : undefined;
   useEffect(() => {
     if (!target) return;
+    // The page may still be loading, so look for the target for a few seconds.
+    // Once found, open the folded section around it, then scroll to it.
     let el: Element | null = null;
-    const t = window.setTimeout(() => {
+    let tries = 0;
+    let t = 0;
+    const find = () => {
       el = document.querySelector(`[data-demo="${target}"]`);
-      if (el) {
+      if (!el) {
+        if (++tries < 30) t = window.setTimeout(find, 200);
+        return;
+      }
+      revealDemoTarget(target);
+      t = window.setTimeout(() => {
+        if (!el) return;
         el.classList.add("demo-highlight");
         el.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
-      }
-    }, 350);
+      }, 150);
+    };
+    t = window.setTimeout(find, 250);
     return () => {
       window.clearTimeout(t);
-      el?.classList.remove("demo-highlight");
+      (el as Element | null)?.classList.remove("demo-highlight");
     };
   }, [target, pathname, step]);
+
+  // Point at something in Surplus World once the page has drawn it.
+  const worldSel = step >= 0 ? STEPS[step].world : undefined;
+  useEffect(() => {
+    if (worldSel === undefined) return;
+    // Repeat a few times in case the world is still loading after navigation.
+    const ts = [900, 2000, 3500].map((ms) => window.setTimeout(() => selectInWorld(worldSel), ms));
+    return () => ts.forEach((t) => window.clearTimeout(t));
+  }, [worldSel, pathname, step]);
 
   const api = useMemo(() => ({ active: step >= 0, step, start, exit }), [step, start, exit]);
 
@@ -231,7 +309,7 @@ function DemoPanel({ step, go, exit, store }: { step: number; go: (i: number) =>
     <div
       role="dialog"
       aria-label="Guided demo"
-      className="fixed inset-x-3 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-50 rounded-2xl border bg-card p-4 shadow-overlay sm:inset-x-auto sm:right-6 sm:w-[380px] md:bottom-6"
+      className="fixed inset-x-3 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-[60] rounded-2xl border bg-card p-4 shadow-overlay sm:inset-x-auto sm:right-6 sm:w-[380px] md:bottom-6"
     >
       <div className="flex items-center justify-between gap-2">
         <span className="inline-flex items-center gap-1.5 text-xs font-medium text-brand">

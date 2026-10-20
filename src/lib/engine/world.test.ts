@@ -32,7 +32,11 @@ group("surplus world", () => {
   });
 
   it("sizes piles between 0 and 1", () => {
-    for (const site of world.sites) for (const p of [...site.piles, ...site.ghosts]) expect(p.scale).toBeGreaterThan(0), expect(p.scale).toBeLessThanOrEqual(1);
+    for (const site of world.sites)
+      for (const p of [...site.piles, ...site.ghosts]) {
+        expect(p.scale).toBeGreaterThan(0);
+        expect(p.scale).toBeLessThanOrEqual(1);
+      }
   });
 
   it("drops a lorry once its transfer completes, and the landfill counter grows", () => {

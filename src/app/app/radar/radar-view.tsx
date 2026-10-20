@@ -7,6 +7,8 @@ import { PageHeader } from "@/components/app/page-header";
 import { PageSkeleton } from "@/components/app/page-skeleton";
 import { StatusBadge } from "@/components/app/status-badge";
 import { ExplanationPanel } from "@/components/explain/explanation-panel";
+import { AiModeBadge } from "@/components/ai/ai-status";
+import { PageSection } from "@/components/app/page-section";
 import { AskBar } from "@/components/ai/ask-bar";
 import { PreOrderPanel } from "@/components/radar/preorder-panel";
 import { RadarLegend, RadarTimeline } from "@/components/radar/radar-timeline";
@@ -96,21 +98,24 @@ export function RadarView() {
         description="See which sites will have material left over, before it happens. Check here before you buy, and reserve what is coming."
       />
 
-      <AskBar onApply={setInput} className="mb-8" />
-
-      <section
-        aria-labelledby="timeline-heading"
-        className="flex flex-col gap-3"
+      <div className="flex flex-col gap-4">
+      <PageSection
+        id="radar-ask"
+        title="Ask Surplus AI"
+        description="Describe the purchase in plain words and the AI fills in the Pre-Order Check for you."
+        actions={<AiModeBadge />}
       >
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <h2 id="timeline-heading" className="text-lg font-bold">
-              Phases and forecast surplus
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Tap a dot to see how we worked it out.
-            </p>
-          </div>
+        <AskBar onApply={setInput} embedded />
+      </PageSection>
+
+      <PageSection
+        id="radar-timeline"
+        title="Phases and forecast surplus"
+        description="Every site's phases on one timeline, with the leftovers each is expected to have. Tap a dot to see how it was worked out."
+        bodyClassName="flex flex-col gap-3 p-4 sm:p-5"
+        forceOpen={!!linked}
+      >
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-end">
           <div className="flex flex-wrap items-end gap-3">
             <Filter
               className="mb-2 hidden size-4 text-muted-foreground sm:block"
@@ -172,17 +177,19 @@ export function RadarView() {
           />
         </div>
         <RadarLegend today={state.today} />
-      </section>
+      </PageSection>
 
-      <section aria-labelledby="preorder-heading" className="mt-10">
-        <h2 id="preorder-heading" className="text-lg font-bold">
-          Pre-Order Check
-        </h2>
-        <p className="mb-4 text-sm text-muted-foreground">
-          Tell us what you are about to buy. We use recorded leftovers first, then leftovers other sites expect to have.
-        </p>
+      <PageSection
+        id="radar-preorder"
+        anchorId="preorder"
+        title="Pre-Order Check"
+        description="Tell us what you are about to buy. We use recorded leftovers first, then leftovers other sites expect to have."
+        bodyClassName="p-4 sm:p-5"
+        defaultOpen
+      >
         <PreOrderPanel input={input} setInput={setInput} result={result} />
-      </section>
+      </PageSection>
+      </div>
 
       <Sheet open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
         <SheetContent className="w-full overflow-y-auto sm:max-w-xl">
