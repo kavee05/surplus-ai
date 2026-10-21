@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 /** Mark: a stack of material seen through radar arcs, with one forecast blip. */
 export function LogoMark({ className, title, onDark = false }: { className?: string; title?: string; onDark?: boolean }) {
   return (
-    <svg viewBox="0 0 32 32" className={cn("size-8 shrink-0", className)} role={title ? "img" : undefined} aria-label={title} aria-hidden={title ? undefined : true}>
+    <svg width={32} height={32} viewBox="0 0 32 32" className={cn("size-8 shrink-0", className)} role={title ? "img" : undefined} aria-label={title} aria-hidden={title ? undefined : true}>
       <defs>
         <linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor={onDark ? "#34D399" : "#10B981"} />

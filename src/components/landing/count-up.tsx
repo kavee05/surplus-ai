@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 /** Renders the final number on the server; on the client it counts up once from 0 (skipped for reduced motion). */
-export function CountUp({ to, delay = 500, duration = 900 }: { to: number; delay?: number; duration?: number }) {
+export function CountUp({ to, delay = 0, duration = 500 }: { to: number; delay?: number; duration?: number }) {
   const [n, setN] = useState(to);
   const started = useRef(false);
   useEffect(() => {
