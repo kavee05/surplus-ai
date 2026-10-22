@@ -59,7 +59,9 @@ test("landing shows the hero recommendation and the credit", async ({ page }) =>
   await expect(hero).toContainText("800");
   await expect(hero).toContainText("200");
   await expect(hero).toContainText("24 Nov");
-  await expect(page.locator("#radar")).toContainText("RM 11,098, 6.4 t diverted");
+  await expect(page.locator("#radar")).toContainText("RM 11,098");
+  await expect(page.locator("#radar")).toContainText("6.4 t of material reused");
+  await expect(page.getByText(/Not affiliated with or endorsed by Sime Darby Property/).first()).toBeVisible();
   await expect(page.locator("footer")).toContainText(CREDIT);
   await expect(page.getByText("Simulated data").first()).toBeVisible();
 });
