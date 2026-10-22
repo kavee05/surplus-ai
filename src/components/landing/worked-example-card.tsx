@@ -58,15 +58,15 @@ export function WorkedExampleCard({
           <p className="mt-0.5 text-2xl font-black tracking-tight text-emerald-700 sm:text-3xl tabular-nums">
             {fmtNum(r.reservedForecast)}
           </p>
-          <span className="text-[10px] font-semibold text-emerald-800/80">Tiles Reserved</span>
+          <span className="text-[10px] font-semibold text-emerald-800">Tiles Reserved</span>
         </div>
 
         <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-center">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Order Reduced To</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600">Order Reduced To</span>
           <p className="mt-0.5 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl tabular-nums">
             {fmtNum(r.orderNow)}
           </p>
-          <span className="text-[10px] font-semibold text-slate-500">From Original {fmtNum(heroInput.qty)}</span>
+          <span className="text-[10px] font-semibold text-slate-600">From Original {fmtNum(heroInput.qty)}</span>
         </div>
       </div>
 
@@ -116,7 +116,7 @@ export function WorkedExampleCard({
                 ["Bandar Bukit Raja requirement", `${fmtNum(heroInput.qty)} tiles by ${fmtDate(heroInput.neededBy)}`],
               ].map(([k, v]) => (
                 <div key={k} className="flex justify-between border-b border-slate-200/80 pb-1 last:border-0 last:pb-0">
-                  <dt className="text-slate-500">{k}</dt>
+                  <dt className="text-slate-600">{k}</dt>
                   <dd className="font-bold text-slate-900 tabular-nums">{v}</dd>
                 </div>
               ))}

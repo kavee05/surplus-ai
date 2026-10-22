@@ -65,7 +65,7 @@ export function SiteHeader() {
           <Link
             prefetch={false}
             href="/app?demo=start"
-            className="rounded-xl bg-[#059669] px-4 py-2 text-sm font-bold text-white shadow-xs transition-all hover:bg-[#047857] active:scale-[0.97]"
+            className="rounded-xl bg-[#047857] px-4 py-2 text-sm font-bold text-white shadow-xs transition-all hover:bg-[#065f46] active:scale-[0.97]"
           >
             Try the demo
           </Link>

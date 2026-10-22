@@ -77,7 +77,7 @@ export default function Landing() {
                   <Link
                     prefetch={false}
                     href="/app?demo=start"
-                    className="inline-flex items-center gap-2 rounded-xl bg-[#059669] px-5 py-3 text-sm font-bold text-white shadow-xs transition-all hover:bg-[#047857] active:scale-[0.98]"
+                    className="inline-flex items-center gap-2 rounded-xl bg-[#047857] px-5 py-3 text-sm font-bold text-white shadow-xs transition-all hover:bg-[#065f46] active:scale-[0.98]"
                   >
                     Try the demo <ArrowRight className="size-4" />
                   </Link>
@@ -116,7 +116,7 @@ export default function Landing() {
               </div>
               <Link
                 href="/app/evidence"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#059669] hover:text-[#047857] transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#047857] hover:text-[#065f46] transition-colors"
               >
                 View research citations <ExternalLink className="size-3.5" />
               </Link>
@@ -131,7 +131,7 @@ export default function Landing() {
               </div>
 
               <div className="rounded-2xl border border-[#E7E2D9] bg-white p-6 shadow-xs transition-all hover:border-[#CBD5E1]">
-                <p className="text-3xl sm:text-4xl font-bold tracking-tight text-[#059669] tabular-nums">43%</p>
+                <p className="text-3xl sm:text-4xl font-bold tracking-tight text-[#047857] tabular-nums">43%</p>
                 <p className="mt-2 text-sm font-semibold text-[#0F172A]">Cost cut in exchange trials</p>
                 <p className="mt-1 text-xs text-[#475569] leading-relaxed">By claiming surplus from neighboring township sites.</p>
               </div>

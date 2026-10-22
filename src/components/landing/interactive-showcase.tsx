@@ -122,7 +122,7 @@ export function InteractiveShowcase() {
       <div className="mx-auto max-w-6xl 2xl:max-w-[88rem] px-4 sm:px-6">
         {/* Section Header */}
         <div className="mx-auto max-w-2xl text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-[#059669]">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-[#047857]">
             <Layers className="size-3.5" /> Platform Architecture
           </span>
           <h2 className="mt-3 text-2xl sm:text-3xl font-bold tracking-tight text-[#0F172A]">
@@ -149,7 +149,7 @@ export function InteractiveShowcase() {
                     : "text-[#475569] hover:text-[#0F172A]"
                 }`}
               >
-                <Repeat className={`size-4 ${activeTab === "how" ? "text-[#059669]" : "text-[#475569]"}`} />
+                <Repeat className={`size-4 ${activeTab === "how" ? "text-[#047857]" : "text-[#475569]"}`} />
                 <span>The 4-Step Loop</span>
               </button>
 
@@ -167,7 +167,7 @@ export function InteractiveShowcase() {
                     : "text-[#475569] hover:text-[#0F172A]"
                 }`}
               >
-                <Sparkles className={`size-4 ${activeTab === "ai" ? "text-[#059669]" : "text-[#475569]"}`} />
+                <Sparkles className={`size-4 ${activeTab === "ai" ? "text-[#047857]" : "text-[#475569]"}`} />
                 <span>AI Governance</span>
               </button>
 
@@ -185,7 +185,7 @@ export function InteractiveShowcase() {
                     : "text-[#475569] hover:text-[#0F172A]"
                 }`}
               >
-                <Users className={`size-4 ${activeTab === "roles" ? "text-[#059669]" : "text-[#475569]"}`} />
+                <Users className={`size-4 ${activeTab === "roles" ? "text-[#047857]" : "text-[#475569]"}`} />
                 <span>Who It Is For</span>
               </button>
             </div>
@@ -203,13 +203,13 @@ export function InteractiveShowcase() {
                 >
                   <div>
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-sm font-bold text-[#059669]">{s.step}</span>
-                      <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-[#059669]">
+                      <span className="font-mono text-sm font-bold text-[#047857]">{s.step}</span>
+                      <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-[#047857]">
                         {s.badge}
                       </span>
                     </div>
 
-                    <div className="mt-4 flex size-11 items-center justify-center rounded-xl bg-white border border-[#E7E2D9] text-[#059669]">
+                    <div className="mt-4 flex size-11 items-center justify-center rounded-xl bg-white border border-[#E7E2D9] text-[#047857]">
                       <s.icon className="size-5" />
                     </div>
 
@@ -218,7 +218,7 @@ export function InteractiveShowcase() {
                   </div>
 
                   <div className="mt-4 border-t border-[#E7E2D9] pt-2.5">
-                    <span className="text-xs font-semibold text-[#059669]">Continuous loop →</span>
+                    <span className="text-xs font-semibold text-[#047857]">Continuous loop →</span>
                   </div>
                 </div>
               ))}
@@ -237,12 +237,12 @@ export function InteractiveShowcase() {
                 >
                   <div>
                     <div className="flex items-center justify-between">
-                      <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-[#059669]">
+                      <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-[#047857]">
                         {c.tag}
                       </span>
                     </div>
 
-                    <div className="mt-4 flex size-11 items-center justify-center rounded-xl bg-white border border-[#E7E2D9] text-[#059669]">
+                    <div className="mt-4 flex size-11 items-center justify-center rounded-xl bg-white border border-[#E7E2D9] text-[#047857]">
                       <c.icon className="size-5" />
                     </div>
 
@@ -271,12 +271,12 @@ export function InteractiveShowcase() {
                 >
                   <div>
                     <div className="flex items-center justify-between">
-                      <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-[#059669]">
+                      <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-[#047857]">
                         {x.scope}
                       </span>
                     </div>
 
-                    <div className="mt-4 flex size-11 items-center justify-center rounded-xl bg-white border border-[#E7E2D9] text-[#059669]">
+                    <div className="mt-4 flex size-11 items-center justify-center rounded-xl bg-white border border-[#E7E2D9] text-[#047857]">
                       <x.icon className="size-5" />
                     </div>
 
@@ -285,7 +285,7 @@ export function InteractiveShowcase() {
                   </div>
 
                   <div className="mt-4 border-t border-[#E7E2D9] pt-3">
-                    <span className="text-xs font-semibold text-[#059669]">Primary task: </span>
+                    <span className="text-xs font-semibold text-[#047857]">Primary task: </span>
                     <span className="text-xs text-[#475569]">{x.keyAction}</span>
                   </div>
                 </div>
