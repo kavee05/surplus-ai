@@ -49,7 +49,7 @@ export default function Landing() {
 
       <main id="main">
         {/* HERO SECTION - DARK NAVY FRAMING TOP OF PAGE */}
-        <section className="relative overflow-hidden bg-[#0F172A] py-24 lg:py-32 text-white">
+        <section id="radar" className="relative overflow-hidden bg-[#0F172A] py-24 lg:py-32 text-white">
           <div className="mx-auto max-w-6xl 2xl:max-w-[88rem] px-4 sm:px-6">
             <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_1.1fr] lg:gap-14">
               <div>
@@ -79,7 +79,7 @@ export default function Landing() {
                     href="/app?demo=start"
                     className="inline-flex items-center gap-2 rounded-xl bg-[#047857] px-5 py-3 text-sm font-bold text-white shadow-xs transition-all hover:bg-[#065f46] active:scale-[0.98]"
                   >
-                    Try the demo <ArrowRight className="size-4" />
+                    Try the guided demo <ArrowRight className="size-4" />
                   </Link>
                   <Link
                     prefetch={false}

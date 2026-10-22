@@ -18,13 +18,13 @@ const ROUTE = "M 75 58 C 150 18, 290 18, 365 58";
 
 export function HeroVisual() {
   return (
-    <div className="relative w-full">
+    <figure className="relative w-full">
       <div className="overflow-hidden rounded-2xl border border-slate-700/80 bg-[#1E293B] p-5 sm:p-6 shadow-none">
         {/* Simple Clean Header with Small Pill */}
         <div className="flex items-center justify-between border-b border-slate-700/60 pb-3">
           <h3 className="text-base font-bold text-white sm:text-lg">Porcelain Floor Tiles</h3>
           <span className="inline-flex items-center rounded-full border border-slate-700 bg-slate-800/90 px-2.5 py-0.5 text-[11px] font-medium text-slate-300">
-            Forecast match
+            Forecast match · Simulated data
           </span>
         </div>
 
@@ -149,7 +149,7 @@ export function HeroVisual() {
           </div>
         </div>
 
-        {/* Savings Row: No beige background, RM 11,098 bigger and green, deadline underneath */}
+        {/* Savings Row: RM 11,098 and 6.4 t diverted */}
         <div className="mt-3.5 rounded-xl border border-slate-700/80 bg-[#0F172A]/70 p-3.5 text-sm">
           <div className="flex items-center justify-between">
             <span className="font-medium text-slate-300">Estimated saving</span>
@@ -157,12 +157,12 @@ export function HeroVisual() {
               {fmtRm(result.expected.savedRm)}
             </span>
           </div>
-          <div className="mt-2 flex items-center justify-between border-t border-slate-700/60 pt-2 text-xs text-slate-400">
-            <span>Decision deadline</span>
-            <span className="font-semibold text-slate-200">24 Nov 2026</span>
+          <div className="mt-2 flex items-center justify-between border-t border-slate-700/60 pt-2 text-xs text-slate-300 font-medium">
+            <span>{fmtRm(result.expected.savedRm)}, {fmtNum(result.expected.tonnes, 1)} t diverted</span>
+            <span>Decision deadline: <strong className="text-slate-100">24 Nov 2026</strong></span>
           </div>
         </div>
       </div>
-    </div>
+    </figure>
   );
 }
