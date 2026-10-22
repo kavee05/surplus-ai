@@ -132,7 +132,7 @@ export function SiteFooter() {
         <div className="mx-auto flex max-w-6xl 2xl:max-w-[88rem] flex-col gap-2 px-4 py-6 text-xs text-slate-400 sm:flex-row sm:justify-between sm:px-6">
           <p>{CREDIT}</p>
           <p>
-            Hackathon submission. No SDP trademarks are used. Quantities, people, and companies are fictional.
+            Hackathon submission; IP follows the programme terms. No SDP logos or trademarks are used. Township names are an example only; quantities, people and companies are fictional.
           </p>
         </div>
       </div>

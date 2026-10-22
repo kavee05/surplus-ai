@@ -22,8 +22,8 @@ const steps = [
     step: "01",
     icon: Radar,
     title: "Forecast Surplus",
-    body: "Compare ordered quantities with planned need. Surplus is predicted 14 days before phase completion.",
-    badge: "14-Day Horizon",
+    body: "Compare what each phase ordered with what its plans need. Leftovers are forecast weeks before the phase ends.",
+    badge: "Weeks ahead",
   },
   {
     step: "02",
@@ -36,15 +36,15 @@ const steps = [
     step: "03",
     icon: Camera,
     title: "Confirm by Photo",
-    body: "Engineers photograph leftover materials on-site. AI detects quantities and engineers sign off.",
+    body: "Engineers photograph what is left on site. AI suggests the item and an estimated quantity; the engineer checks and confirms.",
     badge: "Visual Verification",
   },
   {
     step: "04",
     icon: Repeat,
     title: "Transfer & Measure",
-    body: "Materials move between sites. Cost avoidance, carbon abatement, and landfill diversion are logged.",
-    badge: "ESG Telemetry",
+    body: "Materials move between sites. Money saved, tonnes reused and an illustrative carbon estimate are recorded.",
+    badge: "Impact tracking",
   },
 ];
 
@@ -53,22 +53,22 @@ const split = [
     icon: Bot,
     tag: "Generative AI",
     title: "AI Suggests",
-    body: "Analyzes site photos to count leftovers, interprets natural-language searches, and generates summaries.",
-    guardrail: "Bounded execution; cannot execute purchases or transfer orders.",
+    body: "Reads site photos to suggest the item and an estimated quantity, reads plain-language requests, and writes short summaries.",
+    guardrail: "Suggestions only: it cannot place orders, reserve material or move transfers.",
   },
   {
     icon: Calculator,
     tag: "Deterministic Logic",
     title: "Code Calculates",
     body: "Surplus forecasting, proximity routing (km), and RM savings are deterministic arithmetic you can audit.",
-    guardrail: "100% auditable formulas. Zero black-box pricing estimates.",
+    guardrail: "Every formula is shown, and every assumption can be edited.",
   },
   {
     icon: UserCheck,
     tag: "Human Authority",
     title: "People Approve",
     body: "Every hold, reservation, match, and handover requires a person. Nothing is ordered automatically.",
-    guardrail: "Mandatory human sign-off with named engineer audit trails.",
+    guardrail: "Every decision is saved with who made it and why.",
   },
 ];
 
@@ -91,8 +91,8 @@ const roles = [
     icon: LineChart,
     role: "Management & ESG",
     scope: "Executive Oversight",
-    body: "Monitors group-wide RM saved, landfill diversion tonnes, and carbon abatement in real-time.",
-    keyAction: "Executive dashboard & ESG audit reports",
+    body: "Sees money saved, tonnes reused and an illustrative carbon estimate across all sites.",
+    keyAction: "Impact dashboard and transfer ledger",
   },
 ];
 
@@ -285,13 +285,18 @@ export function InteractiveShowcase() {
                   </div>
 
                   <div className="mt-4 border-t border-[#E7E2D9] pt-3">
-                    <span className="text-xs font-semibold text-[#047857]">Primary task: </span>
+                    <span className="text-xs font-semibold text-[#047857]">Main task: </span>
                     <span className="text-xs text-[#475569]">{x.keyAction}</span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
+        )}
+        {activeTab === "roles" && (
+          <p className="mt-6 text-center text-xs text-[#475569]">
+            For any developer or contractor in Malaysia. These roles are our assumption; we have not tested them with site teams yet.
+          </p>
         )}
       </div>
     </section>

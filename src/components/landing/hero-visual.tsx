@@ -1,11 +1,9 @@
-"use client";
-
 import { HERO_INPUT, seedState } from "@/data/initial";
 import { HERO_FORECAST_ID } from "@/data/seed";
 import { computeForecasts } from "@/lib/engine/forecast";
 import { siteDistanceKm } from "@/lib/engine/geo";
 import { preOrderCheck } from "@/lib/engine/preorder";
-import { fmtNum, fmtRm } from "@/lib/format";
+import { fmtDate, fmtNum, fmtRm } from "@/lib/format";
 import { CountUp } from "./count-up";
 
 // Same seed data and engine as the app, so these numbers always match it.
@@ -94,7 +92,7 @@ export function HeroVisual() {
                 fontWeight="600"
                 fill="#34D399"
               >
-                12.8 km
+                {fmtNum(km, 1)} km
               </text>
             </g>
 
@@ -158,8 +156,8 @@ export function HeroVisual() {
             </span>
           </div>
           <div className="mt-2 flex items-center justify-between border-t border-slate-700/60 pt-2 text-xs text-slate-300 font-medium">
-            <span>{fmtRm(result.expected.savedRm)}, {fmtNum(result.expected.tonnes, 1)} t diverted</span>
-            <span>Decision deadline: <strong className="text-slate-100">24 Nov 2026</strong></span>
+            <span>{fmtNum(result.expected.tonnes, 1)} t of material reused</span>
+            <span>Decision deadline: <strong className="text-slate-100">{fmtDate(result.decisionDate)}</strong></span>
           </div>
         </div>
       </div>
