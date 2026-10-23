@@ -1,4 +1,4 @@
-import { ArrowRight, ExternalLink } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { HeroVisual } from "@/components/landing/hero-visual";
@@ -21,7 +21,7 @@ const faqs = [
   },
   {
     q: "Is the data real?",
-    a: "No. Every quantity, person, company, phase and transfer is simulated. Township names are real Sime Darby Property townships, used only as an example. The figures about the problem come from cited public sources, listed with their limits on the Evidence page.",
+    a: "No. Every quantity, person, company, phase and transfer is simulated. Township names are real Sime Darby Property townships, used only as an example. The figures about the problem come from cited public sources, listed with their limits in our supporting documents.",
   },
   {
     q: "Is it only for Sime Darby Property?",
@@ -123,15 +123,9 @@ export default function Landing() {
                   Public evidence, each shown with its limit.
                 </p>
               </div>
-              <Link
-                href="/app/evidence"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#047857] hover:text-[#065f46] transition-colors"
-              >
-                Sources and their limits <ExternalLink className="size-3.5" />
-              </Link>
             </div>
 
-            {/* Evidence cards: figures and limits come from the same data as the Evidence page */}
+            {/* Evidence cards: figures and limits come from src/data/evidence.ts */}
             <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {evidence
                 .filter((e) => e.id !== "haehre")

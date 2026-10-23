@@ -64,6 +64,8 @@ test("landing shows the hero recommendation and the credit", async ({ page }) =>
   await expect(page.getByText(/Not affiliated with or endorsed by Sime Darby Property/).first()).toBeVisible();
   await expect(page.locator("footer")).toContainText(CREDIT);
   await expect(page.getByText("Simulated data").first()).toBeVisible();
+  // The Evidence page is deliberately not linked from the website; judges get its address in the supporting documents.
+  await expect(page.locator('a[href="/app/evidence"]')).toHaveCount(0);
 });
 
 test("Radar shows the hero numbers for the default check", async ({ page }) => {
