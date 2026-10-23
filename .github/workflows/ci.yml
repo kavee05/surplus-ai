@@ -14,7 +14,8 @@ concurrency:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    # Pinned: Playwright browsers are not yet available for the Ubuntu 26 runner image.
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
       # Demo mode only: CI never calls a live AI model.
